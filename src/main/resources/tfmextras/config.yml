@@ -1,0 +1,14 @@
+  # TFM Extras Configuration File #
+
+server:
+  # The strength of the Jump Pads. Must be a positive whole number. Not recommended being greater than 10.
+  jumppad_strength: 1
+  # Admin Info Messages
+  # These do not support legacy characters '&' and '§', please refer to https://docs.adventure.kyori.net/minimessage/format.html
+  admininfo:
+    - "<red>I'm not inputting a preset admin info message."
+  clear-on-join:
+    - "Taahh"
+  teleport-on-join:
+    - "Taahh"
+  allow-unsafe-enchantments: true
