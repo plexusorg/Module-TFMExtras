@@ -4,8 +4,6 @@ import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.rank.enums.Rank;
 import dev.plex.util.PlexUtils;
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicInteger;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -15,6 +13,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @CommandParameters(name = "cloudclear", description = "Clears lingering potion area effect clouds", aliases = "clearcloud,aeclear")
 @CommandPermissions(level = Rank.ADMIN, permission = "plex.tfmextras.cloudclear")

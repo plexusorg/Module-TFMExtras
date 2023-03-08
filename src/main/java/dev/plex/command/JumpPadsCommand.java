@@ -8,9 +8,6 @@ import dev.plex.jumppads.JumpPads;
 import dev.plex.jumppads.Mode;
 import dev.plex.rank.enums.Rank;
 import dev.plex.util.PlexUtils;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -20,7 +17,11 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandParameters(name = "jumppads", usage = "/jumppads <mode> [player]", description = "Enables jump pads for yourself or another player. Mode types available: none, regular, enhanced, extreme, ultimate", aliases = "jp, pads, launchpads")
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+@CommandParameters(name = "jumppads", usage = "/jumppads <mode> [player]", description = "Enables jump pads for yourself or another player. Mode types available: none, regular, enhanced, extreme, ultimate", aliases = "jp,pads,launchpads")
 @CommandPermissions(level = Rank.OP, permission = "plex.tfmextras.jumppads", source = RequiredCommandSource.ANY)
 public class JumpPadsCommand extends PlexCommand
 {

@@ -59,7 +59,9 @@ public class JumpPadsListener extends PlexListener
                 if (jumpPads.wool.getValues().contains(b.getType()))
                 {
                     if (!(event.getFrom().getY() > block.getY() + 0.1 && ((int) event.getTo().getY() == block.getY())))
+                    {
                         return;
+                    }
                     if (w.y() == -1)
                     {
                         playerVector.add(new Vector(0.0, jumpPads.SCALAR * jumpPads.STRENGTH, 0.0));

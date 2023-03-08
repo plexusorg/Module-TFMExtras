@@ -4,9 +4,6 @@ import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.source.RequiredCommandSource;
 import dev.plex.rank.enums.Rank;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.block.Block;
@@ -15,6 +12,10 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @CommandParameters(name = "randomfish", description = "Spawns a random type of fish at your location", aliases = "rfish,bird")
 @CommandPermissions(level = Rank.OP, permission = "plex.tfmextras.randomfish", source = RequiredCommandSource.IN_GAME)

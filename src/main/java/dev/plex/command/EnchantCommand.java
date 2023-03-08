@@ -22,9 +22,11 @@ import java.util.List;
 
 @CommandParameters(name = "enchant", description = "Enchants an item", usage = "/<command> <add | reset | list | addall | remove>", aliases = "enchantment")
 @CommandPermissions(level = Rank.OP, permission = "plex.tfmextras.enchant", source = RequiredCommandSource.IN_GAME)
-public class EnchantCommand extends PlexCommand {
+public class EnchantCommand extends PlexCommand
+{
     @Override
-    protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args) {
+    protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
+    {
         if (args.length == 0)
         {
             return usage();
@@ -58,13 +60,15 @@ public class EnchantCommand extends PlexCommand {
         return null;
     }
 
-    private List<Enchantment> getEnchantments(ItemStack item) {
+    private List<Enchantment> getEnchantments(ItemStack item)
+    {
         List<Enchantment> enchants = Lists.newArrayList();
         Arrays.stream(Enchantment.values()).filter(enchantment -> enchantment.canEnchantItem(item)).forEach(enchants::add);
         return enchants;
     }
 
-    private String[] getEnchantmentNames(ItemStack item) {
+    private String[] getEnchantmentNames(ItemStack item)
+    {
         return getEnchantments(item).stream().map(enchantment -> enchantment.key().value()).toArray(String[]::new);
     }
 }

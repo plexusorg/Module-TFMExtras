@@ -1,4 +1,4 @@
-  # TFM Extras Configuration File #
+# TFM Extras Configuration File #
 
 server:
   # The strength of the Jump Pads. Must be a positive whole number. Not recommended being greater than 10.

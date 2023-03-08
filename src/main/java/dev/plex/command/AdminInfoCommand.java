@@ -4,13 +4,14 @@ import dev.plex.TFMExtras;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.rank.enums.Rank;
-import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 @CommandParameters(name = "admininfo", description = "Information on how to apply for admin", aliases = "ai,si,staffinfo")
 @CommandPermissions(level = Rank.OP, permission = "plex.tfmextras.admininfo")

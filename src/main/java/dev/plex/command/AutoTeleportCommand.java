@@ -7,13 +7,14 @@ import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.exception.PlayerNotFoundException;
 import dev.plex.player.PlexPlayer;
 import dev.plex.rank.enums.Rank;
-import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 @CommandParameters(name = "autoteleport", description = "If a player is specified, it will toggle whether or not the player is automatically teleported when they join. If no player is specified, you will be randomly teleported", usage = "/<command> [player]", aliases = "autotp,rtp,randomtp,tpr")
 @CommandPermissions(level = Rank.OP, permission = "plex.tfmextras.autotp")
