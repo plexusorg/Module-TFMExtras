@@ -16,15 +16,15 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.26")
-    annotationProcessor("org.projectlombok:lombok:1.18.26")
-    compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
+    compileOnly("org.projectlombok:lombok:1.18.28")
+    annotationProcessor("org.projectlombok:lombok:1.18.28")
+    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
     implementation("org.apache.commons:commons-lang3:3.12.0")
-    compileOnly("dev.plex:server:1.3-SNAPSHOT")
+    compileOnly("dev.plex:server:1.3")
 }
 
 group = "dev.plex"
-version = "1.3-SNAPSHOT"
+version = "1.3"
 description = "Module-TFMExtras"
 
 java {
