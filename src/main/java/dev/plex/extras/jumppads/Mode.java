@@ -1,4 +1,4 @@
-package dev.plex.jumppads;
+package dev.plex.extras.jumppads;
 
 public enum Mode
 {

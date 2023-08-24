@@ -12,3 +12,5 @@ server:
   teleport-on-join:
     - "Taahh"
   allow-unsafe-enchantments: true
+player-worlds:
+  size: 500

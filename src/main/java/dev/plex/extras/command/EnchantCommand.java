@@ -1,6 +1,7 @@
-package dev.plex.command;
+package dev.plex.extras.command;
 
 import com.google.common.collect.Lists;
+import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.source.RequiredCommandSource;

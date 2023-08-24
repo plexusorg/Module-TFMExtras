@@ -1,8 +1,9 @@
-package dev.plex.listener;
+package dev.plex.extras.listener;
 
-import dev.plex.TFMExtras;
-import dev.plex.jumppads.JumpPads;
-import dev.plex.jumppads.Mode;
+import dev.plex.extras.TFMExtras;
+import dev.plex.extras.jumppads.JumpPads;
+import dev.plex.extras.jumppads.Mode;
+import dev.plex.listener.PlexListener;
 import dev.plex.util.PlexLog;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;

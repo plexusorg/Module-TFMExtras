@@ -11,6 +11,9 @@ repositories {
     maven {
         url = uri("https://nexus.telesphoreo.me/repository/plex/")
     }
+    maven {
+        url = uri("https://repo.infernalsuite.com/repository/maven-snapshots/")
+    }
 
     mavenCentral()
 }
@@ -21,6 +24,9 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     compileOnly("dev.plex:server:1.3")
+    compileOnly("com.infernalsuite.aswm:api:1.20-R0.1-SNAPSHOT") {
+        exclude(group="com.flowpowered")
+    }
 }
 
 group = "dev.plex"

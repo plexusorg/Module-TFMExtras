@@ -1,5 +1,6 @@
-package dev.plex.command;
+package dev.plex.extras.command;
 
+import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.punishment.Punishment;

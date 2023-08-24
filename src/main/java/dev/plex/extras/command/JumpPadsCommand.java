@@ -1,11 +1,12 @@
-package dev.plex.command;
+package dev.plex.extras.command;
 
-import dev.plex.TFMExtras;
+import dev.plex.extras.TFMExtras;
+import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.source.RequiredCommandSource;
-import dev.plex.jumppads.JumpPads;
-import dev.plex.jumppads.Mode;
+import dev.plex.extras.jumppads.JumpPads;
+import dev.plex.extras.jumppads.Mode;
 import dev.plex.rank.enums.Rank;
 import dev.plex.util.PlexUtils;
 import net.kyori.adventure.text.Component;

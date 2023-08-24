@@ -1,14 +1,15 @@
-package dev.plex;
+package dev.plex.extras;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.ClassPath;
+import dev.plex.extras.hook.SlimeWorldHook;
+import dev.plex.extras.listener.PlayerListener;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.config.ModuleConfig;
-import dev.plex.jumppads.JumpPads;
-import dev.plex.listener.JumpPadsListener;
-import dev.plex.listener.PlayerListener;
+import dev.plex.extras.jumppads.JumpPads;
+import dev.plex.extras.listener.JumpPadsListener;
 import dev.plex.listener.PlexListener;
 import dev.plex.module.PlexModule;
 import dev.plex.util.PlexLog;
@@ -33,6 +34,9 @@ public class TFMExtras extends PlexModule
     @Getter
     private ModuleConfig config;
 
+    @Getter
+    private final SlimeWorldHook slimeWorldHook = new SlimeWorldHook();
+
     @Override
     public void load()
     {
@@ -46,12 +50,14 @@ public class TFMExtras extends PlexModule
     @Override
     public void enable()
     {
-        registerListener(new JumpPadsListener());
-        registerListener(new PlayerListener());
-
-        getClassesFrom("dev.plex.command").forEach(aClass ->
+        if (slimeWorldHook.plugin() != null)
         {
-            if (aClass.getSuperclass() == PlexCommand.class && aClass.isAnnotationPresent(CommandParameters.class) && aClass.isAnnotationPresent(CommandPermissions.class))
+            slimeWorldHook.onEnable(this);
+        }
+
+        getClassesFrom("dev.plex.extras.command").forEach(aClass ->
+        {
+            if (PlexCommand.class.isAssignableFrom(aClass) && aClass.isAnnotationPresent(CommandParameters.class) && aClass.isAnnotationPresent(CommandPermissions.class))
             {
                 try
                 {
@@ -65,9 +71,9 @@ public class TFMExtras extends PlexModule
             }
         });
 
-        getClassesFrom("dev.plex.listener").forEach(aClass ->
+        getClassesFrom("dev.plex.extras.listener").forEach(aClass ->
         {
-            if (aClass.getSuperclass() == PlexListener.class)
+            if (PlexListener.class.isAssignableFrom(aClass))
             {
                 try
                 {
@@ -88,12 +94,17 @@ public class TFMExtras extends PlexModule
         addDefaultMessage("attributeList", "<gold>All possible attributes: <yellow>{0}", "0 - The attribute list, each split by a new line");
         addDefaultMessage("modifiedAutoClear", "<gold>{0} will {1} have their inventory cleared when they join.", "0 - The player who will have their inventory cleared on join", "1 - Whether they had this option toggled (returns: 'no longer', 'now')");
         addDefaultMessage("modifiedAutoTeleport", "<gold>{0} will {1} be teleported automatically when they join.", "0 - The player to be teleported automatically", "1 - Whether they had this option toggled (returns: 'no longer', 'now')");
+        addDefaultMessage("createdPlayerWorld", "<green>Welcome to the server! We've created you a new private world where you can invite your friends! View how to use this using /myworld!");
     }
 
     @Override
     public void disable()
     {
         // Unregistering listeners / commands is handled by Plex
+        if (slimeWorldHook.plugin() != null)
+        {
+            slimeWorldHook.onDisable(this);
+        }
     }
 
     public static Location getRandomLocation(World world)

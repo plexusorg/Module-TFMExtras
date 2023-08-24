@@ -1,5 +1,6 @@
-package dev.plex.command;
+package dev.plex.extras.command;
 
+import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.source.RequiredCommandSource;
@@ -26,7 +27,7 @@ public class RandomFishCommand extends PlexCommand
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
-        @Nullable Block block = player.getTargetBlock(15);
+        @Nullable Block block = player.getTargetBlockExact(15);
         if (block == null)
         {
             return MiniMessage.miniMessage().deserialize("<red>There is no block within 15 blocks of you.");

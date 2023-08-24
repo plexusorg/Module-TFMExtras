@@ -1,6 +1,6 @@
-package dev.plex.jumppads;
+package dev.plex.extras.jumppads;
 
-import dev.plex.TFMExtras;
+import dev.plex.extras.TFMExtras;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;

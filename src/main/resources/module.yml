@@ -1,4 +1,4 @@
 name: Module-TFMExtras
-main: dev.plex.TFMExtras
+main: dev.plex.extras.TFMExtras
 description: TFM extras for Plex
 version: 1.3
