@@ -3,12 +3,15 @@ package dev.plex.extras.listener;
 import dev.plex.Plex;
 import dev.plex.extras.TFMExtras;
 import dev.plex.listener.PlexListener;
+import dev.plex.util.PlexLog;
 import dev.plex.util.PlexUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlayerListener extends PlexListener
@@ -41,13 +44,14 @@ public class PlayerListener extends PlexListener
     }
 
     @EventHandler
-    public void createPlayerWorld(PlayerJoinEvent event)
+    public void unloadWorld(PlayerQuitEvent event)
     {
         final Player player = event.getPlayer();
-        final Pair<World, Boolean> world = TFMExtras.getModule().getSlimeWorldHook().createPlayerWorld(player.getUniqueId());
-        if (world.getRight())
+        PlexLog.log("{0}", TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(player.getUniqueId().toString()));
+        PlexLog.log("{0}", Bukkit.getWorld(player.getUniqueId().toString()) != null);
+        if (TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(player.getUniqueId().toString()) && Bukkit.getWorld(player.getUniqueId().toString()) != null)
         {
-            player.sendMessage(PlexUtils.messageComponent("createdPlayerWorld"));
+            Bukkit.unloadWorld(player.getUniqueId().toString(), true);
         }
     }
 }

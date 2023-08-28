@@ -1,19 +1,28 @@
 package dev.plex.extras;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
-import dev.plex.extras.hook.SlimeWorldHook;
-import dev.plex.extras.listener.PlayerListener;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.config.ModuleConfig;
+import dev.plex.extras.command.slime.MyWorldCommand;
+import dev.plex.extras.command.slime.SlimeManagerCommand;
+import dev.plex.extras.hook.SlimeWorldHook;
+import dev.plex.extras.hook.slime.PlayerWorld;
 import dev.plex.extras.jumppads.JumpPads;
-import dev.plex.extras.listener.JumpPadsListener;
 import dev.plex.listener.PlexListener;
+import dev.plex.listener.impl.ChatListener;
 import dev.plex.module.PlexModule;
+import dev.plex.player.PlexPlayer;
 import dev.plex.util.PlexLog;
+import dev.plex.util.PlexUtils;
+import dev.plex.util.minimessage.SafeMiniMessage;
+import dev.plex.util.sql.SQLUtil;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -44,7 +53,8 @@ public class TFMExtras extends PlexModule
         config = new ModuleConfig(this, "tfmextras/config.yml", "config.yml");
         config.load();
         jumpPads = new JumpPads();
-        PlexLog.debug(String.valueOf(config.getInt("server.jumppad_strength")));
+//        PlexLog.debug(String.valueOf(config.getInt("server.jumppad_strength")));
+//        PlexLog.log("Test map: {0}", StringUtils.join(SQLUtil.createTable(Lists.newArrayList(), PlayerWorld.class), "\n"));
     }
 
     @Override
@@ -53,7 +63,11 @@ public class TFMExtras extends PlexModule
         if (slimeWorldHook.plugin() != null)
         {
             slimeWorldHook.onEnable(this);
+            registerCommand(new SlimeManagerCommand());
+            registerCommand(new MyWorldCommand());
         }
+
+
 
         getClassesFrom("dev.plex.extras.command").forEach(aClass ->
         {
@@ -94,7 +108,11 @@ public class TFMExtras extends PlexModule
         addDefaultMessage("attributeList", "<gold>All possible attributes: <yellow>{0}", "0 - The attribute list, each split by a new line");
         addDefaultMessage("modifiedAutoClear", "<gold>{0} will {1} have their inventory cleared when they join.", "0 - The player who will have their inventory cleared on join", "1 - Whether they had this option toggled (returns: 'no longer', 'now')");
         addDefaultMessage("modifiedAutoTeleport", "<gold>{0} will {1} be teleported automatically when they join.", "0 - The player to be teleported automatically", "1 - Whether they had this option toggled (returns: 'no longer', 'now')");
-        addDefaultMessage("createdPlayerWorld", "<green>Welcome to the server! We've created you a new private world where you can invite your friends! View how to use this using /myworld!");
+        addDefaultMessage("createdPlayerWorld", "<green>Welcome to the server! We've created you a new private world where you can invite your friends! View how to use this using /myworld and visit it using /myworld goto!");
+        addDefaultMessage("playerWorldExists", "<red>Hey! Your world seems to already exist, go to it using /myworld goto");
+        addDefaultMessage("selfPlayerWorldNotFound", "<red>Hey! You don't seem to own a world yet. Go ahead and run /myworld create and then run /myworld for more help!");
+        addDefaultMessage("playerWorldNotFound", "<red>Hey! This player's world does not seem to exist. Are they online?");
+        addDefaultMessage("worldLoadError", "<red>Hey! It looks like something went wrong when this world was being loaded in, please try asking the player (or if it is yours, then rejoin) to rejoin and if not, tell the world owner to contact support on our <click:open_url:https://discord.gg/6QcT7K2Bkw><bold>Discord</bold></click>");
     }
 
     @Override

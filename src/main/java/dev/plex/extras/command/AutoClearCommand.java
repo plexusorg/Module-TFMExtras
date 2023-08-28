@@ -7,7 +7,7 @@ import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.exception.PlayerNotFoundException;
 import dev.plex.player.PlexPlayer;
-import dev.plex.rank.enums.Rank;
+
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 @CommandParameters(name = "autoclear", description = "Toggle whether or not a player has their inventory automatically cleared when they join", usage = "/<command> <player>", aliases = "aclear,ac")
-@CommandPermissions(level = Rank.ADMIN, permission = "plex.tfmextras.autoclear")
+@CommandPermissions(permission = "plex.tfmextras.autoclear")
 public class AutoClearCommand extends PlexCommand
 {
     @Override

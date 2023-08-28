@@ -7,7 +7,7 @@ import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.source.RequiredCommandSource;
 import dev.plex.extras.jumppads.JumpPads;
 import dev.plex.extras.jumppads.Mode;
-import dev.plex.rank.enums.Rank;
+
 import dev.plex.util.PlexUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 @CommandParameters(name = "jumppads", usage = "/jumppads <mode> [player]", description = "Enables jump pads for yourself or another player. Mode types available: none, regular, enhanced, extreme, ultimate", aliases = "jp,pads,launchpads")
-@CommandPermissions(level = Rank.OP, permission = "plex.tfmextras.jumppads", source = RequiredCommandSource.ANY)
+@CommandPermissions( permission = "plex.tfmextras.jumppads", source = RequiredCommandSource.ANY)
 public class JumpPadsCommand extends PlexCommand
 {
     JumpPads jumpPads = TFMExtras.getModule().jumpPads;
@@ -96,7 +96,7 @@ public class JumpPadsCommand extends PlexCommand
 
             Mode mode = Mode.valueOf(args[0]);
 
-            if (!checkRank(sender, Rank.ADMIN, "plex.tfmextras.jumppads.others"))
+            if (!checkPermission(sender, "plex.tfmextras.jumppads.others"))
             {
                 return permissionMessage();
             }

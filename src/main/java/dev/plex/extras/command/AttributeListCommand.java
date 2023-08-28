@@ -3,7 +3,7 @@ package dev.plex.extras.command;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.rank.enums.Rank;
+
 import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.attribute.Attribute;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
 @CommandParameters(name = "attributes", description = "Lists all possible attributes", aliases = "attributelist,attrlist")
-@CommandPermissions(level = Rank.OP, permission = "plex.tfmextras.attrlist")
+@CommandPermissions( permission = "plex.tfmextras.attrlist")
 public class AttributeListCommand extends PlexCommand
 {
     @Override

@@ -4,7 +4,7 @@ import dev.plex.extras.TFMExtras;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.rank.enums.Rank;
+
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 @CommandParameters(name = "admininfo", description = "Information on how to apply for admin", aliases = "ai,si,staffinfo")
-@CommandPermissions(level = Rank.OP, permission = "plex.tfmextras.admininfo")
+@CommandPermissions( permission = "plex.tfmextras.admininfo")
 public class AdminInfoCommand extends PlexCommand
 {
     private static final List<Component> ADMIN_INFO = TFMExtras.getModule().getConfig().getStringList("server.admininfo")

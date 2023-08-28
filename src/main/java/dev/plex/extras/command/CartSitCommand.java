@@ -4,7 +4,7 @@ import dev.plex.Plex;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.rank.enums.Rank;
+
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @CommandParameters(name = "cartsit", description = "Sit in nearest minecart. If target is in a minecart already, they will be ejected", aliases = "minecartsit")
-@CommandPermissions(level = Rank.NONOP, permission = "plex.tfmextras.cartsit")
+@CommandPermissions(permission = "plex.tfmextras.cartsit")
 public class CartSitCommand extends PlexCommand
 {
     @Override

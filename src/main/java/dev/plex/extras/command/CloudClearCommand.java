@@ -3,7 +3,7 @@ package dev.plex.extras.command;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.rank.enums.Rank;
+
 import dev.plex.util.PlexUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @CommandParameters(name = "cloudclear", description = "Clears lingering potion area effect clouds", aliases = "clearcloud,aeclear")
-@CommandPermissions(level = Rank.ADMIN, permission = "plex.tfmextras.cloudclear")
+@CommandPermissions(permission = "plex.tfmextras.cloudclear")
 public class CloudClearCommand extends PlexCommand
 {
     @Override

@@ -9,13 +9,16 @@ import com.infernalsuite.aswm.api.world.properties.SlimeProperties;
 import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap;
 import dev.plex.extras.TFMExtras;
 import dev.plex.util.PlexLog;
+import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.event.world.WorldLoadEvent;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,8 +32,11 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
     private static final String WORLD_NOT_FOUND = "<red>This world could not be found!";
     private static final String STORAGE_FAILURE = "<red>This world cannot be stored!";
 
-    private final Set<String> LOADED_WORLDS = Sets.newHashSet();
+    private final Set<String> loadedWorlds = Sets.newHashSet();
+    
+//    private final List<>
 
+    @Getter
     private SlimeLoader loader;
 
 
@@ -46,7 +52,6 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
         PlexLog.log("<green>Enabling SWM Hook");
 
         this.loader = plugin().getLoader("mysql");
-        this.loadAllWorlds();
     }
 
     @Override
@@ -54,7 +59,7 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
     {
         PlexLog.log("<green>Disabling SWM Hook");
         AtomicInteger i = new AtomicInteger();
-        LOADED_WORLDS.forEach(s ->
+        loadedWorlds.forEach(s ->
         {
             final World world = Bukkit.getWorld(s);
             if (world != null)
@@ -104,7 +109,7 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
                 world.setSpawnLocation(0, 130, 0);
                 world.setAutoSave(true);
 
-                LOADED_WORLDS.add(s);
+                loadedWorlds.add(s);
 
                 double configuratedSize = TFMExtras.getModule().getConfig().getDouble("player-worlds.size");
                 world.getWorldBorder().setCenter(world.getSpawnLocation());
@@ -117,6 +122,27 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
         catch (IOException | IllegalArgumentException ex)
         {
             PlexLog.error(ex.getMessage());
+        }
+    }
+
+    public boolean isWorldLoaded(String world)
+    {
+        return loadedWorlds.stream().anyMatch(s -> s.equals(world));
+    }
+
+    public void deleteWorld(String world)
+    {
+        try
+        {
+            if (Bukkit.getWorld(world) != null)
+            {
+                Bukkit.unloadWorld(world, false);
+            }
+            this.loader.deleteWorld(world);
+        }
+        catch (UnknownWorldException | IOException e)
+        {
+            PlexLog.error(e.getMessage());
         }
     }
 
@@ -173,7 +199,7 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
             world.getBlockAt(0, 128, 0).setType(Material.STONE);
         }
 
-        LOADED_WORLDS.add(uuid.toString());
+        loadedWorlds.add(uuid.toString());
 
         double configuratedSize = TFMExtras.getModule().getConfig().getDouble("player-worlds.size");
         world.getWorldBorder().setCenter(world.getSpawnLocation());
@@ -181,9 +207,16 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
         world.getWorldBorder().setDamageAmount(0);
         world.getWorldBorder().setDamageBuffer(0);
 
+        final WorldLoadEvent event = new WorldLoadEvent(world);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+
         return Pair.of(world, newWorld);
     }
 
+    public Set<String> loadedWorlds()
+    {
+        return this.loadedWorlds;
+    }
 
     @Override
     public SlimePlugin plugin()

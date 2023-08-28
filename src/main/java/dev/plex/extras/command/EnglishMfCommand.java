@@ -3,7 +3,7 @@ package dev.plex.extras.command;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.rank.enums.Rank;
+
 import dev.plex.util.PlexUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  */
 
 @CommandParameters(name = "emf", description = "Speak english.", usage = "/<command> <player>")
-@CommandPermissions(level = Rank.ADMIN, permission = "plex.tfmextras.emf")
+@CommandPermissions(permission = "plex.tfmextras.emf")
 public class EnglishMfCommand extends PlexCommand
 {
     @Override

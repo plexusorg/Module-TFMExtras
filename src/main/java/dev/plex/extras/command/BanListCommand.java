@@ -4,7 +4,6 @@ import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.punishment.Punishment;
-import dev.plex.rank.enums.Rank;
 import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.command.CommandSender;
@@ -15,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.stream.Collectors;
 
 @CommandParameters(name = "banlist", description = "Manages the banlist", usage = "/<command> [purge]")
-@CommandPermissions(level = Rank.ADMIN, permission = "plex.tfmextras.banlist")
+@CommandPermissions(permission = "plex.tfmextras.banlist")
 public class BanListCommand extends PlexCommand
 {
     @Override
@@ -37,7 +36,7 @@ public class BanListCommand extends PlexCommand
             }
             if (!sender.getName().equalsIgnoreCase("console"))
             {
-                if (!checkRank(sender, Rank.EXECUTIVE, "plex.tfmextras.banlist.clear"))
+                if (!checkPermission(sender, "plex.tfmextras.banlist.clear"))
                 {
                     return null;
                 }

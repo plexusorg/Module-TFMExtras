@@ -3,7 +3,7 @@ package dev.plex.extras.command;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.rank.enums.Rank;
+
 import dev.plex.util.PlexUtils;
 import dev.plex.util.item.ItemBuilder;
 import net.kyori.adventure.text.Component;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @CommandParameters(name = "cake", description = "For the people that are still alive - gives a cake to everyone on the server")
-@CommandPermissions(level = Rank.ADMIN, permission = "plex.tfmextras.cake")
+@CommandPermissions(permission = "plex.tfmextras.cake")
 public class CakeCommand extends PlexCommand
 {
     private static final ItemStack CAKE = new ItemBuilder(Material.CAKE)
