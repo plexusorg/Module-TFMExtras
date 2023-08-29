@@ -5,7 +5,8 @@ import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.source.RequiredCommandSource;
-
+import java.util.Arrays;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.apache.commons.lang3.StringUtils;
@@ -18,11 +19,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
-
 @CommandParameters(name = "enchant", description = "Enchants an item", usage = "/<command> <add | reset | list | addall | remove>", aliases = "enchantment")
-@CommandPermissions( permission = "plex.tfmextras.enchant", source = RequiredCommandSource.IN_GAME)
+@CommandPermissions(permission = "plex.tfmextras.enchant", source = RequiredCommandSource.IN_GAME)
 public class EnchantCommand extends PlexCommand
 {
     @Override

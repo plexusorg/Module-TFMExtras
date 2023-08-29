@@ -4,7 +4,9 @@ import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.source.RequiredCommandSource;
-
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.block.Block;
@@ -14,12 +16,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
 @CommandParameters(name = "randomfish", description = "Spawns a random type of fish at your location", aliases = "rfish,bird")
-@CommandPermissions( permission = "plex.tfmextras.randomfish", source = RequiredCommandSource.IN_GAME)
+@CommandPermissions(permission = "plex.tfmextras.randomfish", source = RequiredCommandSource.IN_GAME)
 public class RandomFishCommand extends PlexCommand
 {
     private static final List<EntityType> FISH_TYPES = Arrays.asList(EntityType.COD, EntityType.SALMON, EntityType.PUFFERFISH, EntityType.TROPICAL_FISH);

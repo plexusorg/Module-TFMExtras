@@ -6,7 +6,6 @@ import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.exception.PlayerNotFoundException;
 import dev.plex.command.source.RequiredCommandSource;
 import dev.plex.extras.TFMExtras;
-
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -22,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
  */
 
 @CommandParameters(name = "myworld", usage = "/<command> <create | goto | manage | members | shared | add | remove | settings> [player]")
-@CommandPermissions( permission = "plex.tfmextras.myworld", source = RequiredCommandSource.IN_GAME)
+@CommandPermissions(permission = "plex.tfmextras.myworld", source = RequiredCommandSource.IN_GAME)
 public class MyWorldCommand extends PlexCommand
 {
     @Override

@@ -8,9 +8,10 @@ repositories {
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
 
-    /*maven {
+    maven {
         url = uri("https://nexus.telesphoreo.me/repository/plex/")
-    }*/
+    }
+
     maven {
         url = uri("https://repo.infernalsuite.com/repository/maven-snapshots/")
     }
@@ -26,12 +27,12 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
     compileOnly("dev.plex:server:1.4-SNAPSHOT")
     compileOnly("com.infernalsuite.aswm:api:1.20-R0.1-SNAPSHOT") {
-        exclude(group="com.flowpowered")
+        exclude(group = "com.flowpowered")
     }
 }
 
 group = "dev.plex"
-version = "1.3"
+version = "1.4-SNAPSHOT"
 description = "Module-TFMExtras"
 
 java {

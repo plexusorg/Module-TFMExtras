@@ -2,13 +2,21 @@ package dev.plex.extras.hook;
 
 import com.google.common.collect.Sets;
 import com.infernalsuite.aswm.api.SlimePlugin;
-import com.infernalsuite.aswm.api.exceptions.*;
+import com.infernalsuite.aswm.api.exceptions.CorruptedWorldException;
+import com.infernalsuite.aswm.api.exceptions.NewerFormatException;
+import com.infernalsuite.aswm.api.exceptions.UnknownWorldException;
+import com.infernalsuite.aswm.api.exceptions.WorldAlreadyExistsException;
+import com.infernalsuite.aswm.api.exceptions.WorldLockedException;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.api.world.SlimeWorld;
 import com.infernalsuite.aswm.api.world.properties.SlimeProperties;
 import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap;
 import dev.plex.extras.TFMExtras;
 import dev.plex.util.PlexLog;
+import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
@@ -16,12 +24,6 @@ import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.event.world.WorldLoadEvent;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Taah
@@ -33,7 +35,7 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
     private static final String STORAGE_FAILURE = "<red>This world cannot be stored!";
 
     private final Set<String> loadedWorlds = Sets.newHashSet();
-    
+
 //    private final List<>
 
     @Getter
@@ -86,7 +88,8 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
                     this.plugin().loadWorld(world);
                     this.loader.unlockWorld(s);
                 }
-                catch (UnknownWorldException | WorldLockedException | CorruptedWorldException | NewerFormatException  | IllegalArgumentException ex)
+                catch (UnknownWorldException | WorldLockedException | CorruptedWorldException | NewerFormatException |
+                       IllegalArgumentException ex)
                 {
                     PlexLog.error(ex.getMessage());
                 }
@@ -221,6 +224,6 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
     @Override
     public SlimePlugin plugin()
     {
-        return (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
+        return (SlimePlugin)Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
     }
 }

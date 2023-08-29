@@ -5,6 +5,7 @@ import dev.plex.extras.jumppads.JumpPads;
 import dev.plex.extras.jumppads.Mode;
 import dev.plex.listener.PlexListener;
 import dev.plex.util.PlexLog;
+import java.util.Map;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -13,8 +14,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.Vector;
-
-import java.util.Map;
 
 public class JumpPadsListener extends PlexListener
 {
@@ -38,7 +37,7 @@ public class JumpPadsListener extends PlexListener
             Block below = block.getRelative(BlockFace.DOWN);
             if (jumpPads.wool.getValues().contains(below.getType()))
             {
-                if (event.getFrom().getY() > block.getY() + 0.1 && ((int) event.getTo().getY() == block.getY()))
+                if (event.getFrom().getY() > block.getY() + 0.1 && ((int)event.getTo().getY() == block.getY()))
                 {
                     Vector vector = playerVector.multiply(new Vector(0.0, jumpPads.SCALAR * jumpPads.STRENGTH, 0.0));
                     if (vector.getY() < 0)
@@ -59,7 +58,7 @@ public class JumpPadsListener extends PlexListener
             {
                 if (jumpPads.wool.getValues().contains(b.getType()))
                 {
-                    if (!(event.getFrom().getY() > block.getY() + 0.1 && ((int) event.getTo().getY() == block.getY())))
+                    if (!(event.getFrom().getY() > block.getY() + 0.1 && ((int)event.getTo().getY() == block.getY())))
                     {
                         return;
                     }
@@ -94,7 +93,7 @@ public class JumpPadsListener extends PlexListener
             Block below = block.getRelative(BlockFace.DOWN);
             if (jumpPads.wool.getValues().contains(below.getType()))
             {
-                if (event.getFrom().getY() > block.getY() + 0.1 && ((int) event.getTo().getY() == block.getY()))
+                if (event.getFrom().getY() > block.getY() + 0.1 && ((int)event.getTo().getY() == block.getY()))
                 {
                     player.setVelocity(jumpPads.extreme(playerVector));
                 }

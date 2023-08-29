@@ -1,7 +1,6 @@
 package dev.plex.extras;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
@@ -10,28 +9,19 @@ import dev.plex.config.ModuleConfig;
 import dev.plex.extras.command.slime.MyWorldCommand;
 import dev.plex.extras.command.slime.SlimeManagerCommand;
 import dev.plex.extras.hook.SlimeWorldHook;
-import dev.plex.extras.hook.slime.PlayerWorld;
 import dev.plex.extras.jumppads.JumpPads;
 import dev.plex.listener.PlexListener;
-import dev.plex.listener.impl.ChatListener;
 import dev.plex.module.PlexModule;
-import dev.plex.player.PlexPlayer;
 import dev.plex.util.PlexLog;
-import dev.plex.util.PlexUtils;
-import dev.plex.util.minimessage.SafeMiniMessage;
-import dev.plex.util.sql.SQLUtil;
-import io.papermc.paper.event.player.AsyncChatEvent;
-import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
-import org.bukkit.Location;
-import org.bukkit.World;
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import lombok.Getter;
+import org.bukkit.Location;
+import org.bukkit.World;
 
 public class TFMExtras extends PlexModule
 {
@@ -68,14 +58,13 @@ public class TFMExtras extends PlexModule
         }
 
 
-
         getClassesFrom("dev.plex.extras.command").forEach(aClass ->
         {
             if (PlexCommand.class.isAssignableFrom(aClass) && aClass.isAnnotationPresent(CommandParameters.class) && aClass.isAnnotationPresent(CommandPermissions.class))
             {
                 try
                 {
-                    PlexCommand plexCommand = (PlexCommand) aClass.getConstructors()[0].newInstance();
+                    PlexCommand plexCommand = (PlexCommand)aClass.getConstructors()[0].newInstance();
                     registerCommand(plexCommand);
                 }
                 catch (InstantiationException | IllegalAccessException | InvocationTargetException e)
@@ -91,7 +80,7 @@ public class TFMExtras extends PlexModule
             {
                 try
                 {
-                    PlexListener plexListener = (PlexListener) aClass.getConstructors()[0].newInstance();
+                    PlexListener plexListener = (PlexListener)aClass.getConstructors()[0].newInstance();
                     registerListener(plexListener);
                 }
                 catch (InstantiationException | IllegalAccessException | InvocationTargetException e)
@@ -129,7 +118,7 @@ public class TFMExtras extends PlexModule
     {
         double x = ThreadLocalRandom.current().nextDouble(-100000, 100000);
         double z = ThreadLocalRandom.current().nextDouble(-100000, 100000);
-        double y = world.getHighestBlockYAt((int) x, (int) z) + 1;
+        double y = world.getHighestBlockYAt((int)x, (int)z) + 1;
         return new Location(world, x, y, z);
     }
 

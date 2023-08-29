@@ -1,15 +1,11 @@
 package dev.plex.extras.hook.slime;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import dev.plex.storage.annotation.PrimaryKey;
 import dev.plex.storage.annotation.SQLTable;
-import lombok.Data;
-import org.bukkit.GameRule;
-
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import lombok.Data;
 
 /**
  * @author Taah

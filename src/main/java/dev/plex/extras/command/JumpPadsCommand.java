@@ -1,14 +1,16 @@
 package dev.plex.extras.command;
 
-import dev.plex.extras.TFMExtras;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.source.RequiredCommandSource;
+import dev.plex.extras.TFMExtras;
 import dev.plex.extras.jumppads.JumpPads;
 import dev.plex.extras.jumppads.Mode;
-
 import dev.plex.util.PlexUtils;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -18,12 +20,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 @CommandParameters(name = "jumppads", usage = "/jumppads <mode> [player]", description = "Enables jump pads for yourself or another player. Mode types available: none, regular, enhanced, extreme, ultimate", aliases = "jp,pads,launchpads")
-@CommandPermissions( permission = "plex.tfmextras.jumppads", source = RequiredCommandSource.ANY)
+@CommandPermissions(permission = "plex.tfmextras.jumppads", source = RequiredCommandSource.ANY)
 public class JumpPadsCommand extends PlexCommand
 {
     JumpPads jumpPads = TFMExtras.getModule().jumpPads;
