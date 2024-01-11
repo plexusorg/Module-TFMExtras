@@ -3,7 +3,6 @@ package dev.plex.extras.listener;
 import dev.plex.Plex;
 import dev.plex.extras.TFMExtras;
 import dev.plex.listener.PlexListener;
-import dev.plex.util.PlexLog;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
