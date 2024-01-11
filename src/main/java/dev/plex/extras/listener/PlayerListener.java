@@ -44,9 +44,9 @@ public class PlayerListener extends PlexListener
     public void unloadWorld(PlayerQuitEvent event)
     {
         final Player player = event.getPlayer();
-        PlexLog.debug("Slime World Loaded: {0}", TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(player.getUniqueId().toString()));
-        PlexLog.debug("World Loaded: {0}", Bukkit.getWorld(player.getUniqueId().toString()) != null);
-        if (TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(player.getUniqueId().toString()) && Bukkit.getWorld(player.getUniqueId().toString()) != null)
+        // PlexLog.debug("Slime World Loaded: {0}", TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(player.getUniqueId().toString()));
+        // PlexLog.debug("World Loaded: {0}", Bukkit.getWorld(player.getUniqueId().toString()) != null);
+        if (TFMExtras.getModule().swmEnabled() && TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(player.getUniqueId().toString()) && Bukkit.getWorld(player.getUniqueId().toString()) != null)
         {
             Bukkit.unloadWorld(player.getUniqueId().toString(), true);
         }

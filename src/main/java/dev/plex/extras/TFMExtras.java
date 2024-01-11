@@ -156,7 +156,7 @@ public class TFMExtras extends PlexModule
         return Collections.unmodifiableSet(classes);
     }
 
-    private boolean swmEnabled()
+    public boolean swmEnabled()
     {
         try
         {
