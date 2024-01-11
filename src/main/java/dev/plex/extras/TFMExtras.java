@@ -111,7 +111,7 @@ public class TFMExtras extends PlexModule
     public void disable()
     {
         // Unregistering listeners / commands is handled by Plex
-        if (slimeWorldHook.plugin() != null)
+        if (swmEnabled())
         {
             slimeWorldHook.onDisable(this);
         }
