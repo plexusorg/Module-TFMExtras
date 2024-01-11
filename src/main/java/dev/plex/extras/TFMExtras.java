@@ -34,7 +34,7 @@ public class TFMExtras extends PlexModule
     private ModuleConfig config;
 
     @Getter
-    private final SlimeWorldHook slimeWorldHook = new SlimeWorldHook();
+    private SlimeWorldHook slimeWorldHook;
 
     @Override
     public void load()
@@ -43,6 +43,10 @@ public class TFMExtras extends PlexModule
         config = new ModuleConfig(this, "tfmextras/config.yml", "config.yml");
         config.load();
         jumpPads = new JumpPads();
+        if (swmEnabled())
+        {
+            slimeWorldHook = new SlimeWorldHook();
+        }
 //        PlexLog.debug(String.valueOf(config.getInt("server.jumppad_strength")));
 //        PlexLog.log("Test map: {0}", StringUtils.join(SQLUtil.createTable(Lists.newArrayList(), PlayerWorld.class), "\n"));
     }
@@ -50,13 +54,12 @@ public class TFMExtras extends PlexModule
     @Override
     public void enable()
     {
-        if (slimeWorldHook.plugin() != null)
+        if (swmEnabled())
         {
             slimeWorldHook.onEnable(this);
             registerCommand(new SlimeManagerCommand());
             registerCommand(new MyWorldCommand());
         }
-
 
         getClassesFrom("dev.plex.extras.command").forEach(aClass ->
         {
@@ -151,5 +154,18 @@ public class TFMExtras extends PlexModule
         }
 
         return Collections.unmodifiableSet(classes);
+    }
+
+    private boolean swmEnabled()
+    {
+        try
+        {
+            Class.forName("com.infernalsuite.aswm.api.exceptions.UnknownWorldException");
+        }
+        catch (Exception ignored)
+        {
+            return false;
+        }
+        return true;
     }
 }

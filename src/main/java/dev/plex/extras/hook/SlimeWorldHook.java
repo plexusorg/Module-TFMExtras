@@ -183,6 +183,10 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
         {
             PlexLog.error(STORAGE_FAILURE);
         }
+        catch (WorldLockedException | UnknownWorldException e)
+        {
+            throw new RuntimeException(e);
+        }
 
         final World world = Bukkit.getWorld(uuid.toString());
         if (world == null)
