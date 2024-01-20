@@ -8,6 +8,9 @@ import dev.plex.extras.TFMExtras;
 import dev.plex.util.PlexLog;
 import dev.plex.util.PlexUtils;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
@@ -15,11 +18,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-/**
- * @author Taah
- * @since 7:11 PM [24-08-2023]
- */
 
 @CommandParameters(name = "slimemanager", usage = "/<command> <delete | list> [world | all]", description = "Manages the slime worlds handled by the plugin")
 @CommandPermissions(source = RequiredCommandSource.CONSOLE, permission = "plex.tfmextras.slimemanager")
@@ -96,5 +94,23 @@ public class SlimeManagerCommand extends PlexCommand
             return null;
         }
         return null;
+    }
+
+    @Override
+    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    {
+        if (silentCheckPermission(sender, this.getPermission()))
+        {
+            if (args.length == 1)
+            {
+                return Arrays.asList("delete", "list");
+            }
+            if (args.length == 2)
+            {
+                return TFMExtras.getModule().getSlimeWorldHook().loadedWorlds().stream().toList();
+            }
+            return Collections.emptyList();
+        }
+        return Collections.emptyList();
     }
 }

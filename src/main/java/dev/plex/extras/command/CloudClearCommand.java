@@ -5,6 +5,8 @@ import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.util.PlexUtils;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -31,5 +33,11 @@ public class CloudClearCommand extends PlexCommand
         });
         PlexUtils.broadcast(messageComponent("areaEffectCloudClear", sender.getName()));
         return MiniMessage.miniMessage().deserialize("<gray>" + removed.get() + " area effect clouds removed.");
+    }
+
+    @Override
+    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    {
+        return Collections.emptyList();
     }
 }

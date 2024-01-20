@@ -4,6 +4,8 @@ import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.source.RequiredCommandSource;
+import java.util.Collections;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
@@ -21,5 +23,11 @@ public class EjectCommand extends PlexCommand
         final int passengers = player.getPassengers().size();
         player.eject();
         return MiniMessage.miniMessage().deserialize("<gray>Ejected " + passengers + " passengers.");
+    }
+
+    @Override
+    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    {
+        return Collections.emptyList();
     }
 }

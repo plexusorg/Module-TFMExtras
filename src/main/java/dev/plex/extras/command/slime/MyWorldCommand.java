@@ -6,6 +6,10 @@ import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.exception.PlayerNotFoundException;
 import dev.plex.command.source.RequiredCommandSource;
 import dev.plex.extras.TFMExtras;
+import dev.plex.util.PlexUtils;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -14,11 +18,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-/**
- * @author Taah
- * @since 7:43 PM [24-08-2023]
- */
 
 @CommandParameters(name = "myworld", usage = "/<command> <create | goto | manage | members | shared | add | remove | settings> [player]")
 @CommandPermissions(permission = "plex.tfmextras.myworld", source = RequiredCommandSource.IN_GAME)
@@ -80,5 +79,23 @@ public class MyWorldCommand extends PlexCommand
             }
         }
         return null;
+    }
+
+    @Override
+    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    {
+        if (silentCheckPermission(sender, this.getPermission()))
+        {
+            if (args.length == 1)
+            {
+                return Arrays.asList("create", "goto", "manage", "members", "shared", "add", "remove", "settings");
+            }
+            if (args.length == 2)
+            {
+                return PlexUtils.getPlayerNameList();
+            }
+            return Collections.emptyList();
+        }
+        return Collections.emptyList();
     }
 }

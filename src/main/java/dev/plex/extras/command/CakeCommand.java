@@ -5,6 +5,8 @@ import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.util.PlexUtils;
 import dev.plex.util.item.ItemBuilder;
+import java.util.Collections;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -32,5 +34,11 @@ public class CakeCommand extends PlexCommand
         });
         PlexUtils.broadcast(messageComponent("cakeLyrics"));
         return null;
+    }
+
+    @Override
+    public @NotNull List<String> smartTabComplete(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) throws IllegalArgumentException
+    {
+        return Collections.emptyList();
     }
 }

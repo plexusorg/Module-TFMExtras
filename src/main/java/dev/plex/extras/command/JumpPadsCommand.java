@@ -120,15 +120,19 @@ public class JumpPadsCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
-        if (args.length == 1)
+        if (silentCheckPermission(sender, this.getPermission()))
         {
-            return Arrays.asList("none", "normal", "enhanced", "extreme", "ultimate");
-        }
-        else if (args.length == 2)
-        {
-            return PlexUtils.getPlayerNameList();
+            if (args.length == 1)
+            {
+                return Arrays.asList("none", "normal", "enhanced", "extreme", "ultimate");
+            }
+            else if (args.length == 2)
+            {
+                return PlexUtils.getPlayerNameList();
+            }
+            return Collections.emptyList();
         }
         return Collections.emptyList();
     }

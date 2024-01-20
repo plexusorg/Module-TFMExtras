@@ -4,6 +4,8 @@ import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.util.PlexUtils;
+import java.util.Collections;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -28,5 +30,11 @@ public class ClearChatCommand extends PlexCommand
                 });
         PlexUtils.broadcast(messageComponent("chatCleared", sender.getName()));
         return null;
+    }
+
+    @Override
+    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    {
+        return Collections.emptyList();
     }
 }

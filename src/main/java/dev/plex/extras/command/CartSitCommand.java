@@ -1,9 +1,11 @@
 package dev.plex.extras.command;
 
+import com.google.common.collect.ImmutableList;
 import dev.plex.Plex;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.util.PlexUtils;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -17,7 +19,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandParameters(name = "cartsit", description = "Sit in nearest minecart. If target is in a minecart already, they will be ejected", aliases = "minecartsit")
+@CommandParameters(name = "cartsit", usage = "/<command> <player>", description = "Sit in nearest minecart. If target is in a minecart already, they will be ejected", aliases = "minecartsit")
 @CommandPermissions(permission = "plex.tfmextras.cartsit")
 public class CartSitCommand extends PlexCommand
 {
@@ -26,7 +28,7 @@ public class CartSitCommand extends PlexCommand
     {
         if (!(sender instanceof Player) && args.length == 0)
         {
-            return usage("/cartsit <player>");
+            return usage();
         }
 
         if (args.length == 0)
@@ -79,5 +81,11 @@ public class CartSitCommand extends PlexCommand
             }
             return nearest;
         });
+    }
+
+    @Override
+    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    {
+        return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? PlexUtils.getPlayerNameList() : ImmutableList.of();
     }
 }

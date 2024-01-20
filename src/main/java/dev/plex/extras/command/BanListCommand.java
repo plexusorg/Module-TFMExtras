@@ -1,9 +1,12 @@
 package dev.plex.extras.command;
 
+import com.google.common.collect.ImmutableList;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.punishment.Punishment;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.StringUtils;
@@ -47,5 +50,11 @@ public class BanListCommand extends PlexCommand
             });
         }
         return null;
+    }
+
+    @Override
+    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    {
+        return args.length == 1 && silentCheckPermission(sender, "plex.tfmextras.banlist.clear") ? Collections.singletonList("purge") : ImmutableList.of();
     }
 }
