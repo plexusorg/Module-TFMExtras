@@ -100,40 +100,6 @@ public class JumpPadsListener extends PlexListener
             }
 
         }
-
-        if (mode.equals(Mode.ULTIMATE))
-        {
-            blockWrapMap.forEach((b, w) ->
-            {
-                if (jumpPads.wool.getValues().contains(b.getType()))
-                {
-                    if (w.y() == -1)
-                    {
-                        jumpPads.extreme(playerVector.add(new Vector(0.0, jumpPads.SCALAR * jumpPads.STRENGTH, 0.0)));
-                    }
-
-                    switch (w.x())
-                    {
-                        case (-1):
-                            jumpPads.extreme(playerVector.add(new Vector(-jumpPads.SCALAR * jumpPads.STRENGTH, 0.0, 0.0)));
-                        case (1):
-                            jumpPads.extreme(playerVector.add(new Vector(jumpPads.SCALAR * jumpPads.STRENGTH, 0.0, 0.0)));
-                    }
-
-                    switch (w.z())
-                    {
-                        case (-1):
-                            jumpPads.extreme(playerVector.add(new Vector(0.0, 0.0, -jumpPads.SCALAR * jumpPads.STRENGTH)));
-                        case (1):
-                            jumpPads.extreme(playerVector.add(new Vector(0.0, 0.0, jumpPads.SCALAR * jumpPads.STRENGTH)));
-
-                    }
-
-                    player.setVelocity(playerVector);
-                }
-            });
-
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

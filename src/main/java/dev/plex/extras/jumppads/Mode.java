@@ -4,6 +4,5 @@ public enum Mode
 {
     NORMAL,
     ENHANCED,
-    EXTREME,
-    ULTIMATE
+    EXTREME
 }
