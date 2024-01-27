@@ -20,7 +20,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandParameters(name = "jumppads", usage = "/jumppads <mode> [player]", description = "Enables jump pads for yourself or another player. Mode types available: none, regular, enhanced, extreme, ultimate", aliases = "jp,pads,launchpads")
+@CommandParameters(name = "jumppads", usage = "/jumppads <mode> [player]", description = "Enables jump pads for yourself or another player. Mode types available: none, regular, enhanced, extreme", aliases = "jp,pads,launchpads")
 @CommandPermissions(permission = "plex.tfmextras.jumppads", source = RequiredCommandSource.ANY)
 public class JumpPadsCommand extends PlexCommand
 {
@@ -126,7 +126,7 @@ public class JumpPadsCommand extends PlexCommand
         {
             if (args.length == 1)
             {
-                return Arrays.asList("none", "normal", "enhanced", "extreme", "ultimate");
+                return Arrays.asList("none", "normal", "enhanced", "extreme");
             }
             else if (args.length == 2)
             {
