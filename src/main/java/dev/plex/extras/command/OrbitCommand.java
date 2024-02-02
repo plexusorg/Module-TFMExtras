@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-@CommandParameters(name = "orbit", description = "Accelerates the player at a fast rate", usage = "/<command> <target> [<<power> | stop>]")
+@CommandParameters(name = "orbit", description = "Accelerates the player at a super fast rate", usage = "/<command> <target> [<<power> | stop>]")
 @CommandPermissions(permission = "plex.tfmextras.orbit")
 public class OrbitCommand extends PlexCommand
 {
