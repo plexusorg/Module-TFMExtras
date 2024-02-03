@@ -13,12 +13,18 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @CommandParameters(name = "orbit", description = "Accelerates the player at a super fast rate", usage = "/<command> <target> [<<power> | stop>]")
 @CommandPermissions(permission = "plex.tfmextras.orbit")
 public class OrbitCommand extends PlexCommand
 {
+
+    private static final Map<UUID, Boolean> isOrbitedMap = new HashMap<>();
+
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player playerSender, String[] args)
     {
@@ -63,9 +69,15 @@ public class OrbitCommand extends PlexCommand
     private void startOrbiting(Player player, int strength) {
         player.setGameMode(org.bukkit.GameMode.SURVIVAL);
         player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, strength, false, false));
+        isOrbitedMap.put(player.getUniqueId(), true);
     }
 
     private void stopOrbiting(Player player) {
         player.removePotionEffect(PotionEffectType.LEVITATION);
+        isOrbitedMap.remove(player.getUniqueId());
+    }
+
+    public static boolean isPlayerOrbited(UUID playerId) {
+        return isOrbitedMap.getOrDefault(playerId, false);
     }
 }
