@@ -21,7 +21,6 @@ import java.util.UUID;
 @CommandPermissions(permission = "plex.tfmextras.orbit")
 public class OrbitCommand extends PlexCommand
 {
-
     private static final List<UUID> isOrbited = new ArrayList<>();
 
     @Override
@@ -65,18 +64,21 @@ public class OrbitCommand extends PlexCommand
         return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? PlexUtils.getPlayerNameList() : ImmutableList.of();
     }
 
-    private void startOrbiting(Player player, int strength) {
+    private void startOrbiting(Player player, int strength)
+    {
         player.setGameMode(org.bukkit.GameMode.SURVIVAL);
         player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, strength, false, false));
         isOrbited.add(player.getUniqueId());
     }
 
-    private void stopOrbiting(Player player) {
+    private void stopOrbiting(Player player)
+    {
         player.removePotionEffect(PotionEffectType.LEVITATION);
         isOrbited.remove(player.getUniqueId());
     }
 
-    public static boolean isPlayerOrbited(UUID playerId) {
+    public static boolean isPlayerOrbited(UUID playerId)
+    {
         return isOrbited.contains(playerId);
     }
 }

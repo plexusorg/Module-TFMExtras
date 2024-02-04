@@ -19,7 +19,8 @@ public class OrbitEffectListener extends PlexListener
         if (event.getEntity() instanceof Player player)
         {
             if ((event.getAction() == EntityPotionEffectEvent.Action.CLEARED || event.getAction() == EntityPotionEffectEvent.Action.REMOVED)
-                    && event.getModifiedType() == PotionEffectType.LEVITATION) {
+                    && event.getModifiedType() == PotionEffectType.LEVITATION)
+            {
                 if (OrbitCommand.isPlayerOrbited(player.getUniqueId()))
                 {
                     Bukkit.getScheduler().runTaskLater(Plex.get(), () ->
