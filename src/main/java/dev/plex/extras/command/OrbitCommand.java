@@ -13,6 +13,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -61,7 +62,15 @@ public class OrbitCommand extends PlexCommand
     @Override
     public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
-        return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? PlexUtils.getPlayerNameList() : ImmutableList.of();
+        if (args.length == 1 && silentCheckPermission(sender, this.getPermission()))
+        {
+            return PlexUtils.getPlayerNameList();
+        }
+        else if (args.length == 2 && silentCheckPermission(sender, this.getPermission()))
+        {
+            return Collections.singletonList("stop");
+        }
+        return ImmutableList.of();
     }
 
     private void startOrbiting(Player player, int strength)
