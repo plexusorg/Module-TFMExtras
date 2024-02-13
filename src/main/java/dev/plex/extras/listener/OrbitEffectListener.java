@@ -25,7 +25,8 @@ public class OrbitEffectListener extends PlexListener
                 {
                     if (OrbitCommand.isPlayerOrbited(player.getUniqueId()))
                     {
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, 100, false, false));
+                        Integer strength = OrbitCommand.getOrbitStrength(player.getUniqueId());
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, strength, false, false));
                     }
                 }, 2);
             }

@@ -15,14 +15,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @CommandParameters(name = "orbit", description = "Accelerates the player at a super fast rate", usage = "/<command> <target> [<<power> | stop>]")
 @CommandPermissions(permission = "plex.tfmextras.orbit")
 public class OrbitCommand extends PlexCommand
 {
-    private static final List<UUID> isOrbited = new ArrayList<>();
+    private static final Map<UUID, Integer> isOrbited = new HashMap<>();
 
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player playerSender, String[] args)
@@ -54,6 +55,11 @@ public class OrbitCommand extends PlexCommand
             }
         }
 
+        if (isPlayerOrbited(targetPlayer.getUniqueId()))
+        {
+            return messageComponent("alreadyOrbited", targetPlayer.getName());
+        }
+
         startOrbiting(targetPlayer, strength);
         PlexUtils.broadcast(messageComponent("playerOrbited", sender.getName(), targetPlayer.getName()));
         return null;
@@ -77,7 +83,7 @@ public class OrbitCommand extends PlexCommand
     {
         player.setGameMode(org.bukkit.GameMode.SURVIVAL);
         player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, strength, false, false));
-        isOrbited.add(player.getUniqueId());
+        isOrbited.put(player.getUniqueId(), strength);
     }
 
     private void stopOrbiting(Player player)
@@ -88,6 +94,11 @@ public class OrbitCommand extends PlexCommand
 
     public static boolean isPlayerOrbited(UUID playerId)
     {
-        return isOrbited.contains(playerId);
+        return isOrbited.containsKey(playerId);
+    }
+
+    public static Integer getOrbitStrength(UUID playerId)
+    {
+        return isOrbited.get(playerId);
     }
 }
