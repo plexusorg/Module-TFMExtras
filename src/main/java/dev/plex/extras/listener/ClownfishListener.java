@@ -4,10 +4,10 @@ import dev.plex.extras.TFMExtras;
 import dev.plex.listener.PlexListener;
 import net.kyori.adventure.text.Component;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,6 +20,7 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class ClownfishListener extends PlexListener
 {
@@ -44,6 +45,13 @@ public class ClownfishListener extends PlexListener
 
                 if (meta.hasDisplayName() && Objects.equals(meta.displayName(), Component.text("Clownfish")))
                 {
+                    final List<String> restrictedPlayers = TFMExtras.getModule().getConfig().getStringList("server.clownfish.restricted");
+                    if (restrictedPlayers.contains(player.getUniqueId().toString()))
+                    {
+                        player.sendMessage(MiniMessage.miniMessage().deserialize("<gray>You have been restricted from using the clownfish"));
+                        return;
+                    }
+
                     double radius = TFMExtras.getModule().getConfig().getInt("server.clownfish.radius");
                     double strength = TFMExtras.getModule().getConfig().getInt("server.clownfish.strength");
 
@@ -54,7 +62,7 @@ public class ClownfishListener extends PlexListener
 
                     for (final Player target : players)
                     {
-                        if (target.equals(player) || toggledPlayers.contains(target.getName()))
+                        if (target.equals(player) || toggledPlayers.contains(target.getUniqueId().toString()))
                         {
                             continue;
                         }
@@ -64,8 +72,18 @@ public class ClownfishListener extends PlexListener
 
                         if (targetPosVec.distanceSquared(senderPos) < (radius * radius))
                         {
-                            target.playSound(target.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 1.0f, 1.0f);
-                            target.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, target.getLocation(), 1);
+                            target.setFlying(false);
+
+                            final Sound[] listOfSounds = Sound.values();
+                            for (Sound sound : listOfSounds)
+                            {
+                                if (sound.toString().contains("HIT"))
+                                {
+                                    target.playSound(target.getLocation(), sound, 100.0f, 0.5f + new Random().nextFloat() * 2.0f);
+                                }
+                            }
+
+                            target.getWorld().spawnParticle(Particle.CLOUD, target.getLocation(), 5);
                             target.setVelocity(targetPosVec.subtract(senderPos).normalize().multiply(strength));
 
                             pushedPlayers.add(target.getName());
@@ -74,7 +92,14 @@ public class ClownfishListener extends PlexListener
 
                     if (!pushedPlayers.isEmpty())
                     {
-                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 1.0f, 1.0f);
+                        final Sound[] listOfSounds = Sound.values();
+                        for (Sound sound : listOfSounds)
+                        {
+                            if (sound.toString().contains("HIT"))
+                            {
+                                player.playSound(player.getLocation(), sound, 100.0f, 0.5f + new Random().nextFloat() * 2.0f);
+                            }
+                        }
                     }
                 }
             }

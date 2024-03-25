@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-@CommandParameters(name = "clownfish", description = "Gives a player a clownfish capable of knocking people back")
+@CommandParameters(name = "clownfish", description = "Gives a player a clownfish capable of knocking people back", usage = "/<command> [<toggle>]")
 @CommandPermissions(permission = "plex.tfmextras.clownfish")
 public class ClownfishCommand extends PlexCommand
 {
@@ -38,25 +38,25 @@ public class ClownfishCommand extends PlexCommand
         else if (args[0].equals("toggle"))
         {
             List<String> toggledPlayers = TFMExtras.getModule().getConfig().getStringList("server.clownfish.toggled_players");
-            boolean isToggled = toggledPlayers.contains(player.getName());
 
+            boolean isToggled = toggledPlayers.contains(player.getUniqueId().toString());
             if (isToggled)
             {
-                toggledPlayers.remove(player.getName());
+                toggledPlayers.remove(player.getUniqueId().toString());
             }
             else
             {
-                toggledPlayers.add(player.getName());
+                toggledPlayers.add(player.getUniqueId().toString());
             }
 
             TFMExtras.getModule().getConfig().set("server.clownfish.toggled_players", toggledPlayers);
             TFMExtras.getModule().getConfig().save();
 
-            return MiniMessage.miniMessage().deserialize("<gray>You " + (isToggled ? "<green>will" : "<red>will no longer") + "<gray> be affected by the clownfish");
+            return messageComponent("toggleClownfish", isToggled ? "now" : "no longer");
         }
         else
         {
-            return MiniMessage.miniMessage().deserialize("<red>Incorrect usage. Use either /clownfish or /clownfish toggle");
+            return usage();
         }
     }
 

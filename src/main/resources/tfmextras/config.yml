@@ -16,6 +16,8 @@ server:
     radius: 5
     strength: 2.5
     toggled_players:
-      - "shdwo"
+      - "9285ace6-7393-45c5-9420-00fc66374ff4"
+    restricted:
+      - "9285ace6-7393-45c5-9420-00fc66374ff4"
 player-worlds:
   size: 500
