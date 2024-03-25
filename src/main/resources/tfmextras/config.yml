@@ -12,5 +12,10 @@ server:
   teleport-on-join:
     - "Taahh"
   allow-unsafe-enchantments: true
+  clownfish:
+    radius: 5
+    strength: 2.5
+    toggled_players:
+      - "shdwo"
 player-worlds:
   size: 500
