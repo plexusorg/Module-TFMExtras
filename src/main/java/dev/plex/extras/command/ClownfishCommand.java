@@ -61,7 +61,7 @@ public class ClownfishCommand extends PlexCommand
         }
         else if (args[0].equals("restrict") && args.length == 2)
         {
-            if (silentCheckPermission(commandSender, "plex.tfmextras.restrictclownfish"))
+            if (silentCheckPermission(commandSender, "plex.tfmextras.clownfish.restrict"))
             {
                 PlexPlayer target = DataUtils.getPlayer(args[1]);
                 if (target == null)
@@ -99,7 +99,7 @@ public class ClownfishCommand extends PlexCommand
 
     @Override
     public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
-        if (silentCheckPermission(sender, "plex.tfmextras.restrictclownfish"))
+        if (silentCheckPermission(sender, "plex.tfmextras.clownfish.restrict"))
         {
             if (args.length == 1)
             {
@@ -110,8 +110,7 @@ public class ClownfishCommand extends PlexCommand
                 return PlexUtils.getPlayerNameList();
             }
         }
-
-        if (args.length == 1)
+        else if (args.length == 1)
         {
             return List.of("toggle");
         }

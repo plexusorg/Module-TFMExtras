@@ -74,8 +74,7 @@ public class ClownfishListener extends PlexListener
                         {
                             target.setFlying(false);
 
-                            final Sound[] listOfSounds = Sound.values();
-                            for (Sound sound : listOfSounds)
+                            for (Sound sound : Sound.values())
                             {
                                 if (sound.toString().contains("HIT"))
                                 {
@@ -92,8 +91,7 @@ public class ClownfishListener extends PlexListener
 
                     if (!pushedPlayers.isEmpty())
                     {
-                        final Sound[] listOfSounds = Sound.values();
-                        for (Sound sound : listOfSounds)
+                        for (Sound sound : Sound.values())
                         {
                             if (sound.toString().contains("HIT"))
                             {
