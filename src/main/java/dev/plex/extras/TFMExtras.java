@@ -93,9 +93,11 @@ public class TFMExtras extends PlexModule
             }
         });
 
-        addDefaultMessage("playerOrbited", "<aqua>{0} - Orbiting {1}", "0 - The command sender, 1 - The person being orbited");
+        addDefaultMessage("playerOrbited", "<aqua>{0} - Orbiting {1}", "0 - The command sender", "1 - The person being orbited");
         addDefaultMessage("stoppedOrbiting", "<aqua>No longer orbiting {0}", "0 - The person no longer being orbited");
         addDefaultMessage("alreadyOrbited", "<red>{0} is already being orbited!", "0 - The person that is already orbited");
+        addDefaultMessage("restrictClownfish", "<gold>{0} will {1} be able to use the clownfish.", "0 - The player who will be restricted", "1 - Whether they had this option toggled (returns: 'no longer', 'now')");
+        addDefaultMessage("toggleClownfish", "<gray>You will {0} be affected by the clownfish.", "0 - Whether they had this option toggled (returns: 'no longer', 'now')");
         addDefaultMessage("emptyAdminInfo", "<red>The admin information section of the config.yml file has not been configured.");
         addDefaultMessage("cakeLyrics", "<rainbow>But there's no sense crying over every mistake. You just keep on trying till you run out of cake.");
         addDefaultMessage("areaEffectCloudClear", "<red>{0} - Removing all area effect clouds", "0 - The command sender");
