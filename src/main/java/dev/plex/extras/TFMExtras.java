@@ -9,6 +9,7 @@ import dev.plex.config.ModuleConfig;
 import dev.plex.extras.command.slime.MyWorldCommand;
 import dev.plex.extras.command.slime.SlimeManagerCommand;
 import dev.plex.extras.hook.SlimeWorldHook;
+import dev.plex.extras.island.storage.IslandHandler;
 import dev.plex.extras.jumppads.JumpPads;
 import dev.plex.listener.PlexListener;
 import dev.plex.module.PlexModule;
@@ -34,7 +35,10 @@ public class TFMExtras extends PlexModule
     private ModuleConfig config;
 
     @Getter
-    private SlimeWorldHook slimeWorldHook;
+    private SlimeWorldHook slimeWorldHook = new SlimeWorldHook();
+
+    @Getter
+    private final IslandHandler islandHandler = new IslandHandler();
 
     @Override
     public void load()
@@ -110,6 +114,7 @@ public class TFMExtras extends PlexModule
         addDefaultMessage("selfPlayerWorldNotFound", "<red>Hey! You don't seem to own a world yet. Go ahead and run /myworld create and then run /myworld for more help!");
         addDefaultMessage("playerWorldNotFound", "<red>Hey! This player's world does not seem to exist. Are they online?");
         addDefaultMessage("worldLoadError", "<red>Hey! It looks like something went wrong when this world was being loaded in, please try asking the player (or if it is yours, then rejoin) to rejoin and if not, tell the world owner to contact support on our <click:open_url:https://discord.gg/6QcT7K2Bkw><bold>Discord</bold></click>");
+        addDefaultMessage("cannotAccessIsland", "<red>Unfortunately you cannot access this player's island!");
     }
 
     @Override

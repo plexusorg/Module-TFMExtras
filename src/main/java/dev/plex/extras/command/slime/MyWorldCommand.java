@@ -6,6 +6,8 @@ import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.exception.PlayerNotFoundException;
 import dev.plex.command.source.RequiredCommandSource;
 import dev.plex.extras.TFMExtras;
+import dev.plex.extras.island.PlayerWorld;
+import dev.plex.extras.island.info.IslandPermissions;
 import dev.plex.util.PlexUtils;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,6 +74,14 @@ public class MyWorldCommand extends PlexCommand
                 if (world == null)
                 {
                     return messageComponent("worldLoadError");
+                }
+                final PlayerWorld playerWorld = TFMExtras.getModule().getIslandHandler().loadedIslands().get(target.getUniqueId());
+                if (playerWorld != null)
+                {
+                    if (playerWorld.visitPermission() == IslandPermissions.NOBODY || (playerWorld.visitPermission() == IslandPermissions.MEMBERS && !playerWorld.members().contains(target.getUniqueId())))
+                    {
+                        return messageComponent("cannotAccessIsland");
+                    }
                 }
                 player.teleportAsync(world.getSpawnLocation());
                 player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);

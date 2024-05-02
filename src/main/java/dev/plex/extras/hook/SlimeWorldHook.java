@@ -16,6 +16,7 @@ import dev.plex.util.PlexLog;
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
@@ -54,6 +55,8 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
         PlexLog.log("<green>Enabling SWM Hook");
 
         this.loader = plugin().getLoader("mysql");
+        this.loadAllWorlds();
+        TFMExtras.getModule().getIslandHandler().loadIslands();
     }
 
     @Override
@@ -66,9 +69,16 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
             final World world = Bukkit.getWorld(s);
             if (world != null)
             {
-                world.save();
+                Bukkit.unloadWorld(world, true);
                 i.getAndIncrement();
             }
+        });
+
+        loadedWorlds.clear();
+
+        CompletableFuture.runAsync(() -> {
+            TFMExtras.getModule().getIslandHandler().loadedIslands().values().forEach(playerWorld -> TFMExtras.getModule().getIslandHandler().updateIsland(playerWorld));
+            TFMExtras.getModule().getIslandHandler().loadedIslands().clear();
         });
         PlexLog.log("<green>SWM Hook saved " + i.get() + " worlds");
     }
