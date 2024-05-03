@@ -9,9 +9,11 @@ import dev.plex.extras.TFMExtras;
 import dev.plex.extras.island.PlayerWorld;
 import dev.plex.extras.island.info.IslandPermissions;
 import dev.plex.util.PlexUtils;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -48,10 +50,10 @@ public class MyWorldCommand extends PlexCommand
             {
                 if (args.length == 1)
                 {
-                    if (!TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(player.getUniqueId().toString()))
-                    {
-                        return messageComponent("selfPlayerWorldNotFound");
-                    }
+                        if (!TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(player.getUniqueId().toString()))
+                        {
+                            return messageComponent("selfPlayerWorldNotFound");
+                        }
                     World world = Bukkit.getWorld(player.getUniqueId().toString());
                     if (world == null)
                     {
@@ -86,6 +88,36 @@ public class MyWorldCommand extends PlexCommand
                 player.teleportAsync(world.getSpawnLocation());
                 player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
                 return null;
+            }
+            case "settings" ->
+            {
+                if (!TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(player.getUniqueId().toString()))
+                {
+                    return messageComponent("selfPlayerWorldNotFound");
+                }
+                if (args.length == 1)
+                {
+                    return usage("/myworld settings <interact | edit | visit> <nobody | anyone | members>");
+                }
+                if (!args[1].equalsIgnoreCase("interact") && !args[1].equalsIgnoreCase("edit") && !args[1].equalsIgnoreCase("visit"))
+                {
+                    return usage("/myworld settings <interact | edit | visit> <nobody | anyone | members>");
+                }
+                final PlayerWorld playerWorld = TFMExtras.getModule().getIslandHandler().loadedIslands().get(player.getUniqueId());
+                try {
+                    final IslandPermissions permissions = IslandPermissions.valueOf(args[2].toUpperCase());
+                    switch (args[1].toLowerCase())
+                    {
+                        case "interact" -> playerWorld.interactPermission(permissions);
+                        case "edit" -> playerWorld.editPermission(permissions);
+                        case "visit" -> playerWorld.visitPermission(permissions);
+                    }
+                    return messageComponent("islandPermissionUpdated", args[1].toUpperCase(), permissions.name());
+
+                } catch (IllegalArgumentException e)
+                {
+                    return usage("/myworld settings <interact | edit | visit> <nobody | anyone | members>");
+                }
             }
         }
         return null;

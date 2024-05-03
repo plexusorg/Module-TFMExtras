@@ -29,6 +29,7 @@ public class PlayerWorld
     private final List<UUID> members;
     private IslandPermissions editPermission;
     private IslandPermissions visitPermission;
+    private IslandPermissions interactPermission;
 
     public boolean addMember(UUID member)
     {

@@ -1,5 +1,6 @@
 package dev.plex.extras.hook;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.infernalsuite.aswm.api.SlimePlugin;
 import com.infernalsuite.aswm.api.exceptions.CorruptedWorldException;
@@ -11,13 +12,20 @@ import com.infernalsuite.aswm.api.loaders.SlimeLoader;
 import com.infernalsuite.aswm.api.world.SlimeWorld;
 import com.infernalsuite.aswm.api.world.properties.SlimeProperties;
 import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap;
+import dev.plex.Plex;
 import dev.plex.extras.TFMExtras;
+import dev.plex.extras.island.PlayerWorld;
+import dev.plex.extras.island.info.IslandPermissions;
 import dev.plex.util.PlexLog;
+
 import java.io.IOException;
+import java.sql.*;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
@@ -56,6 +64,17 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
 
         this.loader = plugin().getLoader("mysql");
         this.loadAllWorlds();
+
+        try (Connection connection = Plex.get().getSqlConnection().getCon())
+        {
+            connection.prepareStatement("ALTER TABLE `islands` ADD COLUMN IF NOT EXISTS `interactPermission` VARCHAR(10);").execute();
+
+        } catch (SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        TFMExtras.getModule().getIslandHandler().createTables();
         TFMExtras.getModule().getIslandHandler().loadIslands();
     }
 
@@ -76,7 +95,8 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
 
         loadedWorlds.clear();
 
-        CompletableFuture.runAsync(() -> {
+        CompletableFuture.runAsync(() ->
+        {
             TFMExtras.getModule().getIslandHandler().loadedIslands().values().forEach(playerWorld -> TFMExtras.getModule().getIslandHandler().updateIsland(playerWorld));
             TFMExtras.getModule().getIslandHandler().loadedIslands().clear();
         });
@@ -97,13 +117,11 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
                     SlimeWorld world = this.plugin().loadWorld(this.loader, s, false, slimePropertyMap);
                     this.plugin().loadWorld(world);
                     this.loader.unlockWorld(s);
-                }
-                catch (UnknownWorldException | WorldLockedException | CorruptedWorldException | NewerFormatException |
-                       IllegalArgumentException ex)
+                } catch (UnknownWorldException | WorldLockedException | CorruptedWorldException | NewerFormatException |
+                         IllegalArgumentException ex)
                 {
                     PlexLog.error(ex.getMessage());
-                }
-                catch (IOException e)
+                } catch (IOException e)
                 {
                     PlexLog.error(STORAGE_FAILURE);
                     return;
@@ -129,10 +147,12 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
                 world.getWorldBorder().setSize(configuratedSize == 0 ? 500 : configuratedSize);
                 world.getWorldBorder().setDamageAmount(0);
                 world.getWorldBorder().setDamageBuffer(0);
+
+                Bukkit.getPluginManager().callEvent(new WorldLoadEvent(world));
+
                 PlexLog.debug("Loaded {0}", s);
             });
-        }
-        catch (IOException | IllegalArgumentException ex)
+        } catch (IOException | IllegalArgumentException ex)
         {
             PlexLog.error(ex.getMessage());
         }
@@ -152,8 +172,7 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
                 Bukkit.unloadWorld(world, false);
             }
             this.loader.deleteWorld(world);
-        }
-        catch (UnknownWorldException | IOException e)
+        } catch (UnknownWorldException | IOException e)
         {
             PlexLog.error(e.getMessage());
         }
@@ -173,27 +192,23 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
             final SlimeWorld slimeWorld = this.plugin().createEmptyWorld(this.loader, uuid.toString(), false, slimePropertyMap);
             this.plugin().loadWorld(slimeWorld);
             newWorld = true;
-        }
-        catch (WorldAlreadyExistsException e)
+        } catch (WorldAlreadyExistsException e)
         {
             try
             {
                 SlimeWorld world = this.plugin().loadWorld(this.loader, uuid.toString(), false, slimePropertyMap);
                 this.plugin().loadWorld(world);
                 this.loader.unlockWorld(uuid.toString());
-            }
-            catch (WorldLockedException | CorruptedWorldException | NewerFormatException | UnknownWorldException |
-                   IOException | IllegalArgumentException ex)
+            } catch (WorldLockedException | CorruptedWorldException | NewerFormatException | UnknownWorldException |
+                     IOException | IllegalArgumentException ex)
             {
                 PlexLog.error(ex.getMessage());
             }
 
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             PlexLog.error(STORAGE_FAILURE);
-        }
-        catch (WorldLockedException | UnknownWorldException e)
+        } catch (WorldLockedException | UnknownWorldException e)
         {
             throw new RuntimeException(e);
         }
@@ -227,6 +242,11 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
         final WorldLoadEvent event = new WorldLoadEvent(world);
         Bukkit.getServer().getPluginManager().callEvent(event);
 
+        final PlayerWorld playerWorld = new PlayerWorld(uuid, Lists.newArrayList(), IslandPermissions.NOBODY, IslandPermissions.ANYONE, IslandPermissions.ANYONE);
+
+        TFMExtras.getModule().getIslandHandler().insertIsland(playerWorld);
+        TFMExtras.getModule().getIslandHandler().loadedIslands().put(uuid, playerWorld);
+
         return Pair.of(world, newWorld);
     }
 
@@ -238,6 +258,6 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
     @Override
     public SlimePlugin plugin()
     {
-        return (SlimePlugin)Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
+        return (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
     }
 }

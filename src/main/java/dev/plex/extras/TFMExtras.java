@@ -115,6 +115,9 @@ public class TFMExtras extends PlexModule
         addDefaultMessage("playerWorldNotFound", "<red>Hey! This player's world does not seem to exist. Are they online?");
         addDefaultMessage("worldLoadError", "<red>Hey! It looks like something went wrong when this world was being loaded in, please try asking the player (or if it is yours, then rejoin) to rejoin and if not, tell the world owner to contact support on our <click:open_url:https://discord.gg/6QcT7K2Bkw><bold>Discord</bold></click>");
         addDefaultMessage("cannotAccessIsland", "<red>Unfortunately you cannot access this player's island!");
+        addDefaultMessage("islandPermissionUpdated", "<green>Your island permission for {0} has been updated to {1}.", "0 - Permission name", "1 - New value");
+        addDefaultMessage("cantModifyIsland", "<red>You can't modify this player's island!");
+        addDefaultMessage("cantVisitIsland", "<red>You can't visit this player's island!");
     }
 
     @Override
