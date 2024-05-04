@@ -95,7 +95,7 @@ public class MyWorldCommand extends PlexCommand
                 {
                     return messageComponent("selfPlayerWorldNotFound");
                 }
-                if (args.length == 1)
+                if (args.length != 3)
                 {
                     return usage("/myworld settings <interact | edit | visit> <nobody | anyone | members>");
                 }
