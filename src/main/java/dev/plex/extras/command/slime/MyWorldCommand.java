@@ -25,7 +25,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import redis.clients.jedis.Jedis;
 
 @CommandParameters(name = "myworld", usage = "/<command> <create | goto | info | invite | remove | settings> [player]")
 @CommandPermissions(permission = "plex.tfmextras.myworld", source = RequiredCommandSource.IN_GAME)
