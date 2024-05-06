@@ -32,6 +32,10 @@ public class SlimeManagerCommand extends PlexCommand
         {
             return usage();
         }
+        if (!TFMExtras.getModule().enableIslands())
+        {
+            return mmString("<red>SlimeWorldManager is not on this server!");
+        }
         try
         {
             if (args[0].equalsIgnoreCase("delete"))

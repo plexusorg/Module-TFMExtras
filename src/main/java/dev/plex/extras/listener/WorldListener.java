@@ -19,6 +19,7 @@ public class WorldListener extends PlexListener
     @EventHandler
     public void onBuild(BlockPlaceEvent event)
     {
+        if (!TFMExtras.getModule().enableIslands()) return;
         if (!TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(event.getPlayer().getWorld().getName())) return;
         final UUID worldOwner = UUID.fromString(event.getPlayer().getWorld().getName());
         final PlayerWorld world = TFMExtras.getModule().getIslandHandler().loadedIslands().get(worldOwner);
@@ -42,6 +43,7 @@ public class WorldListener extends PlexListener
     @EventHandler
     public void onBreak(BlockBreakEvent event)
     {
+        if (!TFMExtras.getModule().enableIslands()) return;
         if (!TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(event.getPlayer().getWorld().getName())) return;
         final UUID worldOwner = UUID.fromString(event.getPlayer().getWorld().getName());
         final PlayerWorld world = TFMExtras.getModule().getIslandHandler().loadedIslands().get(worldOwner);
@@ -63,6 +65,7 @@ public class WorldListener extends PlexListener
     @EventHandler
     public void onInteract(PlayerInteractEvent event)
     {
+        if (!TFMExtras.getModule().enableIslands()) return;
         if (!TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(event.getPlayer().getWorld().getName())) return;
         final UUID worldOwner = UUID.fromString(event.getPlayer().getWorld().getName());
         final PlayerWorld world = TFMExtras.getModule().getIslandHandler().loadedIslands().get(worldOwner);
@@ -84,6 +87,7 @@ public class WorldListener extends PlexListener
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event)
     {
+        if (!TFMExtras.getModule().enableIslands()) return;
         if (!TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(event.getPlayer().getWorld().getName())) return;
         final UUID worldOwner = UUID.fromString(event.getPlayer().getWorld().getName());
         final PlayerWorld world = TFMExtras.getModule().getIslandHandler().loadedIslands().get(worldOwner);

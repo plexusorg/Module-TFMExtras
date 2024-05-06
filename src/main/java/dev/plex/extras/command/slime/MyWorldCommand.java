@@ -38,6 +38,10 @@ public class MyWorldCommand extends PlexCommand
         {
             return usage();
         }
+        if (!TFMExtras.getModule().enableIslands())
+        {
+            return mmString("<red>Islands are not enabled on this server!");
+        }
         switch (args[0].toLowerCase())
         {
             case "create" ->
