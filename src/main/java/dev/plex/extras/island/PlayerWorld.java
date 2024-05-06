@@ -27,9 +27,12 @@ public class PlayerWorld
 //    @PrimaryKey
     private final UUID owner;
     private final List<UUID> members;
+    private final List<UUID> pendingInvites = Lists.newArrayList();
+
     private IslandPermissions editPermission;
     private IslandPermissions visitPermission;
     private IslandPermissions interactPermission;
+
 
     public boolean addMember(UUID member)
     {

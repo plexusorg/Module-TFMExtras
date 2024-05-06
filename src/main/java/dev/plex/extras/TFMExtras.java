@@ -2,6 +2,7 @@ package dev.plex.extras;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.ClassPath;
+import dev.plex.Plex;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
@@ -35,7 +36,7 @@ public class TFMExtras extends PlexModule
     private ModuleConfig config;
 
     @Getter
-    private SlimeWorldHook slimeWorldHook = new SlimeWorldHook();
+    private SlimeWorldHook slimeWorldHook;
 
     @Getter
     private final IslandHandler islandHandler = new IslandHandler();
@@ -47,7 +48,7 @@ public class TFMExtras extends PlexModule
         config = new ModuleConfig(this, "tfmextras/config.yml", "config.yml");
         config.load();
         jumpPads = new JumpPads();
-        if (swmEnabled())
+        if (enableIslands())
         {
             slimeWorldHook = new SlimeWorldHook();
         }
@@ -58,7 +59,7 @@ public class TFMExtras extends PlexModule
     @Override
     public void enable()
     {
-        if (swmEnabled())
+        if (enableIslands())
         {
             slimeWorldHook.onEnable(this);
             registerCommand(new SlimeManagerCommand());
@@ -118,13 +119,15 @@ public class TFMExtras extends PlexModule
         addDefaultMessage("islandPermissionUpdated", "<green>Your island permission for {0} has been updated to {1}.", "0 - Permission name", "1 - New value");
         addDefaultMessage("cantModifyIsland", "<red>You can't modify this player's island!");
         addDefaultMessage("cantVisitIsland", "<red>You can't visit this player's island!");
+        addDefaultMessage("islandMemberExists", "<red>This player is already a member of your island!");
+        addDefaultMessage("receivedInviteForIsland", "<green>You have been invited to join "); //TODO: Finish this message... my laptop isn't liking minecraft so I can't do formatting for it, and do receivedInviteForIsland message
     }
 
     @Override
     public void disable()
     {
         // Unregistering listeners / commands is handled by Plex
-        if (swmEnabled())
+        if (enableIslands())
         {
             slimeWorldHook.onDisable(this);
         }
@@ -169,16 +172,16 @@ public class TFMExtras extends PlexModule
         return Collections.unmodifiableSet(classes);
     }
 
-    public boolean swmEnabled()
+    public boolean enableIslands()
     {
         try
         {
             Class.forName("com.infernalsuite.aswm.api.exceptions.UnknownWorldException");
+            return true;
         }
         catch (Exception ignored)
         {
             return false;
         }
-        return true;
     }
 }

@@ -1,5 +1,7 @@
 package dev.plex.extras.command.slime;
 
+import dev.plex.Plex;
+import dev.plex.cache.DataUtils;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
@@ -8,6 +10,7 @@ import dev.plex.command.source.RequiredCommandSource;
 import dev.plex.extras.TFMExtras;
 import dev.plex.extras.island.PlayerWorld;
 import dev.plex.extras.island.info.IslandPermissions;
+import dev.plex.player.PlexPlayer;
 import dev.plex.util.PlexUtils;
 
 import java.util.Arrays;
@@ -22,8 +25,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import redis.clients.jedis.Jedis;
 
-@CommandParameters(name = "myworld", usage = "/<command> <create | goto | manage | members | shared | add | remove | settings> [player]")
+@CommandParameters(name = "myworld", usage = "/<command> <create | goto | info | invite | remove | settings> [player]")
 @CommandPermissions(permission = "plex.tfmextras.myworld", source = RequiredCommandSource.IN_GAME)
 public class MyWorldCommand extends PlexCommand
 {
@@ -118,6 +122,34 @@ public class MyWorldCommand extends PlexCommand
                 {
                     return usage("/myworld settings <interact | edit | visit> <nobody | anyone | members>");
                 }
+            }
+
+            case "invite" -> {
+                final PlexPlayer plexPlayer = DataUtils.getPlayer(args[1], false);
+                if (plexPlayer == null)
+                {
+                    throw new PlayerNotFoundException();
+                }
+
+                if (!TFMExtras.getModule().getSlimeWorldHook().isWorldLoaded(player.getUniqueId().toString()))
+                {
+                    return messageComponent("selfPlayerWorldNotFound");
+                }
+
+                final PlayerWorld playerWorld = TFMExtras.getModule().getIslandHandler().loadedIslands().get(player.getUniqueId());
+                if (playerWorld.members().contains(plexPlayer.getPlayer().getUniqueId()))
+                {
+                    return messageComponent("islandMemberExists");
+                }
+                playerWorld.pendingInvites().add(plexPlayer.getUuid());
+                if (Bukkit.getPlayer(plexPlayer.getUuid()) != null)
+                {
+                    final Player target = Bukkit.getPlayer(plexPlayer.getUuid());
+                    assert target != null;
+                    target.sendMessage(messageComponent("receivedInviteForIsland", player.getName()));
+                }
+
+                return messageComponent("sentInviteToIsland");
             }
         }
         return null;
