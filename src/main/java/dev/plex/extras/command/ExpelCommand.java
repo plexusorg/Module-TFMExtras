@@ -3,6 +3,7 @@ package dev.plex.extras.command;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.util.PlexLog;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
@@ -30,7 +31,7 @@ public class ExpelCommand extends PlexCommand
         {
             try
             {
-                radius = Double.parseDouble(args[0]);
+                radius = Math.min(Double.parseDouble(args[0]), 20.0);
             }
             catch (NumberFormatException ignored)
             {
@@ -42,7 +43,7 @@ public class ExpelCommand extends PlexCommand
         {
             try
             {
-                strength = Double.parseDouble(args[1]);
+                strength = Math.min(Double.parseDouble(args[1]), 10.0);
             }
             catch (NumberFormatException ignored)
             {
