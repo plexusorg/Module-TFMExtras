@@ -121,6 +121,7 @@ public class TFMExtras extends PlexModule
         addDefaultMessage("cantVisitIsland", "<red>You can't visit this player's island!");
         addDefaultMessage("islandMemberExists", "<red>This player is already a member of your island!");
         addDefaultMessage("receivedInviteForIsland", "<green>You have been invited to join "); //TODO: Finish this message... my laptop isn't liking minecraft so I can't do formatting for it, and do receivedInviteForIsland message
+        addDefaultMessage("playersExpelled", "<gray>Pushed away players: <white><em>{0}", "0 - The list of players");
     }
 
     @Override

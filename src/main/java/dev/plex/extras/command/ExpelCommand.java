@@ -3,7 +3,6 @@ package dev.plex.extras.command;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.util.PlexLog;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
@@ -79,7 +78,7 @@ public class ExpelCommand extends PlexCommand
 
         if (!pushedPlayers.isEmpty())
         {
-            return MiniMessage.miniMessage().deserialize("<gray>Pushed away players: <white><em>" + String.join("<reset><gray>, <white><em>", pushedPlayers));
+            return messageComponent("playersExpelled", String.join("<reset><gray>, <white><em>", pushedPlayers));
         }
 
         return null;
@@ -88,14 +87,6 @@ public class ExpelCommand extends PlexCommand
     @Override
     public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
     {
-        if (args.length == 1)
-        {
-            return Collections.singletonList("<radius>");
-        }
-        else if (args.length == 2)
-        {
-            return Collections.singletonList("<strength>");
-        }
         return Collections.emptyList();
     }
 }
