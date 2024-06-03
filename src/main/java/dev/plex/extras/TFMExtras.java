@@ -122,6 +122,15 @@ public class TFMExtras extends PlexModule
         addDefaultMessage("islandMemberExists", "<red>This player is already a member of your island!");
         addDefaultMessage("receivedInviteForIsland", "<green>You have been invited to join "); //TODO: Finish this message... my laptop isn't liking minecraft so I can't do formatting for it, and do receivedInviteForIsland message
         addDefaultMessage("playersExpelled", "<gray>Pushed away players: <white><em>{0}", "0 - The list of players");
+        addDefaultMessage("enchantList", "<dark_gray>All possible enchantments are for this item are: <gray>{0}", "0 - A comma-separated list of enchantment names");
+        addDefaultMessage("enchantAddAll", "<gray>Added all possible enchantments for this item.");
+        addDefaultMessage("enchantReset", "<gray>Removed every enchantment from this item.");
+        addDefaultMessage("enchantMustHoldItem", "<red>You must be holding an enchantable item.");
+        addDefaultMessage("enchantSpecify", "<red>Please specify an enchantment.");
+        addDefaultMessage("enchantInvalid", "<red>Invalid enchantment for this item.");
+        addDefaultMessage("enchantAdd", "<gray>Added {0} {1}", "0 - The enchantment name", "1 - The enchantment level");
+        addDefaultMessage("enchantRemove", "<gray>Removed {0}", "0 - The enchantment name");
+        addDefaultMessage("enchantInvalidLevel", "<red>Invalid enchantment level.");
     }
 
     @Override
