@@ -5,15 +5,14 @@ import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.source.RequiredCommandSource;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.apache.commons.lang3.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -36,27 +35,72 @@ public class EnchantCommand extends PlexCommand
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.getType() == Material.AIR)
         {
-            return MiniMessage.miniMessage().deserialize("<red>You must be holding an enchantable item.");
+            return messageComponent("enchantMustHoldItem");
         }
 
-        if (args.length == 1)
+        switch (args[0].toLowerCase())
         {
-            if (args[0].equalsIgnoreCase("list"))
-            {
-                return MiniMessage.miniMessage().deserialize("<dark_gray>All possible enchantments are for this item are: <gray>" + StringUtils.join(getEnchantmentNames(item), ", "));
-            }
-            if (args[0].equalsIgnoreCase("addall"))
-            {
+            case "add":
+                if (args.length < 2)
+                {
+                    return messageComponent("enchantSpecify");
+                }
+
+                Enchantment enchantmentToAdd = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(args[1].toLowerCase()));
+                if (enchantmentToAdd == null || !enchantmentToAdd.canEnchantItem(item))
+                {
+                    return messageComponent("enchantInvalid");
+                }
+
+                int levelToAdd = enchantmentToAdd.getMaxLevel();
+                if (args.length >= 3)
+                {
+                    try
+                    {
+                        levelToAdd = Integer.parseInt(args[2]);
+                        if (levelToAdd < 1 || levelToAdd > 255)
+                        {
+                            return messageComponent("enchantInvalidLevel");
+                        }
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        return messageComponent("enchantInvalidLevel");
+                    }
+                }
+
+                item.addUnsafeEnchantment(enchantmentToAdd, levelToAdd);
+                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1, 1);
+                return messageComponent("enchantAdd", enchantmentToAdd.getKey().getKey(), levelToAdd);
+
+            case "remove":
+                if (args.length < 2)
+                {
+                    return messageComponent("enchantSpecify");
+                }
+
+                Enchantment enchantmentToRemove = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(args[1].toLowerCase()));
+                if (enchantmentToRemove == null || !item.containsEnchantment(enchantmentToRemove))
+                {
+                    return messageComponent("enchantInvalid");
+                }
+
+                item.removeEnchantment(enchantmentToRemove);
+                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1, 1);
+                return messageComponent("enchantRemove", enchantmentToRemove.getKey().getKey());
+
+            case "list":
+                return messageComponent("enchantList", StringUtils.join(getEnchantmentNames(item), ", "));
+
+            case "addall":
                 getEnchantments(item).forEach(enchantment -> item.addEnchantment(enchantment, enchantment.getMaxLevel()));
                 player.playSound(player, Sound.BLOCK_ANVIL_USE, 1, 1);
-                return MiniMessage.miniMessage().deserialize("<gray>Added all possible enchantments for this item.");
-            }
-            if (args[0].equalsIgnoreCase("reset"))
-            {
+                return messageComponent("enchantAddAll");
+
+            case "reset":
                 item.getEnchantments().keySet().forEach(item::removeEnchantment);
                 player.playSound(player, Sound.BLOCK_ANVIL_USE, 1, 1);
-                return MiniMessage.miniMessage().deserialize("<gray>Removed every enchantment from this item.");
-            }
+                return messageComponent("enchantReset");
         }
         return null;
     }
@@ -82,12 +126,12 @@ public class EnchantCommand extends PlexCommand
             {
                 return Arrays.asList("add", "reset", "list", "addall", "remove");
             }
-            if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove"))
+            if (args.length == 2 && args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove"))
             {
                 Player player = Bukkit.getPlayer(sender.getName());
                 if (player != null)
                 {
-                    return List.of(getEnchantmentNames(player.getActiveItem()));
+                    return List.of(getEnchantmentNames(player.getInventory().getItemInMainHand()));
                 }
             }
             return Collections.emptyList();
