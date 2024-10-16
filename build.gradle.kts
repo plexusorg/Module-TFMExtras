@@ -32,7 +32,7 @@ dependencies {
 }
 
 group = "dev.plex"
-version = "1.4-SNAPSHOT"
+version = "1.5-SNAPSHOT"
 description = "Module-TFMExtras"
 
 java {
