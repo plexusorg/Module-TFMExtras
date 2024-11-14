@@ -116,7 +116,6 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
                 {
                     SlimeWorld world = this.plugin().loadWorld(this.loader, s, false, slimePropertyMap);
                     this.plugin().loadWorld(world);
-                    this.loader.unlockWorld(s);
                 } catch (UnknownWorldException | WorldLockedException | CorruptedWorldException | NewerFormatException |
                          IllegalArgumentException ex)
                 {
@@ -198,7 +197,6 @@ public class SlimeWorldHook implements IHook<SlimePlugin>
             {
                 SlimeWorld world = this.plugin().loadWorld(this.loader, uuid.toString(), false, slimePropertyMap);
                 this.plugin().loadWorld(world);
-                this.loader.unlockWorld(uuid.toString());
             } catch (WorldLockedException | CorruptedWorldException | NewerFormatException | UnknownWorldException |
                      IOException | IllegalArgumentException ex)
             {

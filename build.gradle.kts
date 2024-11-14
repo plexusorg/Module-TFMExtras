@@ -23,7 +23,7 @@ repositories {
 dependencies {
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
-    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
     implementation("org.apache.commons:commons-lang3:3.17.0")
     compileOnly("dev.plex:server:1.5-SNAPSHOT")
     compileOnly("com.infernalsuite.aswm:api:1.20.6-R0.1-SNAPSHOT") {
