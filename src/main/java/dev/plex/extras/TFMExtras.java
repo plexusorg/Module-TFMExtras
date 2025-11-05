@@ -153,7 +153,7 @@ public class TFMExtras extends PlexModule
 
     private Set<Class<?>> getClassesFrom(String packageName)
     {
-        Set<Class<?>> classes = new HashSet();
+        Set<Class<?>> classes = new HashSet<>();
 
         try
         {

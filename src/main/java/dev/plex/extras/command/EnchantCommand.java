@@ -6,6 +6,8 @@ import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.source.RequiredCommandSource;
 
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -79,7 +81,7 @@ public class EnchantCommand extends PlexCommand
                     return messageComponent("enchantSpecify");
                 }
 
-                Enchantment enchantmentToRemove = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(args[1].toLowerCase()));
+                Enchantment enchantmentToRemove = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(NamespacedKey.minecraft(args[1].toLowerCase()));
                 if (enchantmentToRemove == null || !item.containsEnchantment(enchantmentToRemove))
                 {
                     return messageComponent("enchantInvalid");
@@ -108,7 +110,7 @@ public class EnchantCommand extends PlexCommand
     private List<Enchantment> getEnchantments(ItemStack item)
     {
         List<Enchantment> enchants = Lists.newArrayList();
-        Arrays.stream(Enchantment.values()).filter(enchantment -> enchantment.canEnchantItem(item)).forEach(enchants::add);
+        RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).stream().filter(enchantment -> enchantment.canEnchantItem(item)).forEach(enchants::add);
         return enchants;
     }
 

@@ -6,7 +6,6 @@ import dev.plex.extras.island.info.IslandPermissions;
 import dev.plex.listener.PlexListener;
 import dev.plex.util.PlexUtils;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -103,7 +102,6 @@ public class WorldListener extends PlexListener
         {
             event.getPlayer().sendMessage(PlexUtils.messageComponent("cantVisitIsland"));
             event.getPlayer().teleportAsync(event.getFrom().getSpawnLocation());
-            return;
         }
     }
 }

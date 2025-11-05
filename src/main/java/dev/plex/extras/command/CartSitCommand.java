@@ -70,12 +70,9 @@ public class CartSitCommand extends PlexCommand
     {
         return CompletableFuture.supplyAsync(() ->
         {
-            Entity nearest = entities.get(0);
-            for (int i = 0; i < entities.size(); i++)
-            {
-                Entity e = entities.get(i);
-                if (player.getLocation().distance(e.getLocation()) < player.getLocation().distance(nearest.getLocation()))
-                {
+            Entity nearest = entities.getFirst();
+            for (Entity e : entities) {
+                if (player.getLocation().distance(e.getLocation()) < player.getLocation().distance(nearest.getLocation())) {
                     nearest = e;
                 }
             }

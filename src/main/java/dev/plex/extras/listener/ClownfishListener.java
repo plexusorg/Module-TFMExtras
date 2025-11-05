@@ -2,6 +2,8 @@ package dev.plex.extras.listener;
 
 import dev.plex.extras.TFMExtras;
 import dev.plex.listener.PlexListener;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.text.Component;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -74,7 +76,7 @@ public class ClownfishListener extends PlexListener
                         {
                             target.setFlying(false);
 
-                            for (Sound sound : Sound.values())
+                            for (Sound sound : RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT))
                             {
                                 if (sound.toString().contains("HIT"))
                                 {
@@ -91,7 +93,7 @@ public class ClownfishListener extends PlexListener
 
                     if (!pushedPlayers.isEmpty())
                     {
-                        for (Sound sound : Sound.values())
+                        for (Sound sound : RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT))
                         {
                             if (sound.toString().contains("HIT"))
                             {

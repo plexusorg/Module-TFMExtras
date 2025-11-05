@@ -21,18 +21,18 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.38")
-    annotationProcessor("org.projectlombok:lombok:1.18.38")
-    compileOnly("io.papermc.paper:paper-api:1.21.7-R0.1-SNAPSHOT")
-    implementation("org.apache.commons:commons-lang3:3.17.0")
-    compileOnly("dev.plex:server:1.5")
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
+    compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
+    implementation("org.apache.commons:commons-lang3:3.19.0")
+    compileOnly("dev.plex:server:1.6")
     compileOnly("com.infernalsuite.aswm:api:1.20.6-R0.1-SNAPSHOT") {
         exclude(group = "com.flowpowered")
     }
 }
 
 group = "dev.plex"
-version = "1.5"
+version = "1.6"
 description = "Module-TFMExtras"
 
 java {
