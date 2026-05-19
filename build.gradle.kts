@@ -12,31 +12,23 @@ repositories {
         url = uri("https://nexus.telesphoreo.me/repository/plex/")
     }
 
-    maven {
-        url = uri("https://repo.infernalsuite.com/repository/maven-snapshots/")
-    }
-
     mavenCentral()
-//    mavenLocal()
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.42")
-    annotationProcessor("org.projectlombok:lombok:1.18.42")
-    compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
-    implementation("org.apache.commons:commons-lang3:3.19.0")
-    compileOnly("dev.plex:server:1.6")
-    compileOnly("com.infernalsuite.aswm:api:1.20.6-R0.1-SNAPSHOT") {
-        exclude(group = "com.flowpowered")
-    }
+    compileOnly("org.projectlombok:lombok:1.18.46")
+    annotationProcessor("org.projectlombok:lombok:1.18.46")
+    compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
+    implementation("org.apache.commons:commons-lang3:3.20.0")
+    compileOnly("dev.plex:api:2.0-SNAPSHOT")
 }
 
 group = "dev.plex"
-version = "1.6"
+version = "2.0-SNAPSHOT"
 description = "Module-TFMExtras"
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
 publishing {

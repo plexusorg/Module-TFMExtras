@@ -7,10 +7,6 @@ import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.config.ModuleConfig;
-import dev.plex.extras.command.slime.MyWorldCommand;
-import dev.plex.extras.command.slime.SlimeManagerCommand;
-import dev.plex.extras.hook.SlimeWorldHook;
-import dev.plex.extras.island.storage.IslandHandler;
 import dev.plex.extras.jumppads.JumpPads;
 import dev.plex.listener.PlexListener;
 import dev.plex.module.PlexModule;
@@ -35,12 +31,6 @@ public class TFMExtras extends PlexModule
     @Getter
     private ModuleConfig config;
 
-    @Getter
-    private SlimeWorldHook slimeWorldHook;
-
-    @Getter
-    private final IslandHandler islandHandler = new IslandHandler();
-
     @Override
     public void load()
     {
@@ -48,24 +38,12 @@ public class TFMExtras extends PlexModule
         config = new ModuleConfig(this, "tfmextras/config.yml", "config.yml");
         config.load();
         jumpPads = new JumpPads();
-        if (enableIslands())
-        {
-            slimeWorldHook = new SlimeWorldHook();
-        }
 //        PlexLog.debug(String.valueOf(config.getInt("server.jumppad_strength")));
-//        PlexLog.log("Test map: {0}", StringUtils.join(SQLUtil.createTable(Lists.newArrayList(), PlayerWorld.class), "\n"));
     }
 
     @Override
     public void enable()
     {
-        if (enableIslands())
-        {
-            slimeWorldHook.onEnable(this);
-            registerCommand(new SlimeManagerCommand());
-            registerCommand(new MyWorldCommand());
-        }
-
         getClassesFrom("dev.plex.extras.command").forEach(aClass ->
         {
             if (PlexCommand.class.isAssignableFrom(aClass) && aClass.isAnnotationPresent(CommandParameters.class) && aClass.isAnnotationPresent(CommandPermissions.class))
@@ -110,17 +88,6 @@ public class TFMExtras extends PlexModule
         addDefaultMessage("attributeList", "<gold>All possible attributes: <yellow>{0}", "0 - The attribute list, each split by a new line");
         addDefaultMessage("modifiedAutoClear", "<gold>{0} will {1} have their inventory cleared when they join.", "0 - The player who will have their inventory cleared on join", "1 - Whether they had this option toggled (returns: 'no longer', 'now')");
         addDefaultMessage("modifiedAutoTeleport", "<gold>{0} will {1} be teleported automatically when they join.", "0 - The player to be teleported automatically", "1 - Whether they had this option toggled (returns: 'no longer', 'now')");
-        addDefaultMessage("createdPlayerWorld", "<green>Welcome to the server! We've created you a new private world where you can invite your friends! View how to use this using /myworld and visit it using /myworld goto!");
-        addDefaultMessage("playerWorldExists", "<red>Hey! Your world seems to already exist, go to it using /myworld goto");
-        addDefaultMessage("selfPlayerWorldNotFound", "<red>Hey! You don't seem to own a world yet. Go ahead and run /myworld create and then run /myworld for more help!");
-        addDefaultMessage("playerWorldNotFound", "<red>Hey! This player's world does not seem to exist. Are they online?");
-        addDefaultMessage("worldLoadError", "<red>Hey! It looks like something went wrong when this world was being loaded in, please try asking the player (or if it is yours, then rejoin) to rejoin and if not, tell the world owner to contact support on our <click:open_url:https://discord.gg/6QcT7K2Bkw><bold>Discord</bold></click>");
-        addDefaultMessage("cannotAccessIsland", "<red>Unfortunately you cannot access this player's island!");
-        addDefaultMessage("islandPermissionUpdated", "<green>Your island permission for {0} has been updated to {1}.", "0 - Permission name", "1 - New value");
-        addDefaultMessage("cantModifyIsland", "<red>You can't modify this player's island!");
-        addDefaultMessage("cantVisitIsland", "<red>You can't visit this player's island!");
-        addDefaultMessage("islandMemberExists", "<red>This player is already a member of your island!");
-        addDefaultMessage("receivedInviteForIsland", "<green>You have been invited to join "); //TODO: Finish this message... my laptop isn't liking minecraft so I can't do formatting for it, and do receivedInviteForIsland message
         addDefaultMessage("playersExpelled", "<gray>Pushed away players: <white><em>{0}", "0 - The list of players");
         addDefaultMessage("enchantList", "<dark_gray>All possible enchantments are for this item are: <gray>{0}", "0 - A comma-separated list of enchantment names");
         addDefaultMessage("enchantAddAll", "<gray>Added all possible enchantments for this item.");
@@ -137,10 +104,6 @@ public class TFMExtras extends PlexModule
     public void disable()
     {
         // Unregistering listeners / commands is handled by Plex
-        if (enableIslands())
-        {
-            slimeWorldHook.onDisable(this);
-        }
     }
 
     public static Location getRandomLocation(World world)
@@ -182,16 +145,4 @@ public class TFMExtras extends PlexModule
         return Collections.unmodifiableSet(classes);
     }
 
-    public boolean enableIslands()
-    {
-        try
-        {
-            Class.forName("com.infernalsuite.aswm.api.exceptions.UnknownWorldException");
-            return true;
-        }
-        catch (Exception ignored)
-        {
-            return false;
-        }
-    }
 }
