@@ -3,7 +3,7 @@ package dev.plex.extras.command;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.util.PlexUtils;
+import dev.plex.extras.TFMExtras;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -23,12 +23,15 @@ public class ClearChatCommand extends PlexCommand
         Bukkit.getOnlinePlayers().stream().filter(p -> !silentCheckPermission(p, "plex.tfmextras.clearchat"))
                 .forEach(p ->
                 {
-                    for (int i = 0; i < 100; i++)
+                    TFMExtras.plexApi().scheduler().runEntity(p, () ->
                     {
-                        send(p, "");
-                    }
+                        for (int i = 0; i < 100; i++)
+                        {
+                            send(p, "");
+                        }
+                    });
                 });
-        PlexUtils.broadcast(messageComponent("chatCleared", sender.getName()));
+        broadcast(messageComponent("chatCleared", sender.getName()));
         return null;
     }
 

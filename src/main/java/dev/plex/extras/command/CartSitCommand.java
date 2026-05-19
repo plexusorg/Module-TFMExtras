@@ -1,17 +1,15 @@
 package dev.plex.extras.command;
 
 import com.google.common.collect.ImmutableList;
-import dev.plex.Plex;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.util.PlexUtils;
+import dev.plex.extras.TFMExtras;
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -42,10 +40,8 @@ public class CartSitCommand extends PlexCommand
             {
                 return MiniMessage.miniMessage().deserialize("<red>Could not find a nearby minecart!");
             }
-            findNearestEntity(player, minecart).whenComplete((entity, throwable) ->
-            {
-                Bukkit.getScheduler().runTask(Plex.get(), () -> entity.addPassenger(player));
-            });
+            Entity entity = findNearestEntity(player, minecart);
+            TFMExtras.plexApi().scheduler().runEntity(entity, () -> entity.addPassenger(player));
             return null;
         }
         Player target = getNonNullPlayer(args[0]);
@@ -58,31 +54,22 @@ public class CartSitCommand extends PlexCommand
         {
             return MiniMessage.miniMessage().deserialize("<red>Could not find a nearby minecart near " + target.getName() + "!");
         }
-        findNearestEntity(target, minecart).whenComplete((entity, throwable) ->
-        {
-            Bukkit.getScheduler().runTask(Plex.get(), () -> entity.addPassenger(target));
-        });
+        Entity entity = findNearestEntity(target, minecart);
+        TFMExtras.plexApi().scheduler().runEntity(entity, () -> entity.addPassenger(target));
 
         return null;
     }
 
-    public CompletableFuture<Entity> findNearestEntity(Player player, List<Entity> entities)
+    public Entity findNearestEntity(Player player, List<Entity> entities)
     {
-        return CompletableFuture.supplyAsync(() ->
-        {
-            Entity nearest = entities.getFirst();
-            for (Entity e : entities) {
-                if (player.getLocation().distance(e.getLocation()) < player.getLocation().distance(nearest.getLocation())) {
-                    nearest = e;
-                }
-            }
-            return nearest;
-        });
+        return entities.stream()
+                .min(Comparator.comparingDouble(entity -> player.getLocation().distanceSquared(entity.getLocation())))
+                .orElseThrow();
     }
 
     @Override
     public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
-        return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? PlexUtils.getPlayerNameList() : ImmutableList.of();
+        return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? onlinePlayerNames() : ImmutableList.of();
     }
 }

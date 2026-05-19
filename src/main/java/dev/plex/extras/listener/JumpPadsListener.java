@@ -4,7 +4,6 @@ import dev.plex.extras.TFMExtras;
 import dev.plex.extras.jumppads.JumpPads;
 import dev.plex.extras.jumppads.Mode;
 import dev.plex.listener.PlexListener;
-import dev.plex.util.PlexLog;
 import java.util.Map;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -44,7 +43,7 @@ public class JumpPadsListener extends PlexListener
                     {
                         vector = vector.multiply(new Vector(0, -1, 0));
                     }
-                    PlexLog.debug("New Velocity: {0}", vector.toString());
+                    TFMExtras.plexApi().logging().debug("New Velocity: {0}", vector.toString());
                     player.setFallDistance(0);
                     player.setVelocity(vector);
                 }

@@ -1,13 +1,11 @@
 package dev.plex.extras.command;
 
-import dev.plex.cache.DataUtils;
+import dev.plex.api.player.PlexPlayerView;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.exception.PlayerNotFoundException;
 import dev.plex.extras.TFMExtras;
-import dev.plex.player.PlexPlayer;
-import dev.plex.util.PlexUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
@@ -37,7 +35,7 @@ public class ClownfishCommand extends PlexCommand
             meta.displayName(Component.text("Clownfish"));
             clownfish.setItemMeta(meta);
 
-            player.getInventory().addItem(clownfish);
+            TFMExtras.plexApi().scheduler().runEntity(player, () -> player.getInventory().addItem(clownfish));
             return MiniMessage.miniMessage().deserialize("<rainbow>blub blub... ><_>");
         }
         else if (args[0].equals("toggle"))
@@ -63,28 +61,24 @@ public class ClownfishCommand extends PlexCommand
         {
             if (silentCheckPermission(commandSender, "plex.tfmextras.clownfish.restrict"))
             {
-                PlexPlayer target = DataUtils.getPlayer(args[1]);
-                if (target == null)
-                {
-                    throw new PlayerNotFoundException();
-                }
+                PlexPlayerView target = TFMExtras.plexApi().players().byName(args[1]).orElseThrow(PlayerNotFoundException::new);
 
                 List<String> restrictedPlayers = TFMExtras.getModule().getConfig().getStringList("server.clownfish.restricted");
 
-                boolean isRestricted = restrictedPlayers.contains(target.getUuid().toString());
+                boolean isRestricted = restrictedPlayers.contains(target.uuid().toString());
                 if (isRestricted)
                 {
-                    restrictedPlayers.remove(target.getUuid().toString());
+                    restrictedPlayers.remove(target.uuid().toString());
                 }
                 else
                 {
-                    restrictedPlayers.add(target.getUuid().toString());
+                    restrictedPlayers.add(target.uuid().toString());
                 }
 
                 TFMExtras.getModule().getConfig().set("server.clownfish.restricted", restrictedPlayers);
                 TFMExtras.getModule().getConfig().save();
 
-                return messageComponent("restrictClownfish", target.getName(), isRestricted ? "now" : "no longer");
+                return messageComponent("restrictClownfish", target.name(), isRestricted ? "now" : "no longer");
             }
             else
             {
@@ -107,7 +101,7 @@ public class ClownfishCommand extends PlexCommand
             }
             else if (args.length == 2 && args[0].equals("restrict"))
             {
-                return PlexUtils.getPlayerNameList();
+                return onlinePlayerNames();
             }
         }
         else if (args.length == 1)

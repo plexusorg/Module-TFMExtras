@@ -1,11 +1,9 @@
 package dev.plex.extras.listener;
 
-import dev.plex.Plex;
 import dev.plex.extras.TFMExtras;
 import dev.plex.listener.PlexListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlayerListener extends PlexListener
 {
@@ -14,25 +12,11 @@ public class PlayerListener extends PlexListener
     {
         if (TFMExtras.getModule().getConfig().getStringList("server.clear-on-join").contains(event.getPlayer().getName()))
         {
-            new BukkitRunnable()
-            {
-                @Override
-                public void run()
-                {
-                    event.getPlayer().getInventory().clear();
-                }
-            }.runTaskLater(Plex.get(), 1);
+            TFMExtras.plexApi().scheduler().runEntityLater(event.getPlayer(), () -> event.getPlayer().getInventory().clear(), 1);
         }
         if (TFMExtras.getModule().getConfig().getStringList("server.teleport-on-join").contains(event.getPlayer().getName()))
         {
-            new BukkitRunnable()
-            {
-                @Override
-                public void run()
-                {
-                    event.getPlayer().teleportAsync(TFMExtras.getRandomLocation(event.getPlayer().getWorld()));
-                }
-            }.runTaskLater(Plex.get(), 1);
+            TFMExtras.plexApi().scheduler().runEntityLater(event.getPlayer(), () -> event.getPlayer().teleportAsync(TFMExtras.getRandomLocation(event.getPlayer().getWorld())), 1);
         }
     }
 

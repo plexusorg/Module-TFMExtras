@@ -2,7 +2,7 @@ package dev.plex.extras;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.ClassPath;
-import dev.plex.Plex;
+import dev.plex.api.PlexApi;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
@@ -10,7 +10,6 @@ import dev.plex.config.ModuleConfig;
 import dev.plex.extras.jumppads.JumpPads;
 import dev.plex.listener.PlexListener;
 import dev.plex.module.PlexModule;
-import dev.plex.util.PlexLog;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
@@ -31,6 +30,11 @@ public class TFMExtras extends PlexModule
     @Getter
     private ModuleConfig config;
 
+    public static PlexApi plexApi()
+    {
+        return module.api();
+    }
+
     @Override
     public void load()
     {
@@ -38,7 +42,7 @@ public class TFMExtras extends PlexModule
         config = new ModuleConfig(this, "tfmextras/config.yml", "config.yml");
         config.load();
         jumpPads = new JumpPads();
-//        PlexLog.debug(String.valueOf(config.getInt("server.jumppad_strength")));
+//        plexApi().logging().debug(String.valueOf(config.getInt("server.jumppad_strength")));
     }
 
     @Override
@@ -131,14 +135,14 @@ public class TFMExtras extends PlexModule
                 }
                 catch (ClassNotFoundException var4)
                 {
-                    PlexLog.error("Unable to find class " + info.getName() + " in " + packageName);
+                    plexApi().logging().error("Unable to find class {0} in {1}", info.getName(), packageName);
                 }
 
             });
         }
         catch (IOException var4)
         {
-            PlexLog.error("Something went wrong while fetching classes from " + packageName);
+            plexApi().logging().error("Something went wrong while fetching classes from {0}", packageName);
             throw new RuntimeException(var4);
         }
 

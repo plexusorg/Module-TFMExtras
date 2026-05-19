@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.util.PlexUtils;
+import dev.plex.extras.TFMExtras;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -29,16 +29,19 @@ public class EnglishMfCommand extends PlexCommand
             return usage();
         }
         Player target = getNonNullPlayer(args[0]);
-        target.sendMessage(mmString("<red>ENGLISH MOTHERFUCKER, Do you speak it!?"));
-        PlexUtils.broadcast("<red>" + sender.getName() + " is sick of " + target.getName() + " not speaking English!");
-        target.setHealth(0);
-        target.getWorld().strikeLightningEffect(target.getLocation());
+        TFMExtras.plexApi().scheduler().runEntity(target, () ->
+        {
+            target.sendMessage(mmString("<red>ENGLISH MOTHERFUCKER, Do you speak it!?"));
+            target.setHealth(0);
+            target.getWorld().strikeLightningEffect(target.getLocation());
+        });
+        broadcast("<red>" + sender.getName() + " is sick of " + target.getName() + " not speaking English!");
         return null;
     }
 
     @Override
     public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
-        return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? PlexUtils.getPlayerNameList() : ImmutableList.of();
+        return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? onlinePlayerNames() : ImmutableList.of();
     }
 }

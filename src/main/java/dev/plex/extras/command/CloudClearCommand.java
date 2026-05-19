@@ -3,7 +3,7 @@ package dev.plex.extras.command;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.util.PlexUtils;
+import dev.plex.extras.TFMExtras;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -26,12 +26,12 @@ public class CloudClearCommand extends PlexCommand
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
         AtomicInteger removed = new AtomicInteger();
-        Bukkit.getWorlds().stream().map(World::getEntities).flatMap(Collection::stream).filter(entity -> entity.getType() == EntityType.AREA_EFFECT_CLOUD).peek(entity ->
+        Bukkit.getWorlds().stream().map(World::getEntities).flatMap(Collection::stream).filter(entity -> entity.getType() == EntityType.AREA_EFFECT_CLOUD).forEach(entity ->
         {
-            entity.remove();
             removed.incrementAndGet();
+            TFMExtras.plexApi().scheduler().runEntity(entity, entity::remove);
         });
-        PlexUtils.broadcast(messageComponent("areaEffectCloudClear", sender.getName()));
+        broadcast(messageComponent("areaEffectCloudClear", sender.getName()));
         return MiniMessage.miniMessage().deserialize("<gray>" + removed.get() + " area effect clouds removed.");
     }
 

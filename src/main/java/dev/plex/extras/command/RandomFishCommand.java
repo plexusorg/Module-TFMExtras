@@ -4,12 +4,14 @@ import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.source.RequiredCommandSource;
+import dev.plex.extras.TFMExtras;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -31,7 +33,8 @@ public class RandomFishCommand extends PlexCommand
         {
             return MiniMessage.miniMessage().deserialize("<red>There is no block within 15 blocks of you.");
         }
-        player.getWorld().spawnEntity(block.getLocation().add(0, 1, 0), randomFish());
+        Location location = block.getLocation().add(0, 1, 0);
+        TFMExtras.plexApi().scheduler().runRegion(location, () -> location.getWorld().spawnEntity(location, randomFish()));
         return MiniMessage.miniMessage().deserialize(":goodbird:");
     }
 

@@ -7,7 +7,6 @@ import dev.plex.command.source.RequiredCommandSource;
 import dev.plex.extras.TFMExtras;
 import dev.plex.extras.jumppads.JumpPads;
 import dev.plex.extras.jumppads.Mode;
-import dev.plex.util.PlexUtils;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -130,7 +129,7 @@ public class JumpPadsCommand extends PlexCommand
             }
             else if (args.length == 2)
             {
-                return PlexUtils.getPlayerNameList();
+                return onlinePlayerNames();
             }
             return Collections.emptyList();
         }

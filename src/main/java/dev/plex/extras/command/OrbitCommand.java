@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.util.PlexUtils;
+import dev.plex.extras.TFMExtras;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,15 +15,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @CommandParameters(name = "orbit", description = "Accelerates the player at a super fast rate", usage = "/<command> <target> [<<power> | stop>]")
 @CommandPermissions(permission = "plex.tfmextras.orbit")
 public class OrbitCommand extends PlexCommand
 {
-    private static final Map<UUID, Integer> isOrbited = new HashMap<>();
+    private static final Map<UUID, Integer> isOrbited = new ConcurrentHashMap<>();
 
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player playerSender, String[] args)
@@ -61,7 +61,7 @@ public class OrbitCommand extends PlexCommand
         }
 
         startOrbiting(targetPlayer, strength);
-        PlexUtils.broadcast(messageComponent("playerOrbited", sender.getName(), targetPlayer.getName()));
+        broadcast(messageComponent("playerOrbited", sender.getName(), targetPlayer.getName()));
         return null;
     }
 
@@ -70,7 +70,7 @@ public class OrbitCommand extends PlexCommand
     {
         if (args.length == 1 && silentCheckPermission(sender, this.getPermission()))
         {
-            return PlexUtils.getPlayerNameList();
+            return onlinePlayerNames();
         }
         else if (args.length == 2 && silentCheckPermission(sender, this.getPermission()))
         {
@@ -81,15 +81,18 @@ public class OrbitCommand extends PlexCommand
 
     private void startOrbiting(Player player, int strength)
     {
-        player.setGameMode(org.bukkit.GameMode.SURVIVAL);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, strength, false, false));
-        isOrbited.put(player.getUniqueId(), strength);
+        TFMExtras.plexApi().scheduler().runEntity(player, () ->
+        {
+            player.setGameMode(org.bukkit.GameMode.SURVIVAL);
+            player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, strength, false, false));
+            isOrbited.put(player.getUniqueId(), strength);
+        });
     }
 
     private void stopOrbiting(Player player)
     {
-        player.removePotionEffect(PotionEffectType.LEVITATION);
         isOrbited.remove(player.getUniqueId());
+        TFMExtras.plexApi().scheduler().runEntity(player, () -> player.removePotionEffect(PotionEffectType.LEVITATION));
     }
 
     public static boolean isPlayerOrbited(UUID playerId)

@@ -3,8 +3,7 @@ package dev.plex.extras.command;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.util.PlexUtils;
-import dev.plex.util.item.ItemBuilder;
+import dev.plex.extras.TFMExtras;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -14,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,19 +21,23 @@ import org.jetbrains.annotations.Nullable;
 @CommandPermissions(permission = "plex.tfmextras.cake")
 public class CakeCommand extends PlexCommand
 {
-    private static final ItemStack CAKE = new ItemBuilder(Material.CAKE)
-            .displayName(MiniMessage.miniMessage().deserialize("<!italic><white>The <dark_gray>Lie"))
-            .build();
+    private static final ItemStack CAKE = cake();
 
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
-        Bukkit.getOnlinePlayers().forEach(p ->
-        {
-            p.getInventory().addItem(CAKE);
-        });
-        PlexUtils.broadcast(messageComponent("cakeLyrics"));
+        Bukkit.getOnlinePlayers().forEach(p -> TFMExtras.plexApi().scheduler().runEntity(p, () -> p.getInventory().addItem(CAKE.clone())));
+        broadcast(messageComponent("cakeLyrics"));
         return null;
+    }
+
+    private static ItemStack cake()
+    {
+        ItemStack cake = new ItemStack(Material.CAKE);
+        ItemMeta meta = cake.getItemMeta();
+        meta.displayName(MiniMessage.miniMessage().deserialize("<!italic><white>The <dark_gray>Lie"));
+        cake.setItemMeta(meta);
+        return cake;
     }
 
     @Override

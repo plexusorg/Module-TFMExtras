@@ -1,14 +1,12 @@
 package dev.plex.extras.command;
 
 import com.google.common.collect.ImmutableList;
-import dev.plex.cache.DataUtils;
+import dev.plex.api.player.PlexPlayerView;
 import dev.plex.command.PlexCommand;
 import dev.plex.command.annotation.CommandParameters;
 import dev.plex.command.annotation.CommandPermissions;
 import dev.plex.command.exception.PlayerNotFoundException;
 import dev.plex.extras.TFMExtras;
-import dev.plex.player.PlexPlayer;
-import dev.plex.util.PlexUtils;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -30,34 +28,30 @@ public class AutoTeleportCommand extends PlexCommand
             {
                 return usage();
             }
-            player.teleportAsync(TFMExtras.getRandomLocation(player.getWorld()));
+            TFMExtras.plexApi().scheduler().runEntity(player, () -> player.teleportAsync(TFMExtras.getRandomLocation(player.getWorld())));
             return null;
         }
         checkPermission(sender, "plex.tfmextras.autotp.other");
-        PlexPlayer target = DataUtils.getPlayer(args[0]);
-        if (target == null)
-        {
-            throw new PlayerNotFoundException();
-        }
+        PlexPlayerView target = TFMExtras.plexApi().players().byName(args[0]).orElseThrow(PlayerNotFoundException::new);
         List<String> names = TFMExtras.getModule().getConfig().getStringList("server.teleport-on-join");
-        boolean isEnabled = names.contains(target.getName());
+        boolean isEnabled = names.contains(target.name());
         if (!isEnabled)
         {
-            names.add(target.getName());
+            names.add(target.name());
         }
         else
         {
-            names.remove(target.getName());
+            names.remove(target.name());
         }
         TFMExtras.getModule().getConfig().set("server.teleport-on-join", names);
         TFMExtras.getModule().getConfig().save();
         isEnabled = !isEnabled;
-        return messageComponent("modifiedAutoTeleport", target.getName(), isEnabled ? "now" : "no longer");
+        return messageComponent("modifiedAutoTeleport", target.name(), isEnabled ? "now" : "no longer");
     }
 
     @Override
     public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
-        return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? PlexUtils.getPlayerNameList() : ImmutableList.of();
+        return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? onlinePlayerNames() : ImmutableList.of();
     }
 }

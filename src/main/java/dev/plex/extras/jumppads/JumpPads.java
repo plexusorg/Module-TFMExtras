@@ -4,6 +4,7 @@ import dev.plex.extras.TFMExtras;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -14,7 +15,7 @@ import org.bukkit.util.Vector;
 
 public class JumpPads
 {
-    public final Map<UUID, Mode> playerModeMap = new HashMap<>();
+    public final Map<UUID, Mode> playerModeMap = new ConcurrentHashMap<>();
     public final double SCALAR = 0.8;
     public final double STRENGTH = TFMExtras.getModule().getConfig().getInt("server.jumppad_strength", 1) + 0.1F;
     public final double EXTREME = STRENGTH + 0.5;
