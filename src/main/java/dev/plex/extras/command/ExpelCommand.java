@@ -1,8 +1,6 @@
 package dev.plex.extras.command;
 
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.command.SimplePlexCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
@@ -16,10 +14,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@CommandParameters(name = "expel", description = "Pushes away nearby players", usage = "/expel <radius> <strength>", aliases = "push")
-@CommandPermissions(permission = "plex.tfmextras.expel")
-public class ExpelCommand extends PlexCommand
+public class ExpelCommand extends SimplePlexCommand
 {
+    public ExpelCommand()
+    {
+        super(command("expel")
+                .description("Pushes away nearby players")
+                .usage("/expel <radius> <strength>")
+                .aliases("push")
+                .permission("plex.tfmextras.expel")
+                .build());
+    }
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
@@ -85,7 +90,7 @@ public class ExpelCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
+    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
     {
         return Collections.emptyList();
     }

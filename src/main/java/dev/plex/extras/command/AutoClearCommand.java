@@ -2,9 +2,7 @@ package dev.plex.extras.command;
 
 import com.google.common.collect.ImmutableList;
 import dev.plex.api.player.PlexPlayerView;
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.command.SimplePlexCommand;
 import dev.plex.command.exception.PlayerNotFoundException;
 import dev.plex.extras.TFMExtras;
 import java.util.List;
@@ -14,10 +12,17 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandParameters(name = "autoclear", description = "Toggle whether or not a player has their inventory automatically cleared when they join", usage = "/<command> <player>", aliases = "aclear,ac")
-@CommandPermissions(permission = "plex.tfmextras.autoclear")
-public class AutoClearCommand extends PlexCommand
+public class AutoClearCommand extends SimplePlexCommand
 {
+    public AutoClearCommand()
+    {
+        super(command("autoclear")
+                .description("Toggle whether or not a player has their inventory automatically cleared when they join")
+                .usage("/<command> <player>")
+                .aliases("aclear,ac")
+                .permission("plex.tfmextras.autoclear")
+                .build());
+    }
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
@@ -44,7 +49,7 @@ public class AutoClearCommand extends PlexCommand
 
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
         return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? onlinePlayerNames() : ImmutableList.of();
     }

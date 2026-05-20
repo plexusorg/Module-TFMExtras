@@ -1,9 +1,7 @@
 package dev.plex.extras.command;
 
 import dev.plex.api.player.PlexPlayerView;
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.command.SimplePlexCommand;
 import dev.plex.command.exception.PlayerNotFoundException;
 import dev.plex.extras.TFMExtras;
 import net.kyori.adventure.text.Component;
@@ -20,10 +18,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@CommandParameters(name = "clownfish", description = "Gives a player a clownfish capable of knocking people back", usage = "/<command> [<toggle>]")
-@CommandPermissions(permission = "plex.tfmextras.clownfish")
-public class ClownfishCommand extends PlexCommand
+public class ClownfishCommand extends SimplePlexCommand
 {
+    public ClownfishCommand()
+    {
+        super(command("clownfish")
+                .description("Gives a player a clownfish capable of knocking people back")
+                .usage("/<command> [<toggle>]")
+                .permission("plex.tfmextras.clownfish")
+                .build());
+    }
     @Override
     protected Component execute(@NotNull CommandSender commandSender, @Nullable Player player, @NotNull String[] args)
     {
@@ -92,7 +96,7 @@ public class ClownfishCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
+    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
         if (silentCheckPermission(sender, "plex.tfmextras.clownfish.restrict"))
         {
             if (args.length == 1)

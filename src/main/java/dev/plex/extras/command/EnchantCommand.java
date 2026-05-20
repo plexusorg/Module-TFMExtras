@@ -1,9 +1,7 @@
 package dev.plex.extras.command;
 
 import com.google.common.collect.Lists;
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.command.SimplePlexCommand;
 import dev.plex.command.source.RequiredCommandSource;
 
 import io.papermc.paper.registry.RegistryAccess;
@@ -22,10 +20,18 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandParameters(name = "enchant", description = "Enchants an item", usage = "/<command> <add | reset | list | addall | remove>", aliases = "enchantment")
-@CommandPermissions(permission = "plex.tfmextras.enchant", source = RequiredCommandSource.IN_GAME)
-public class EnchantCommand extends PlexCommand
+public class EnchantCommand extends SimplePlexCommand
 {
+    public EnchantCommand()
+    {
+        super(command("enchant")
+                .description("Enchants an item")
+                .usage("/<command> <add | reset | list | addall | remove>")
+                .aliases("enchantment")
+                .permission("plex.tfmextras.enchant")
+                .source(RequiredCommandSource.IN_GAME)
+                .build());
+    }
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
@@ -120,7 +126,7 @@ public class EnchantCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
         if (silentCheckPermission(sender, this.getPermission()))
         {

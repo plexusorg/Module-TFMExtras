@@ -1,8 +1,6 @@
 package dev.plex.extras.command;
 
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,10 +16,16 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandParameters(name = "cloudclear", description = "Clears lingering potion area effect clouds", aliases = "clearcloud,aeclear")
-@CommandPermissions(permission = "plex.tfmextras.cloudclear")
-public class CloudClearCommand extends PlexCommand
+public class CloudClearCommand extends SimplePlexCommand
 {
+    public CloudClearCommand()
+    {
+        super(command("cloudclear")
+                .description("Clears lingering potion area effect clouds")
+                .aliases("clearcloud,aeclear")
+                .permission("plex.tfmextras.cloudclear")
+                .build());
+    }
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
@@ -36,7 +40,7 @@ public class CloudClearCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
         return Collections.emptyList();
     }

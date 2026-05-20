@@ -1,9 +1,6 @@
 package dev.plex.extras.command;
 
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
-import dev.plex.command.source.RequiredCommandSource;
+import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
 import dev.plex.extras.jumppads.JumpPads;
 import dev.plex.extras.jumppads.Mode;
@@ -19,10 +16,17 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandParameters(name = "jumppads", usage = "/jumppads <mode> [player]", description = "Enables jump pads for yourself or another player. Mode types available: none, regular, enhanced, extreme", aliases = "jp,pads,launchpads")
-@CommandPermissions(permission = "plex.tfmextras.jumppads", source = RequiredCommandSource.ANY)
-public class JumpPadsCommand extends PlexCommand
+public class JumpPadsCommand extends SimplePlexCommand
 {
+    public JumpPadsCommand()
+    {
+        super(command("jumppads")
+                .description("Enables jump pads for yourself or another player. Mode types available: none, regular, enhanced, extreme")
+                .usage("/jumppads <mode> [player]")
+                .aliases("jp,pads,launchpads")
+                .permission("plex.tfmextras.jumppads")
+                .build());
+    }
     JumpPads jumpPads = TFMExtras.getModule().jumpPads;
 
     @Override
@@ -119,7 +123,7 @@ public class JumpPadsCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
         if (silentCheckPermission(sender, this.getPermission()))
         {

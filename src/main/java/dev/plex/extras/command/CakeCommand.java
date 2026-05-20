@@ -1,8 +1,6 @@
 package dev.plex.extras.command;
 
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
 import java.util.Collections;
 import java.util.List;
@@ -17,10 +15,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandParameters(name = "cake", description = "For the people that are still alive - gives a cake to everyone on the server")
-@CommandPermissions(permission = "plex.tfmextras.cake")
-public class CakeCommand extends PlexCommand
+public class CakeCommand extends SimplePlexCommand
 {
+    public CakeCommand()
+    {
+        super(command("cake")
+                .description("For the people that are still alive - gives a cake to everyone on the server")
+                .permission("plex.tfmextras.cake")
+                .build());
+    }
     private static final ItemStack CAKE = cake();
 
     @Override
@@ -41,7 +44,7 @@ public class CakeCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) throws IllegalArgumentException
+    protected @NotNull List<String> suggestions(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) throws IllegalArgumentException
     {
         return Collections.emptyList();
     }

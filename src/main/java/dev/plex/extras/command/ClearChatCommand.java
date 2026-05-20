@@ -1,8 +1,6 @@
 package dev.plex.extras.command;
 
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
 import java.util.Collections;
 import java.util.List;
@@ -13,10 +11,16 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandParameters(name = "clearchat", description = "Clears the chat", aliases = "cc,cleanchat,chatclear")
-@CommandPermissions(permission = "plex.tfmextras.clearchat")
-public class ClearChatCommand extends PlexCommand
+public class ClearChatCommand extends SimplePlexCommand
 {
+    public ClearChatCommand()
+    {
+        super(command("clearchat")
+                .description("Clears the chat")
+                .aliases("cc,cleanchat,chatclear")
+                .permission("plex.tfmextras.clearchat")
+                .build());
+    }
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
@@ -36,7 +40,7 @@ public class ClearChatCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
         return Collections.emptyList();
     }

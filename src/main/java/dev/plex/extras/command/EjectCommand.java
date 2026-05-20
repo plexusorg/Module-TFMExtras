@@ -1,8 +1,6 @@
 package dev.plex.extras.command;
 
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.command.SimplePlexCommand;
 import dev.plex.command.source.RequiredCommandSource;
 import dev.plex.extras.TFMExtras;
 import java.util.Collections;
@@ -14,10 +12,16 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandParameters(name = "eject", description = "Removes all passengers from a player")
-@CommandPermissions(permission = "plex.tfmextras.eject", source = RequiredCommandSource.IN_GAME)
-public class EjectCommand extends PlexCommand
+public class EjectCommand extends SimplePlexCommand
 {
+    public EjectCommand()
+    {
+        super(command("eject")
+                .description("Removes all passengers from a player")
+                .permission("plex.tfmextras.eject")
+                .source(RequiredCommandSource.IN_GAME)
+                .build());
+    }
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
@@ -27,7 +31,7 @@ public class EjectCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
         return Collections.emptyList();
     }

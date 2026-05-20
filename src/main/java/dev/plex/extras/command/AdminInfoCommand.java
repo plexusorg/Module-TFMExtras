@@ -1,8 +1,6 @@
 package dev.plex.extras.command;
 
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
 import java.util.Collections;
 import java.util.List;
@@ -13,10 +11,16 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandParameters(name = "admininfo", description = "Information on how to apply for admin", aliases = "ai,si,staffinfo")
-@CommandPermissions(permission = "plex.tfmextras.admininfo")
-public class AdminInfoCommand extends PlexCommand
+public class AdminInfoCommand extends SimplePlexCommand
 {
+    public AdminInfoCommand()
+    {
+        super(command("admininfo")
+                .description("Information on how to apply for admin")
+                .aliases("ai,si,staffinfo")
+                .permission("plex.tfmextras.admininfo")
+                .build());
+    }
     private static final List<Component> ADMIN_INFO = TFMExtras.getModule().getConfig().getStringList("server.admininfo")
             .stream().map(info -> MiniMessage.miniMessage().deserialize(info)).toList();
 
@@ -32,7 +36,7 @@ public class AdminInfoCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
         return Collections.emptyList();
     }

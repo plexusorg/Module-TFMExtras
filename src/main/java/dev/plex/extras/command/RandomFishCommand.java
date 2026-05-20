@@ -1,8 +1,6 @@
 package dev.plex.extras.command;
 
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.command.SimplePlexCommand;
 import dev.plex.command.source.RequiredCommandSource;
 import dev.plex.extras.TFMExtras;
 import java.util.Arrays;
@@ -19,10 +17,17 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandParameters(name = "randomfish", description = "Spawns a random type of fish at your location", aliases = "rfish,bird")
-@CommandPermissions(permission = "plex.tfmextras.randomfish", source = RequiredCommandSource.IN_GAME)
-public class RandomFishCommand extends PlexCommand
+public class RandomFishCommand extends SimplePlexCommand
 {
+    public RandomFishCommand()
+    {
+        super(command("randomfish")
+                .description("Spawns a random type of fish at your location")
+                .aliases("rfish,bird")
+                .permission("plex.tfmextras.randomfish")
+                .source(RequiredCommandSource.IN_GAME)
+                .build());
+    }
     private static final List<EntityType> FISH_TYPES = Arrays.asList(EntityType.COD, EntityType.SALMON, EntityType.PUFFERFISH, EntityType.TROPICAL_FISH);
 
     @Override
@@ -44,7 +49,7 @@ public class RandomFishCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
         return Collections.emptyList();
     }

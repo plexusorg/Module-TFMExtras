@@ -1,9 +1,7 @@
 package dev.plex.extras.command;
 
 import com.google.common.collect.ImmutableList;
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
 import java.util.Comparator;
 import java.util.List;
@@ -17,10 +15,17 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandParameters(name = "cartsit", usage = "/<command> <player>", description = "Sit in nearest minecart. If target is in a minecart already, they will be ejected", aliases = "minecartsit")
-@CommandPermissions(permission = "plex.tfmextras.cartsit")
-public class CartSitCommand extends PlexCommand
+public class CartSitCommand extends SimplePlexCommand
 {
+    public CartSitCommand()
+    {
+        super(command("cartsit")
+                .description("Sit in nearest minecart. If target is in a minecart already, they will be ejected")
+                .usage("/<command> <player>")
+                .aliases("minecartsit")
+                .permission("plex.tfmextras.cartsit")
+                .build());
+    }
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
@@ -68,7 +73,7 @@ public class CartSitCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
         return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? onlinePlayerNames() : ImmutableList.of();
     }

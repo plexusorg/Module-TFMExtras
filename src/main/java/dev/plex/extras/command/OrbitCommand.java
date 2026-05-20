@@ -1,9 +1,7 @@
 package dev.plex.extras.command;
 
 import com.google.common.collect.ImmutableList;
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -19,10 +17,16 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-@CommandParameters(name = "orbit", description = "Accelerates the player at a super fast rate", usage = "/<command> <target> [<<power> | stop>]")
-@CommandPermissions(permission = "plex.tfmextras.orbit")
-public class OrbitCommand extends PlexCommand
+public class OrbitCommand extends SimplePlexCommand
 {
+    public OrbitCommand()
+    {
+        super(command("orbit")
+                .description("Accelerates the player at a super fast rate")
+                .usage("/<command> <target> [<<power> | stop>]")
+                .permission("plex.tfmextras.orbit")
+                .build());
+    }
     private static final Map<UUID, Integer> isOrbited = new ConcurrentHashMap<>();
 
     @Override
@@ -66,7 +70,7 @@ public class OrbitCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
         if (args.length == 1 && silentCheckPermission(sender, this.getPermission()))
         {

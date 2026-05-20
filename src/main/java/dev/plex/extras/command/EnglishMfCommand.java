@@ -1,9 +1,7 @@
 package dev.plex.extras.command;
 
 import com.google.common.collect.ImmutableList;
-import dev.plex.command.PlexCommand;
-import dev.plex.command.annotation.CommandParameters;
-import dev.plex.command.annotation.CommandPermissions;
+import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -17,10 +15,16 @@ import org.jetbrains.annotations.Nullable;
  * Credit to "TheDeus-Group" for the messages :)
  */
 
-@CommandParameters(name = "emf", description = "Speak english.", usage = "/<command> <player>")
-@CommandPermissions(permission = "plex.tfmextras.emf")
-public class EnglishMfCommand extends PlexCommand
+public class EnglishMfCommand extends SimplePlexCommand
 {
+    public EnglishMfCommand()
+    {
+        super(command("emf")
+                .description("Speak english.")
+                .usage("/<command> <player>")
+                .permission("plex.tfmextras.emf")
+                .build());
+    }
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
@@ -40,7 +44,7 @@ public class EnglishMfCommand extends PlexCommand
     }
 
     @Override
-    public @NotNull List<String> smartTabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
+    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
     {
         return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? onlinePlayerNames() : ImmutableList.of();
     }
