@@ -29,7 +29,7 @@ public class CakeCommand extends SimplePlexCommand
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
         Bukkit.getOnlinePlayers().forEach(p -> api().scheduler().runEntity(p, () -> p.getInventory().addItem(CAKE.clone())));
-        broadcast(messageComponent("cakeLyrics"));
+        broadcast("<rainbow>But there's no sense crying over every mistake. You just keep on trying till you run out of cake.");
         return null;
     }
 

@@ -63,7 +63,7 @@ public class ClownfishCommand extends SimplePlexCommand
             module.getConfig().set("server.clownfish.toggled_players", toggledPlayers);
             module.getConfig().save();
 
-            return messageComponent("toggleClownfish", isToggled ? "now" : "no longer");
+            return MiniMessage.miniMessage().deserialize("<gray>You will " + (isToggled ? "now" : "no longer") + " be affected by the clownfish.");
         }
         else if (args[0].equals("restrict") && args.length == 2)
         {
@@ -86,7 +86,7 @@ public class ClownfishCommand extends SimplePlexCommand
                 module.getConfig().set("server.clownfish.restricted", restrictedPlayers);
                 module.getConfig().save();
 
-                return messageComponent("restrictClownfish", target.name(), isRestricted ? "now" : "no longer");
+                return MiniMessage.miniMessage().deserialize("<gold>" + target.name() + " will " + (isRestricted ? "now" : "no longer") + " be able to use the clownfish.");
             }
             else
             {

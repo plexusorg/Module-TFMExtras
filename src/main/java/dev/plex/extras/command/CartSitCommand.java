@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -42,7 +41,7 @@ public class CartSitCommand extends SimplePlexCommand
             List<Entity> minecart = player.getNearbyEntities(100, 100, 100).stream().filter(entity -> entity.getType() == EntityType.MINECART).collect(Collectors.toList());
             if (minecart.isEmpty())
             {
-                return MiniMessage.miniMessage().deserialize("<red>Could not find a nearby minecart!");
+                return messageComponent("minecartNotFound");
             }
             Entity entity = findNearestEntity(player, minecart);
             api().scheduler().runEntity(entity, () -> entity.addPassenger(player));
@@ -56,7 +55,7 @@ public class CartSitCommand extends SimplePlexCommand
         List<Entity> minecart = target.getNearbyEntities(100, 100, 100).stream().filter(entity -> entity.getType() == EntityType.MINECART).collect(Collectors.toList());
         if (minecart.isEmpty())
         {
-            return MiniMessage.miniMessage().deserialize("<red>Could not find a nearby minecart near " + target.getName() + "!");
+            return messageComponent("targetMinecartNotFound", target.getName());
         }
         Entity entity = findNearestEntity(target, minecart);
         api().scheduler().runEntity(entity, () -> entity.addPassenger(target));

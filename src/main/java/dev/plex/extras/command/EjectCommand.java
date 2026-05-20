@@ -5,7 +5,6 @@ import dev.plex.command.source.RequiredCommandSource;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +25,7 @@ public class EjectCommand extends SimplePlexCommand
     {
         final int passengers = player.getPassengers().size();
         api().scheduler().runEntity(player, player::eject);
-        return MiniMessage.miniMessage().deserialize("<gray>Ejected " + passengers + " passengers.");
+        return messageComponent("passengersEjected", passengers);
     }
 
     @Override

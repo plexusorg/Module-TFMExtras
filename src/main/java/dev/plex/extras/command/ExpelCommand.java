@@ -2,7 +2,6 @@ package dev.plex.extras.command;
 
 import dev.plex.command.SimplePlexCommand;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -83,7 +82,7 @@ public class ExpelCommand extends SimplePlexCommand
 
         if (!pushedPlayers.isEmpty())
         {
-            return messageComponent("playersExpelled", String.join("<reset><gray>, <white><em>", pushedPlayers));
+            return messageComponent("playersExpelled", String.join(messageString("playersExpelledSeparator"), pushedPlayers));
         }
 
         return null;

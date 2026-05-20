@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -45,7 +44,7 @@ public class JumpPadsCommand extends SimplePlexCommand
             {
                 if (sender instanceof ConsoleCommandSender)
                 {
-                    return MiniMessage.miniMessage().deserialize("<red>You must specify a player when running this command from console.");
+                    return messageComponent("jumpPadsConsoleSpecifyPlayer");
                 }
 
                 if (player == null)
@@ -56,7 +55,7 @@ public class JumpPadsCommand extends SimplePlexCommand
                 if (args[0].equalsIgnoreCase("none") || args[0].equalsIgnoreCase("off"))
                 {
                     jumpPads.removePlayer(player);
-                    return MiniMessage.miniMessage().deserialize("<gray>You have disabled your jump pads.");
+                    return messageComponent("jumpPadsDisabledSelf");
                 }
 
                 Mode mode = Mode.valueOf(args[0].toUpperCase());
@@ -65,21 +64,21 @@ public class JumpPadsCommand extends SimplePlexCommand
                 {
                     if (mode.equals(jumpPads.get(player)))
                     {
-                        return MiniMessage.miniMessage().deserialize("<red>Your jump pads are already set to " + mode.name() + ".");
+                        return messageComponent("jumpPadsAlreadySet", mode.name());
                     }
                     else
                     {
                         jumpPads.updatePlayer(player, mode);
-                        return MiniMessage.miniMessage().deserialize("<aqua>Successfully set your jump pads to " + mode.name() + ".");
+                        return messageComponent("jumpPadsSetSelf", mode.name());
                     }
                 }
 
                 jumpPads.addPlayer(player, mode);
-                return MiniMessage.miniMessage().deserialize("<aqua>Successfully set your jump pads to " + mode.name() + ".");
+                return messageComponent("jumpPadsSetSelf", mode.name());
             }
             catch (IllegalArgumentException ignored)
             {
-                return MiniMessage.miniMessage().deserialize("<red>That is not a valid mode.");
+                return messageComponent("jumpPadsInvalidMode");
             }
         }
         try
@@ -88,13 +87,13 @@ public class JumpPadsCommand extends SimplePlexCommand
 
             if (p == null)
             {
-                return MiniMessage.miniMessage().deserialize("<red>That player cannot be found.");
+                return messageComponent("jumpPadsPlayerNotFound");
             }
 
             if (args[0].equalsIgnoreCase("none"))
             {
                 jumpPads.removePlayer(p);
-                return MiniMessage.miniMessage().deserialize("<gray>Jump pads for " + p.getName() + " have been disabled.");
+                return messageComponent("jumpPadsDisabledOther", p.getName());
             }
 
             Mode mode = Mode.valueOf(args[0]);
@@ -108,19 +107,19 @@ public class JumpPadsCommand extends SimplePlexCommand
             {
                 if (jumpPads.get(p).equals(mode))
                 {
-                    return MiniMessage.miniMessage().deserialize("<red>Your jump pads are already set to " + mode.name() + ".");
+                    return messageComponent("jumpPadsAlreadySet", mode.name());
                 }
 
                 jumpPads.updatePlayer(p, mode);
-                return MiniMessage.miniMessage().deserialize("<gray>Jump pads for " + p.getName() + " have been set to " + mode.name() + ".");
+                return messageComponent("jumpPadsSetOther", p.getName(), mode.name());
             }
 
             jumpPads.addPlayer(p, mode);
-            return MiniMessage.miniMessage().deserialize("<gray>Jump pads for " + p.getName() + " have been set to " + mode.name() + ".");
+            return messageComponent("jumpPadsSetOther", p.getName(), mode.name());
         }
         catch (IllegalArgumentException ignored)
         {
-            return MiniMessage.miniMessage().deserialize("That is not a valid mode.");
+            return messageComponent("jumpPadsInvalidMode");
         }
     }
 

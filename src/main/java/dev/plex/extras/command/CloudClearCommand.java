@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -35,7 +34,7 @@ public class CloudClearCommand extends SimplePlexCommand
             api().scheduler().runEntity(entity, entity::remove);
         });
         broadcast(messageComponent("areaEffectCloudClear", sender.getName()));
-        return MiniMessage.miniMessage().deserialize("<gray>" + removed.get() + " area effect clouds removed.");
+        return messageComponent("areaEffectCloudsRemoved", removed.get());
     }
 
     @Override
