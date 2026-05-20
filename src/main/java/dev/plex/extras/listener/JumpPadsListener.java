@@ -16,7 +16,14 @@ import org.bukkit.util.Vector;
 
 public class JumpPadsListener extends PlexListener
 {
-    JumpPads jumpPads = TFMExtras.getModule().jumpPads;
+    private final TFMExtras module;
+    private final JumpPads jumpPads;
+
+    public JumpPadsListener(TFMExtras module)
+    {
+        this.module = module;
+        this.jumpPads = module.getJumpPads();
+    }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void jumppadsAction(PlayerMoveEvent event)
@@ -43,7 +50,7 @@ public class JumpPadsListener extends PlexListener
                     {
                         vector = vector.multiply(new Vector(0, -1, 0));
                     }
-                    TFMExtras.plexApi().logging().debug("New Velocity: {0}", vector.toString());
+                    module.api().logging().debug("New Velocity: {0}", vector.toString());
                     player.setFallDistance(0);
                     player.setVelocity(vector);
                 }

@@ -1,7 +1,6 @@
 package dev.plex.extras.command;
 
 import dev.plex.command.SimplePlexCommand;
-import dev.plex.extras.TFMExtras;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +32,7 @@ public class CloudClearCommand extends SimplePlexCommand
         Bukkit.getWorlds().stream().map(World::getEntities).flatMap(Collection::stream).filter(entity -> entity.getType() == EntityType.AREA_EFFECT_CLOUD).forEach(entity ->
         {
             removed.incrementAndGet();
-            TFMExtras.plexApi().scheduler().runEntity(entity, entity::remove);
+            api().scheduler().runEntity(entity, entity::remove);
         });
         broadcast(messageComponent("areaEffectCloudClear", sender.getName()));
         return MiniMessage.miniMessage().deserialize("<gray>" + removed.get() + " area effect clouds removed.");

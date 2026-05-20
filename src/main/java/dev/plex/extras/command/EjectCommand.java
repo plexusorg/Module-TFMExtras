@@ -2,7 +2,6 @@ package dev.plex.extras.command;
 
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.command.source.RequiredCommandSource;
-import dev.plex.extras.TFMExtras;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -26,7 +25,7 @@ public class EjectCommand extends SimplePlexCommand
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
         final int passengers = player.getPassengers().size();
-        TFMExtras.plexApi().scheduler().runEntity(player, player::eject);
+        api().scheduler().runEntity(player, player::eject);
         return MiniMessage.miniMessage().deserialize("<gray>Ejected " + passengers + " passengers.");
     }
 

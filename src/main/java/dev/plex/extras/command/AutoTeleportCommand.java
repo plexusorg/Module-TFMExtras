@@ -15,7 +15,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class AutoTeleportCommand extends SimplePlexCommand
 {
-    public AutoTeleportCommand()
+    private final TFMExtras module;
+
+    public AutoTeleportCommand(TFMExtras module)
     {
         super(command("autoteleport")
                 .description("If a player is specified, it will toggle whether or not the player is automatically teleported when they join. If no player is specified, you will be randomly teleported")
@@ -23,7 +25,9 @@ public class AutoTeleportCommand extends SimplePlexCommand
                 .aliases("autotp,rtp,randomtp,tpr")
                 .permission("plex.tfmextras.autotp")
                 .build());
+        this.module = module;
     }
+
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
@@ -33,12 +37,12 @@ public class AutoTeleportCommand extends SimplePlexCommand
             {
                 return usage();
             }
-            TFMExtras.plexApi().scheduler().runEntity(player, () -> player.teleportAsync(TFMExtras.getRandomLocation(player.getWorld())));
+            api().scheduler().runEntity(player, () -> player.teleportAsync(module.getRandomLocation(player.getWorld())));
             return null;
         }
         checkPermission(sender, "plex.tfmextras.autotp.other");
-        PlexPlayerView target = TFMExtras.plexApi().players().byName(args[0]).orElseThrow(PlayerNotFoundException::new);
-        List<String> names = TFMExtras.getModule().getConfig().getStringList("server.teleport-on-join");
+        PlexPlayerView target = api().players().byName(args[0]).orElseThrow(PlayerNotFoundException::new);
+        List<String> names = module.getConfig().getStringList("server.teleport-on-join");
         boolean isEnabled = names.contains(target.name());
         if (!isEnabled)
         {
@@ -48,8 +52,8 @@ public class AutoTeleportCommand extends SimplePlexCommand
         {
             names.remove(target.name());
         }
-        TFMExtras.getModule().getConfig().set("server.teleport-on-join", names);
-        TFMExtras.getModule().getConfig().save();
+        module.getConfig().set("server.teleport-on-join", names);
+        module.getConfig().save();
         isEnabled = !isEnabled;
         return messageComponent("modifiedAutoTeleport", target.name(), isEnabled ? "now" : "no longer");
     }

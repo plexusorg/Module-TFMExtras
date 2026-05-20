@@ -18,7 +18,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class JumpPadsCommand extends SimplePlexCommand
 {
-    public JumpPadsCommand()
+    private final JumpPads jumpPads;
+
+    public JumpPadsCommand(TFMExtras module)
     {
         super(command("jumppads")
                 .description("Enables jump pads for yourself or another player. Mode types available: none, regular, enhanced, extreme")
@@ -26,8 +28,8 @@ public class JumpPadsCommand extends SimplePlexCommand
                 .aliases("jp,pads,launchpads")
                 .permission("plex.tfmextras.jumppads")
                 .build());
+        this.jumpPads = module.getJumpPads();
     }
-    JumpPads jumpPads = TFMExtras.getModule().jumpPads;
 
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)

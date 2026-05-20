@@ -2,7 +2,6 @@ package dev.plex.extras.command;
 
 import com.google.common.collect.ImmutableList;
 import dev.plex.command.SimplePlexCommand;
-import dev.plex.extras.TFMExtras;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -33,7 +32,7 @@ public class EnglishMfCommand extends SimplePlexCommand
             return usage();
         }
         Player target = getNonNullPlayer(args[0]);
-        TFMExtras.plexApi().scheduler().runEntity(target, () ->
+        api().scheduler().runEntity(target, () ->
         {
             target.sendMessage(mmString("<red>ENGLISH MOTHERFUCKER, Do you speak it!?"));
             target.setHealth(0);

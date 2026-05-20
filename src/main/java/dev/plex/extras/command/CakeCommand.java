@@ -1,7 +1,6 @@
 package dev.plex.extras.command;
 
 import dev.plex.command.SimplePlexCommand;
-import dev.plex.extras.TFMExtras;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -29,7 +28,7 @@ public class CakeCommand extends SimplePlexCommand
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
-        Bukkit.getOnlinePlayers().forEach(p -> TFMExtras.plexApi().scheduler().runEntity(p, () -> p.getInventory().addItem(CAKE.clone())));
+        Bukkit.getOnlinePlayers().forEach(p -> api().scheduler().runEntity(p, () -> p.getInventory().addItem(CAKE.clone())));
         broadcast(messageComponent("cakeLyrics"));
         return null;
     }

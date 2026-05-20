@@ -1,7 +1,6 @@
 package dev.plex.extras.command;
 
 import dev.plex.command.SimplePlexCommand;
-import dev.plex.extras.TFMExtras;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -27,7 +26,7 @@ public class ClearChatCommand extends SimplePlexCommand
         Bukkit.getOnlinePlayers().stream().filter(p -> !silentCheckPermission(p, "plex.tfmextras.clearchat"))
                 .forEach(p ->
                 {
-                    TFMExtras.plexApi().scheduler().runEntity(p, () ->
+                    api().scheduler().runEntity(p, () ->
                     {
                         for (int i = 0; i < 100; i++)
                         {

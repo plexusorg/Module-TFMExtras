@@ -2,7 +2,6 @@ package dev.plex.extras.command;
 
 import com.google.common.collect.ImmutableList;
 import dev.plex.command.SimplePlexCommand;
-import dev.plex.extras.TFMExtras;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -85,7 +84,7 @@ public class OrbitCommand extends SimplePlexCommand
 
     private void startOrbiting(Player player, int strength)
     {
-        TFMExtras.plexApi().scheduler().runEntity(player, () ->
+        api().scheduler().runEntity(player, () ->
         {
             player.setGameMode(org.bukkit.GameMode.SURVIVAL);
             player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, strength, false, false));
@@ -96,7 +95,7 @@ public class OrbitCommand extends SimplePlexCommand
     private void stopOrbiting(Player player)
     {
         isOrbited.remove(player.getUniqueId());
-        TFMExtras.plexApi().scheduler().runEntity(player, () -> player.removePotionEffect(PotionEffectType.LEVITATION));
+        api().scheduler().runEntity(player, () -> player.removePotionEffect(PotionEffectType.LEVITATION));
     }
 
     public static boolean isPlayerOrbited(UUID playerId)

@@ -1,6 +1,5 @@
 package dev.plex.extras.jumppads;
 
-import dev.plex.extras.TFMExtras;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -17,9 +16,15 @@ public class JumpPads
 {
     public final Map<UUID, Mode> playerModeMap = new ConcurrentHashMap<>();
     public final double SCALAR = 0.8;
-    public final double STRENGTH = TFMExtras.getModule().getConfig().getInt("server.jumppad_strength", 1) + 0.1F;
-    public final double EXTREME = STRENGTH + 0.5;
+    public final double STRENGTH;
+    public final double EXTREME;
     public final Tag<Material> wool = Tag.WOOL;
+
+    public JumpPads(double strength)
+    {
+        STRENGTH = strength + 0.1F;
+        EXTREME = STRENGTH + 0.5;
+    }
 
     public Vector extreme(Vector vector)
     {

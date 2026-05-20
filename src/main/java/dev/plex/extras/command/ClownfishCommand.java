@@ -20,14 +20,18 @@ import java.util.List;
 
 public class ClownfishCommand extends SimplePlexCommand
 {
-    public ClownfishCommand()
+    private final TFMExtras module;
+
+    public ClownfishCommand(TFMExtras module)
     {
         super(command("clownfish")
                 .description("Gives a player a clownfish capable of knocking people back")
                 .usage("/<command> [<toggle>]")
                 .permission("plex.tfmextras.clownfish")
                 .build());
+        this.module = module;
     }
+
     @Override
     protected Component execute(@NotNull CommandSender commandSender, @Nullable Player player, @NotNull String[] args)
     {
@@ -39,12 +43,12 @@ public class ClownfishCommand extends SimplePlexCommand
             meta.displayName(Component.text("Clownfish"));
             clownfish.setItemMeta(meta);
 
-            TFMExtras.plexApi().scheduler().runEntity(player, () -> player.getInventory().addItem(clownfish));
+            api().scheduler().runEntity(player, () -> player.getInventory().addItem(clownfish));
             return MiniMessage.miniMessage().deserialize("<rainbow>blub blub... ><_>");
         }
         else if (args[0].equals("toggle"))
         {
-            List<String> toggledPlayers = TFMExtras.getModule().getConfig().getStringList("server.clownfish.toggled_players");
+            List<String> toggledPlayers = module.getConfig().getStringList("server.clownfish.toggled_players");
 
             boolean isToggled = toggledPlayers.contains(player.getUniqueId().toString());
             if (isToggled)
@@ -56,8 +60,8 @@ public class ClownfishCommand extends SimplePlexCommand
                 toggledPlayers.add(player.getUniqueId().toString());
             }
 
-            TFMExtras.getModule().getConfig().set("server.clownfish.toggled_players", toggledPlayers);
-            TFMExtras.getModule().getConfig().save();
+            module.getConfig().set("server.clownfish.toggled_players", toggledPlayers);
+            module.getConfig().save();
 
             return messageComponent("toggleClownfish", isToggled ? "now" : "no longer");
         }
@@ -65,9 +69,9 @@ public class ClownfishCommand extends SimplePlexCommand
         {
             if (silentCheckPermission(commandSender, "plex.tfmextras.clownfish.restrict"))
             {
-                PlexPlayerView target = TFMExtras.plexApi().players().byName(args[1]).orElseThrow(PlayerNotFoundException::new);
+                PlexPlayerView target = api().players().byName(args[1]).orElseThrow(PlayerNotFoundException::new);
 
-                List<String> restrictedPlayers = TFMExtras.getModule().getConfig().getStringList("server.clownfish.restricted");
+                List<String> restrictedPlayers = module.getConfig().getStringList("server.clownfish.restricted");
 
                 boolean isRestricted = restrictedPlayers.contains(target.uuid().toString());
                 if (isRestricted)
@@ -79,8 +83,8 @@ public class ClownfishCommand extends SimplePlexCommand
                     restrictedPlayers.add(target.uuid().toString());
                 }
 
-                TFMExtras.getModule().getConfig().set("server.clownfish.restricted", restrictedPlayers);
-                TFMExtras.getModule().getConfig().save();
+                module.getConfig().set("server.clownfish.restricted", restrictedPlayers);
+                module.getConfig().save();
 
                 return messageComponent("restrictClownfish", target.name(), isRestricted ? "now" : "no longer");
             }

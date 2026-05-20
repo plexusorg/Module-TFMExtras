@@ -26,6 +26,12 @@ import java.util.Random;
 
 public class ClownfishListener extends PlexListener
 {
+    private final TFMExtras module;
+
+    public ClownfishListener(TFMExtras module)
+    {
+        this.module = module;
+    }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event)
@@ -47,20 +53,20 @@ public class ClownfishListener extends PlexListener
 
                 if (meta.hasDisplayName() && Objects.equals(meta.displayName(), Component.text("Clownfish")))
                 {
-                    final List<String> restrictedPlayers = TFMExtras.getModule().getConfig().getStringList("server.clownfish.restricted");
+                    final List<String> restrictedPlayers = module.getConfig().getStringList("server.clownfish.restricted");
                     if (restrictedPlayers.contains(player.getUniqueId().toString()))
                     {
                         player.sendMessage(MiniMessage.miniMessage().deserialize("<gray>You have been restricted from using the clownfish"));
                         return;
                     }
 
-                    double radius = TFMExtras.getModule().getConfig().getInt("server.clownfish.radius");
-                    double strength = TFMExtras.getModule().getConfig().getInt("server.clownfish.strength");
+                    double radius = module.getConfig().getInt("server.clownfish.radius");
+                    double strength = module.getConfig().getInt("server.clownfish.strength");
 
                     List<String> pushedPlayers = new ArrayList<>();
                     final Vector senderPos = player.getLocation().toVector();
                     final List<Player> players = player.getWorld().getPlayers();
-                    final List<String> toggledPlayers = TFMExtras.getModule().getConfig().getStringList("server.clownfish.toggled_players");
+                    final List<String> toggledPlayers = module.getConfig().getStringList("server.clownfish.toggled_players");
 
                     for (final Player target : players)
                     {

@@ -13,25 +13,28 @@ import org.jetbrains.annotations.Nullable;
 
 public class AdminInfoCommand extends SimplePlexCommand
 {
-    public AdminInfoCommand()
+    private final TFMExtras module;
+
+    public AdminInfoCommand(TFMExtras module)
     {
         super(command("admininfo")
                 .description("Information on how to apply for admin")
                 .aliases("ai,si,staffinfo")
                 .permission("plex.tfmextras.admininfo")
                 .build());
+        this.module = module;
     }
-    private static final List<Component> ADMIN_INFO = TFMExtras.getModule().getConfig().getStringList("server.admininfo")
-            .stream().map(info -> MiniMessage.miniMessage().deserialize(info)).toList();
 
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
-        if (ADMIN_INFO.isEmpty())
+        List<Component> adminInfo = module.getConfig().getStringList("server.admininfo")
+                .stream().map(info -> MiniMessage.miniMessage().deserialize(info)).toList();
+        if (adminInfo.isEmpty())
         {
             return messageComponent("emptyAdminInfo");
         }
-        ADMIN_INFO.forEach(component -> send(sender, component));
+        adminInfo.forEach(component -> send(sender, component));
         return null;
     }
 

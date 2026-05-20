@@ -2,7 +2,6 @@ package dev.plex.extras.command;
 
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.command.source.RequiredCommandSource;
-import dev.plex.extras.TFMExtras;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +38,7 @@ public class RandomFishCommand extends SimplePlexCommand
             return MiniMessage.miniMessage().deserialize("<red>There is no block within 15 blocks of you.");
         }
         Location location = block.getLocation().add(0, 1, 0);
-        TFMExtras.plexApi().scheduler().runRegion(location, () -> location.getWorld().spawnEntity(location, randomFish()));
+        api().scheduler().runRegion(location, () -> location.getWorld().spawnEntity(location, randomFish()));
         return MiniMessage.miniMessage().deserialize(":goodbird:");
     }
 

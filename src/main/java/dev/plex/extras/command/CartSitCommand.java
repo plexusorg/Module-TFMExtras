@@ -2,7 +2,6 @@ package dev.plex.extras.command;
 
 import com.google.common.collect.ImmutableList;
 import dev.plex.command.SimplePlexCommand;
-import dev.plex.extras.TFMExtras;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,7 +45,7 @@ public class CartSitCommand extends SimplePlexCommand
                 return MiniMessage.miniMessage().deserialize("<red>Could not find a nearby minecart!");
             }
             Entity entity = findNearestEntity(player, minecart);
-            TFMExtras.plexApi().scheduler().runEntity(entity, () -> entity.addPassenger(player));
+            api().scheduler().runEntity(entity, () -> entity.addPassenger(player));
             return null;
         }
         Player target = getNonNullPlayer(args[0]);
@@ -60,7 +59,7 @@ public class CartSitCommand extends SimplePlexCommand
             return MiniMessage.miniMessage().deserialize("<red>Could not find a nearby minecart near " + target.getName() + "!");
         }
         Entity entity = findNearestEntity(target, minecart);
-        TFMExtras.plexApi().scheduler().runEntity(entity, () -> entity.addPassenger(target));
+        api().scheduler().runEntity(entity, () -> entity.addPassenger(target));
 
         return null;
     }

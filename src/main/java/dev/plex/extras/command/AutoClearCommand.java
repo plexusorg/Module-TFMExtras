@@ -14,7 +14,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class AutoClearCommand extends SimplePlexCommand
 {
-    public AutoClearCommand()
+    private final TFMExtras module;
+
+    public AutoClearCommand(TFMExtras module)
     {
         super(command("autoclear")
                 .description("Toggle whether or not a player has their inventory automatically cleared when they join")
@@ -22,7 +24,9 @@ public class AutoClearCommand extends SimplePlexCommand
                 .aliases("aclear,ac")
                 .permission("plex.tfmextras.autoclear")
                 .build());
+        this.module = module;
     }
+
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
@@ -30,8 +34,8 @@ public class AutoClearCommand extends SimplePlexCommand
         {
             return usage();
         }
-        PlexPlayerView target = TFMExtras.plexApi().players().byName(args[0]).orElseThrow(PlayerNotFoundException::new);
-        List<String> names = TFMExtras.getModule().getConfig().getStringList("server.clear-on-join");
+        PlexPlayerView target = api().players().byName(args[0]).orElseThrow(PlayerNotFoundException::new);
+        List<String> names = module.getConfig().getStringList("server.clear-on-join");
         boolean isEnabled = names.contains(target.name());
         if (!isEnabled)
         {
@@ -41,8 +45,8 @@ public class AutoClearCommand extends SimplePlexCommand
         {
             names.remove(target.name());
         }
-        TFMExtras.getModule().getConfig().set("server.clear-on-join", names);
-        TFMExtras.getModule().getConfig().save();
+        module.getConfig().set("server.clear-on-join", names);
+        module.getConfig().save();
         isEnabled = !isEnabled;
         return messageComponent("modifiedAutoClear", target.name(), isEnabled ? "now" : "no longer");
     }
