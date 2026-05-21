@@ -43,11 +43,6 @@ public class TFMExtras extends PlexModule
         config.load();
         loadMessages("tfmextras/messages.yml");
         jumpPads = new JumpPads(config.getInt("server.jumppad_strength", 1));
-    }
-
-    @Override
-    public void enable()
-    {
         List.of(
                 new AdminInfoCommand(this),
                 new AutoClearCommand(this),
@@ -65,7 +60,11 @@ public class TFMExtras extends PlexModule
                 new OrbitCommand(),
                 new RandomFishCommand()
         ).forEach(this::registerCommand);
+    }
 
+    @Override
+    public void enable()
+    {
         List.of(
                 new ClownfishListener(this),
                 new JumpPadsListener(this),
