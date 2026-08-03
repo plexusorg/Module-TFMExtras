@@ -39,9 +39,9 @@ public class TFMExtras extends PlexModule
     @Override
     public void load()
     {
-        config = new ModuleConfig(this, "tfmextras/config.yml", "config.yml");
+        config = new ModuleConfig(this, "config.yml", "config.yml");
         config.load();
-        loadMessages("tfmextras/messages.yml");
+        loadMessages("messages.yml");
         jumpPads = new JumpPads(config.getInt("server.jumppad_strength", 1));
         List.of(
                 new AdminInfoCommand(this),
