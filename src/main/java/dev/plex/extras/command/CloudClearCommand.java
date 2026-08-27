@@ -31,7 +31,7 @@ public class CloudClearCommand extends SimplePlexCommand
         Bukkit.getWorlds().stream().map(World::getEntities).flatMap(Collection::stream).filter(entity -> entity.getType() == EntityType.AREA_EFFECT_CLOUD).forEach(entity ->
         {
             removed.incrementAndGet();
-            api().scheduler().runEntity(entity, entity::remove);
+            scheduler().runEntity(entity, entity::remove);
         });
         broadcast(messageComponent("areaEffectCloudClear", sender.getName()));
         return messageComponent("areaEffectCloudsRemoved", removed.get());

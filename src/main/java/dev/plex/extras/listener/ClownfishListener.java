@@ -1,7 +1,6 @@
 package dev.plex.extras.listener;
 
 import dev.plex.extras.TFMExtras;
-import dev.plex.listener.PlexListener;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.text.Component;
@@ -13,6 +12,7 @@ import org.bukkit.Sound;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public class ClownfishListener extends PlexListener
+public class ClownfishListener implements Listener
 {
     private final TFMExtras module;
 

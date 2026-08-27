@@ -43,7 +43,7 @@ public class ClownfishCommand extends SimplePlexCommand
             meta.displayName(Component.text("Clownfish"));
             clownfish.setItemMeta(meta);
 
-            api().scheduler().runEntity(player, () -> player.getInventory().addItem(clownfish));
+            scheduler().runEntity(player, () -> player.getInventory().addItem(clownfish));
             return MiniMessage.miniMessage().deserialize("<rainbow>blub blub... ><_>");
         }
         else if (args[0].equals("toggle"))

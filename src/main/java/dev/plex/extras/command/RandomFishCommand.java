@@ -38,7 +38,7 @@ public class RandomFishCommand extends SimplePlexCommand
             return MiniMessage.miniMessage().deserialize("<red>There is no block within 15 blocks of you.");
         }
         Location location = block.getLocation().add(0, 1, 0);
-        api().scheduler().runRegion(location, () -> location.getWorld().spawnEntity(location, randomFish()));
+        scheduler().runRegion(location, () -> location.getWorld().spawnEntity(location, randomFish()));
         return MiniMessage.miniMessage().deserialize(":goodbird:");
     }
 

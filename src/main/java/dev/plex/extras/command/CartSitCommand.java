@@ -44,7 +44,7 @@ public class CartSitCommand extends SimplePlexCommand
                 return messageComponent("minecartNotFound");
             }
             Entity entity = findNearestEntity(player, minecart);
-            api().scheduler().runEntity(entity, () -> entity.addPassenger(player));
+            scheduler().runEntity(entity, () -> entity.addPassenger(player));
             return null;
         }
         Player target = getNonNullPlayer(args[0]);
@@ -58,7 +58,7 @@ public class CartSitCommand extends SimplePlexCommand
             return messageComponent("targetMinecartNotFound", target.getName());
         }
         Entity entity = findNearestEntity(target, minecart);
-        api().scheduler().runEntity(entity, () -> entity.addPassenger(target));
+        scheduler().runEntity(entity, () -> entity.addPassenger(target));
 
         return null;
     }

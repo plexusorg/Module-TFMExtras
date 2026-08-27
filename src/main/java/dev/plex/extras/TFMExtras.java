@@ -1,6 +1,6 @@
 package dev.plex.extras;
 
-import dev.plex.config.ModuleConfig;
+import dev.plex.api.config.ModuleConfiguration;
 import dev.plex.extras.command.AdminInfoCommand;
 import dev.plex.extras.command.AutoClearCommand;
 import dev.plex.extras.command.AutoTeleportCommand;
@@ -34,12 +34,12 @@ public class TFMExtras extends PlexModule
     private JumpPads jumpPads;
 
     @Getter
-    private ModuleConfig config;
+    private ModuleConfiguration config;
 
     @Override
     public void load()
     {
-        config = new ModuleConfig(this, "config.yml", "config.yml");
+        config = api().moduleConfigs().create(this, "config.yml");
         config.load();
         loadMessages("messages.yml");
         jumpPads = new JumpPads(config.getInt("server.jumppad_strength", 1));
@@ -71,12 +71,6 @@ public class TFMExtras extends PlexModule
                 new OrbitEffectListener(this),
                 new PlayerListener(this)
         ).forEach(this::registerListener);
-    }
-
-    @Override
-    public void disable()
-    {
-        // Unregistering listeners / commands is handled by Plex
     }
 
     public Location getRandomLocation(World world)

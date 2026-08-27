@@ -3,18 +3,18 @@ package dev.plex.extras.listener;
 import dev.plex.extras.TFMExtras;
 import dev.plex.extras.jumppads.JumpPads;
 import dev.plex.extras.jumppads.Mode;
-import dev.plex.listener.PlexListener;
 import java.util.Map;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.Vector;
 
-public class JumpPadsListener extends PlexListener
+public class JumpPadsListener implements Listener
 {
     private final TFMExtras module;
     private final JumpPads jumpPads;

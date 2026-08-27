@@ -54,7 +54,7 @@ public class EnchantCommand extends SimplePlexCommand
                     return messageComponent("enchantSpecify");
                 }
 
-                Enchantment enchantmentToAdd = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(args[1].toLowerCase()));
+                Enchantment enchantmentToAdd = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(NamespacedKey.minecraft(args[1].toLowerCase()));
                 if (enchantmentToAdd == null || !enchantmentToAdd.canEnchantItem(item))
                 {
                     return messageComponent("enchantInvalid");

@@ -84,7 +84,7 @@ public class OrbitCommand extends SimplePlexCommand
 
     private void startOrbiting(Player player, int strength)
     {
-        api().scheduler().runEntity(player, () ->
+        scheduler().runEntity(player, () ->
         {
             player.setGameMode(org.bukkit.GameMode.SURVIVAL);
             player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, strength, false, false));
@@ -95,7 +95,7 @@ public class OrbitCommand extends SimplePlexCommand
     private void stopOrbiting(Player player)
     {
         isOrbited.remove(player.getUniqueId());
-        api().scheduler().runEntity(player, () -> player.removePotionEffect(PotionEffectType.LEVITATION));
+        scheduler().runEntity(player, () -> player.removePotionEffect(PotionEffectType.LEVITATION));
     }
 
     public static boolean isPlayerOrbited(UUID playerId)

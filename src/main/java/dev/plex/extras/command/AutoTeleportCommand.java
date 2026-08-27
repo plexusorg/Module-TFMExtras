@@ -37,7 +37,7 @@ public class AutoTeleportCommand extends SimplePlexCommand
             {
                 return usage();
             }
-            api().scheduler().runEntity(player, () -> player.teleportAsync(module.getRandomLocation(player.getWorld())));
+            scheduler().runEntity(player, () -> player.teleportAsync(module.getRandomLocation(player.getWorld())));
             return null;
         }
         checkPermission(sender, "plex.tfmextras.autotp.other");

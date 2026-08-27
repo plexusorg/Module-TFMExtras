@@ -26,7 +26,7 @@ public class ClearChatCommand extends SimplePlexCommand
         Bukkit.getOnlinePlayers().stream().filter(p -> !silentCheckPermission(p, "plex.tfmextras.clearchat"))
                 .forEach(p ->
                 {
-                    api().scheduler().runEntity(p, () ->
+                    scheduler().runEntity(p, () ->
                     {
                         for (int i = 0; i < 100; i++)
                         {

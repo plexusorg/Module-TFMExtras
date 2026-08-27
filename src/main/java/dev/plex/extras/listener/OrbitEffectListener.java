@@ -6,13 +6,13 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import dev.plex.listener.PlexListener;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class OrbitEffectListener extends PlexListener
+public class OrbitEffectListener implements Listener
 {
     private final TFMExtras module;
 
@@ -29,7 +29,7 @@ public class OrbitEffectListener extends PlexListener
             if ((event.getAction() == EntityPotionEffectEvent.Action.CLEARED || event.getAction() == EntityPotionEffectEvent.Action.REMOVED)
                     && event.getModifiedType() == PotionEffectType.LEVITATION)
             {
-                module.api().scheduler().runEntityLater(player, () ->
+                module.scheduler().runEntityLater(player, () ->
                 {
                     if (OrbitCommand.isPlayerOrbited(player.getUniqueId()))
                     {
@@ -47,7 +47,7 @@ public class OrbitEffectListener extends PlexListener
         Player player = event.getPlayer();
 
         GameMode newGameMode = event.getNewGameMode();
-        module.api().scheduler().runEntityLater(player, () ->
+        module.scheduler().runEntityLater(player, () ->
         {
             if (OrbitCommand.isPlayerOrbited(player.getUniqueId()) && newGameMode != GameMode.SURVIVAL)
             {
