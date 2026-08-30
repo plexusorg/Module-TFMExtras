@@ -31,9 +31,9 @@ public class OrbitEffectListener implements Listener
             {
                 module.scheduler().runEntityLater(player, () ->
                 {
-                    if (OrbitCommand.isPlayerOrbited(player.getUniqueId()))
+                    Integer strength = OrbitCommand.orbitStrength(player.getUniqueId());
+                    if (strength != null)
                     {
-                        Integer strength = OrbitCommand.getOrbitStrength(player.getUniqueId());
                         player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, strength, false, false));
                     }
                 }, 2);
@@ -49,7 +49,7 @@ public class OrbitEffectListener implements Listener
         GameMode newGameMode = event.getNewGameMode();
         module.scheduler().runEntityLater(player, () ->
         {
-            if (OrbitCommand.isPlayerOrbited(player.getUniqueId()) && newGameMode != GameMode.SURVIVAL)
+            if (OrbitCommand.orbitStrength(player.getUniqueId()) != null && newGameMode != GameMode.SURVIVAL)
             {
                 player.setGameMode(GameMode.SURVIVAL);
             }

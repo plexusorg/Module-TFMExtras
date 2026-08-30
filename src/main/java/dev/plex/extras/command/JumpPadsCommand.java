@@ -60,20 +60,12 @@ public class JumpPadsCommand extends SimplePlexCommand
 
                 Mode mode = Mode.valueOf(args[0].toUpperCase());
 
-                if (jumpPads.get(player) != null)
+                if (mode.equals(jumpPads.get(player)))
                 {
-                    if (mode.equals(jumpPads.get(player)))
-                    {
-                        return messageComponent("jumpPadsAlreadySet", mode.name());
-                    }
-                    else
-                    {
-                        jumpPads.updatePlayer(player, mode);
-                        return messageComponent("jumpPadsSetSelf", mode.name());
-                    }
+                    return messageComponent("jumpPadsAlreadySet", mode.name());
                 }
 
-                jumpPads.addPlayer(player, mode);
+                jumpPads.setMode(player, mode);
                 return messageComponent("jumpPadsSetSelf", mode.name());
             }
             catch (IllegalArgumentException ignored)
@@ -103,18 +95,12 @@ public class JumpPadsCommand extends SimplePlexCommand
                 return permissionMessage();
             }
 
-            if (jumpPads.get(p) != null)
+            if (mode.equals(jumpPads.get(p)))
             {
-                if (jumpPads.get(p).equals(mode))
-                {
-                    return messageComponent("jumpPadsAlreadySet", mode.name());
-                }
-
-                jumpPads.updatePlayer(p, mode);
-                return messageComponent("jumpPadsSetOther", p.getName(), mode.name());
+                return messageComponent("jumpPadsAlreadySet", mode.name());
             }
 
-            jumpPads.addPlayer(p, mode);
+            jumpPads.setMode(p, mode);
             return messageComponent("jumpPadsSetOther", p.getName(), mode.name());
         }
         catch (IllegalArgumentException ignored)

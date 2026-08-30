@@ -2,7 +2,6 @@ package dev.plex.extras.command;
 
 import dev.plex.api.player.PlexPlayerView;
 import dev.plex.command.SimplePlexCommand;
-import dev.plex.command.exception.PlayerNotFoundException;
 import dev.plex.extras.TFMExtras;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -69,24 +68,22 @@ public class ClownfishCommand extends SimplePlexCommand
         {
             if (silentCheckPermission(commandSender, "plex.tfmextras.clownfish.restrict"))
             {
-                PlexPlayerView target = api().players().byName(args[1]).orElseThrow(PlayerNotFoundException::new);
-
-                List<String> restrictedPlayers = module.getConfig().getStringList("server.clownfish.restricted");
-
-                boolean isRestricted = restrictedPlayers.contains(target.uuid().toString());
-                if (isRestricted)
+                api().players().byName(args[1]).whenComplete((result, failure) -> scheduler().executeGlobal(() ->
                 {
-                    restrictedPlayers.remove(target.uuid().toString());
-                }
-                else
-                {
-                    restrictedPlayers.add(target.uuid().toString());
-                }
-
-                module.getConfig().set("server.clownfish.restricted", restrictedPlayers);
-                module.getConfig().save();
-
-                return MiniMessage.miniMessage().deserialize("<gold>" + target.name() + " will " + (isRestricted ? "now" : "no longer") + " be able to use the clownfish.");
+                    if (failure != null)
+                    {
+                        module.getLogger().error("Failed to look up player {}", args[1], failure);
+                        send(commandSender, Component.text("Player lookup failed."));
+                        return;
+                    }
+                    if (result.isEmpty())
+                    {
+                        send(commandSender, messageComponent("playerNotFound"));
+                        return;
+                    }
+                    restrict(commandSender, result.get());
+                }));
+                return null;
             }
             else
             {
@@ -97,6 +94,26 @@ public class ClownfishCommand extends SimplePlexCommand
         {
             return usage();
         }
+    }
+
+    private void restrict(CommandSender sender, PlexPlayerView target)
+    {
+        List<String> restrictedPlayers = module.getConfig().getStringList("server.clownfish.restricted");
+
+        boolean isRestricted = restrictedPlayers.contains(target.uuid().toString());
+        if (isRestricted)
+        {
+            restrictedPlayers.remove(target.uuid().toString());
+        }
+        else
+        {
+            restrictedPlayers.add(target.uuid().toString());
+        }
+
+        module.getConfig().set("server.clownfish.restricted", restrictedPlayers);
+        module.getConfig().save();
+
+        send(sender, MiniMessage.miniMessage().deserialize("<gold>" + target.name() + " will " + (isRestricted ? "now" : "no longer") + " be able to use the clownfish."));
     }
 
     @Override

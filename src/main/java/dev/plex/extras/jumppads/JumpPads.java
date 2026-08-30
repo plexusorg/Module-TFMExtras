@@ -17,13 +17,11 @@ public class JumpPads
     public final Map<UUID, Mode> playerModeMap = new ConcurrentHashMap<>();
     public final double SCALAR = 0.8;
     public final double STRENGTH;
-    public final double EXTREME;
     public final Tag<Material> wool = Tag.WOOL;
 
     public JumpPads(double strength)
     {
         STRENGTH = strength + 0.1F;
-        EXTREME = STRENGTH + 0.5;
     }
 
     public Vector extreme(Vector vector)
@@ -31,14 +29,9 @@ public class JumpPads
         return vector.multiply(STRENGTH * SCALAR * ThreadLocalRandom.current().nextInt(3, 6));
     }
 
-    public void addPlayer(Player player, Mode mode)
+    public void setMode(Player player, Mode mode)
     {
         playerModeMap.put(player.getUniqueId(), mode);
-    }
-
-    public void updatePlayer(Player player, Mode mode)
-    {
-        playerModeMap.replace(player.getUniqueId(), mode);
     }
 
     public void removePlayer(Player player)

@@ -58,7 +58,7 @@ public class OrbitCommand extends SimplePlexCommand
             }
         }
 
-        if (isPlayerOrbited(targetPlayer.getUniqueId()))
+        if (orbitStrength(targetPlayer.getUniqueId()) != null)
         {
             return messageComponent("alreadyOrbited", targetPlayer.getName());
         }
@@ -98,12 +98,7 @@ public class OrbitCommand extends SimplePlexCommand
         scheduler().runEntity(player, () -> player.removePotionEffect(PotionEffectType.LEVITATION));
     }
 
-    public static boolean isPlayerOrbited(UUID playerId)
-    {
-        return isOrbited.containsKey(playerId);
-    }
-
-    public static Integer getOrbitStrength(UUID playerId)
+    public static Integer orbitStrength(UUID playerId)
     {
         return isOrbited.get(playerId);
     }

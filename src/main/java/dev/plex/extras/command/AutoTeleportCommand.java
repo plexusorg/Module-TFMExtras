@@ -3,7 +3,6 @@ package dev.plex.extras.command;
 import com.google.common.collect.ImmutableList;
 import dev.plex.api.player.PlexPlayerView;
 import dev.plex.command.SimplePlexCommand;
-import dev.plex.command.exception.PlayerNotFoundException;
 import dev.plex.extras.TFMExtras;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -41,7 +40,26 @@ public class AutoTeleportCommand extends SimplePlexCommand
             return null;
         }
         checkPermission(sender, "plex.tfmextras.autotp.other");
-        PlexPlayerView target = api().players().byName(args[0]).orElseThrow(PlayerNotFoundException::new);
+        api().players().byName(args[0]).whenComplete((result, failure) -> scheduler().executeGlobal(() ->
+        {
+            if (failure != null)
+            {
+                module.getLogger().error("Failed to look up player {}", args[0], failure);
+                send(sender, Component.text("Player lookup failed."));
+                return;
+            }
+            if (result.isEmpty())
+            {
+                send(sender, messageComponent("playerNotFound"));
+                return;
+            }
+            toggle(sender, result.get());
+        }));
+        return null;
+    }
+
+    private void toggle(CommandSender sender, PlexPlayerView target)
+    {
         List<String> names = module.getConfig().getStringList("server.teleport-on-join");
         boolean isEnabled = names.contains(target.name());
         if (!isEnabled)
@@ -55,7 +73,7 @@ public class AutoTeleportCommand extends SimplePlexCommand
         module.getConfig().set("server.teleport-on-join", names);
         module.getConfig().save();
         isEnabled = !isEnabled;
-        return messageComponent("modifiedAutoTeleport", target.name(), isEnabled ? "now" : "no longer");
+        send(sender, messageComponent("modifiedAutoTeleport", target.name(), isEnabled ? "now" : "no longer"));
     }
 
     @Override

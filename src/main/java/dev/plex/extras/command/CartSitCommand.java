@@ -63,7 +63,7 @@ public class CartSitCommand extends SimplePlexCommand
         return null;
     }
 
-    public Entity findNearestEntity(Player player, List<Entity> entities)
+    private Entity findNearestEntity(Player player, List<Entity> entities)
     {
         return entities.stream()
                 .min(Comparator.comparingDouble(entity -> player.getLocation().distanceSquared(entity.getLocation())))
