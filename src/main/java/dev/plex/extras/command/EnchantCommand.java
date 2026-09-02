@@ -12,7 +12,9 @@ import java.util.List;
 
 import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.StringUtils;
-import org.bukkit.*;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -134,13 +136,11 @@ public class EnchantCommand extends SimplePlexCommand
             {
                 return Arrays.asList("add", "reset", "list", "addall", "remove");
             }
-            if (args.length == 2 && args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove"))
+            if (args.length == 2 && (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove")))
             {
-                Player player = Bukkit.getPlayer(sender.getName());
-                if (player != null)
-                {
-                    return List.of(getEnchantmentNames(player.getInventory().getItemInMainHand()));
-                }
+                return RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).stream()
+                        .map(enchantment -> enchantment.key().value())
+                        .toList();
             }
             return Collections.emptyList();
         }

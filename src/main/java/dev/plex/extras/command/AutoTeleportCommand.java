@@ -36,11 +36,11 @@ public class AutoTeleportCommand extends SimplePlexCommand
             {
                 return usage();
             }
-            scheduler().runEntity(player, () -> player.teleportAsync(module.getRandomLocation(player.getWorld())));
+            module.teleportRandom(player);
             return null;
         }
         checkPermission(sender, "plex.tfmextras.autotp.other");
-        api().players().byName(args[0]).whenComplete((result, failure) -> scheduler().executeGlobal(() ->
+        api().players().byName(args[0]).whenComplete((result, failure) ->
         {
             if (failure != null)
             {
@@ -54,7 +54,7 @@ public class AutoTeleportCommand extends SimplePlexCommand
                 return;
             }
             toggle(sender, result.get());
-        }));
+        });
         return null;
     }
 

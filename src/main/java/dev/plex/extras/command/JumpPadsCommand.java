@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -73,14 +72,10 @@ public class JumpPadsCommand extends SimplePlexCommand
                 return messageComponent("jumpPadsInvalidMode");
             }
         }
+        checkPermission(sender, "plex.tfmextras.jumppads.others");
         try
         {
-            Player p = Bukkit.getPlayer(args[1]);
-
-            if (p == null)
-            {
-                return messageComponent("jumpPadsPlayerNotFound");
-            }
+            Player p = getNonNullPlayer(args[1]);
 
             if (args[0].equalsIgnoreCase("none"))
             {
@@ -88,12 +83,7 @@ public class JumpPadsCommand extends SimplePlexCommand
                 return messageComponent("jumpPadsDisabledOther", p.getName());
             }
 
-            Mode mode = Mode.valueOf(args[0]);
-
-            if (!checkPermission(sender, "plex.tfmextras.jumppads.others"))
-            {
-                return permissionMessage();
-            }
+            Mode mode = Mode.valueOf(args[0].toUpperCase());
 
             if (mode.equals(jumpPads.get(p)))
             {

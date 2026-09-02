@@ -4,7 +4,6 @@ import dev.plex.command.SimplePlexCommand;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -27,14 +26,16 @@ public class CloudClearCommand extends SimplePlexCommand
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
-        AtomicInteger removed = new AtomicInteger();
-        Bukkit.getWorlds().stream().map(World::getEntities).flatMap(Collection::stream).filter(entity -> entity.getType() == EntityType.AREA_EFFECT_CLOUD).forEach(entity ->
-        {
-            removed.incrementAndGet();
-            scheduler().runEntity(entity, entity::remove);
-        });
-        broadcast(messageComponent("areaEffectCloudClear", sender.getName()));
-        return messageComponent("areaEffectCloudsRemoved", removed.get());
+        String senderName = sender.getName();
+        List<org.bukkit.entity.Entity> clouds = Bukkit.getWorlds().stream()
+                .map(World::getEntities)
+                .flatMap(Collection::stream)
+                .filter(entity -> entity.getType() == EntityType.AREA_EFFECT_CLOUD)
+                .toList();
+        clouds.forEach(entity -> scheduler().runEntity(entity, entity::remove));
+        broadcast(messageComponent("areaEffectCloudClear", senderName));
+        send(sender, messageComponent("areaEffectCloudsRemoved", clouds.size()));
+        return null;
     }
 
     @Override

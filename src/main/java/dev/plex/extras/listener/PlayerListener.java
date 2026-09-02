@@ -19,11 +19,11 @@ public class PlayerListener implements Listener
     {
         if (module.getConfig().getStringList("server.clear-on-join").contains(event.getPlayer().getName()))
         {
-            module.scheduler().runEntityLater(event.getPlayer(), () -> event.getPlayer().getInventory().clear(), 1);
+            event.getPlayer().getInventory().clear();
         }
         if (module.getConfig().getStringList("server.teleport-on-join").contains(event.getPlayer().getName()))
         {
-            module.scheduler().runEntityLater(event.getPlayer(), () -> event.getPlayer().teleportAsync(module.getRandomLocation(event.getPlayer().getWorld())), 1);
+            module.scheduler().runEntityLater(event.getPlayer(), () -> module.teleportRandom(event.getPlayer()), 1);
         }
     }
 

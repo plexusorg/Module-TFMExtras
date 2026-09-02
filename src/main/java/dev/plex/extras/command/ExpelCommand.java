@@ -1,6 +1,7 @@
 package dev.plex.extras.command;
 
 import dev.plex.command.SimplePlexCommand;
+import dev.plex.command.source.RequiredCommandSource;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -9,7 +10,6 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +22,7 @@ public class ExpelCommand extends SimplePlexCommand
                 .usage("/expel <radius> <strength>")
                 .aliases("push")
                 .permission("plex.tfmextras.expel")
+                .source(RequiredCommandSource.IN_GAME)
                 .build());
     }
     @Override
@@ -54,38 +55,30 @@ public class ExpelCommand extends SimplePlexCommand
             }
         }
 
-        List<String> pushedPlayers = new ArrayList<>();
-
-        final Vector senderPos = player.getLocation().toVector();
-        final List<Player> players = player.getWorld().getPlayers();
-
-        for (final Player target : players)
+        Vector senderPos = player.getLocation().toVector();
+        for (Player target : player.getWorld().getPlayers())
         {
-            if (target.equals(player))
+            if (!target.equals(player))
             {
-                continue;
+                expel(target, senderPos, radius, strength);
             }
+        }
+        return null;
+    }
 
-            final Location targetPos = target.getLocation();
-            final Vector targetPosVec = targetPos.toVector();
-
-            if (targetPosVec.distanceSquared(senderPos) < (radius * radius))
+    private void expel(Player target, Vector senderPos, double radius, double strength)
+    {
+        scheduler().runEntity(target, () ->
+        {
+            Location targetPos = target.getLocation();
+            Vector targetPosVec = targetPos.toVector();
+            if (targetPosVec.distanceSquared(senderPos) < radius * radius)
             {
                 target.setFlying(false);
-
                 target.getWorld().createExplosion(targetPos, 0.0f, false);
                 target.setVelocity(targetPosVec.subtract(senderPos).normalize().multiply(strength));
-
-                pushedPlayers.add(target.getName());
             }
-        }
-
-        if (!pushedPlayers.isEmpty())
-        {
-            return messageComponent("playersExpelled", String.join(messageString("playersExpelledSeparator"), pushedPlayers));
-        }
-
-        return null;
+        });
     }
 
     @Override

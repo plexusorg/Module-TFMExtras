@@ -32,35 +32,37 @@ public class CartSitCommand extends SimplePlexCommand
             return usage();
         }
 
-        if (args.length == 0)
+        boolean other = args.length > 0;
+        Player target = other ? getNonNullPlayer(args[0]) : player;
+        if (other)
         {
-            if (player.isInsideVehicle())
-            {
-                player.eject();
-            }
-            List<Entity> minecart = player.getNearbyEntities(100, 100, 100).stream().filter(entity -> entity.getType() == EntityType.MINECART).collect(Collectors.toList());
-            if (minecart.isEmpty())
-            {
-                return messageComponent("minecartNotFound");
-            }
-            Entity entity = findNearestEntity(player, minecart);
-            scheduler().runEntity(entity, () -> entity.addPassenger(player));
-            return null;
+            scheduler().runEntity(target, () -> seat(sender, target, true));
         }
-        Player target = getNonNullPlayer(args[0]);
+        else
+        {
+            seat(sender, target, false);
+        }
+        return null;
+    }
+
+    private void seat(CommandSender sender, Player target, boolean other)
+    {
         if (target.isInsideVehicle())
         {
-            target.eject();
+            target.leaveVehicle();
         }
-        List<Entity> minecart = target.getNearbyEntities(100, 100, 100).stream().filter(entity -> entity.getType() == EntityType.MINECART).collect(Collectors.toList());
-        if (minecart.isEmpty())
+        List<Entity> minecarts = target.getNearbyEntities(100, 100, 100).stream()
+                .filter(entity -> entity.getType() == EntityType.MINECART)
+                .collect(Collectors.toList());
+        if (minecarts.isEmpty())
         {
-            return messageComponent("targetMinecartNotFound", target.getName());
+            send(sender, other
+                    ? messageComponent("targetMinecartNotFound", target.getName())
+                    : messageComponent("minecartNotFound"));
+            return;
         }
-        Entity entity = findNearestEntity(target, minecart);
-        scheduler().runEntity(entity, () -> entity.addPassenger(target));
-
-        return null;
+        Entity minecart = findNearestEntity(target, minecarts);
+        scheduler().runEntity(minecart, () -> minecart.addPassenger(target));
     }
 
     private Entity findNearestEntity(Player player, List<Entity> entities)

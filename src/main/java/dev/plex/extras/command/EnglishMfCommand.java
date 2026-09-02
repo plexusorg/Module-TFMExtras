@@ -32,9 +32,9 @@ public class EnglishMfCommand extends SimplePlexCommand
             return usage();
         }
         Player target = getNonNullPlayer(args[0]);
+        target.sendMessage(mmString("<red>ENGLISH MOTHERFUCKER, Do you speak it!?"));
         scheduler().runEntity(target, () ->
         {
-            target.sendMessage(mmString("<red>ENGLISH MOTHERFUCKER, Do you speak it!?"));
             target.setHealth(0);
             target.getWorld().strikeLightningEffect(target.getLocation());
         });

@@ -42,7 +42,7 @@ public class ClownfishCommand extends SimplePlexCommand
             meta.displayName(Component.text("Clownfish"));
             clownfish.setItemMeta(meta);
 
-            scheduler().runEntity(player, () -> player.getInventory().addItem(clownfish));
+            player.getInventory().addItem(clownfish);
             return MiniMessage.miniMessage().deserialize("<rainbow>blub blub... ><_>");
         }
         else if (args[0].equals("toggle"))
@@ -68,7 +68,7 @@ public class ClownfishCommand extends SimplePlexCommand
         {
             if (silentCheckPermission(commandSender, "plex.tfmextras.clownfish.restrict"))
             {
-                api().players().byName(args[1]).whenComplete((result, failure) -> scheduler().executeGlobal(() ->
+                api().players().byName(args[1]).whenComplete((result, failure) ->
                 {
                     if (failure != null)
                     {
@@ -82,7 +82,7 @@ public class ClownfishCommand extends SimplePlexCommand
                         return;
                     }
                     restrict(commandSender, result.get());
-                }));
+                });
                 return null;
             }
             else

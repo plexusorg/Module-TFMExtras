@@ -24,7 +24,7 @@ public class EjectCommand extends SimplePlexCommand
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
         final int passengers = player.getPassengers().size();
-        scheduler().runEntity(player, player::eject);
+        player.eject();
         return messageComponent("passengersEjected", passengers);
     }
 

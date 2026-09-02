@@ -23,18 +23,18 @@ public class ClearChatCommand extends SimplePlexCommand
     @Override
     protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
     {
-        Bukkit.getOnlinePlayers().stream().filter(p -> !silentCheckPermission(p, "plex.tfmextras.clearchat"))
-                .forEach(p ->
+        String senderName = sender.getName();
+        Bukkit.getOnlinePlayers().forEach(p ->
+        {
+            if (!p.hasPermission("plex.tfmextras.clearchat"))
+            {
+                for (int i = 0; i < 100; i++)
                 {
-                    scheduler().runEntity(p, () ->
-                    {
-                        for (int i = 0; i < 100; i++)
-                        {
-                            send(p, "");
-                        }
-                    });
-                });
-        broadcast(messageComponent("chatCleared", sender.getName()));
+                    send(p, "");
+                }
+            }
+        });
+        broadcast(messageComponent("chatCleared", senderName));
         return null;
     }
 

@@ -11,8 +11,6 @@ modifiedAutoTeleport: "<gold>{0} will {1} be teleported automatically when they 
 minecartNotFound: "<red>Could not find a nearby minecart!"
 targetMinecartNotFound: "<red>Could not find a nearby minecart near {0}!"
 passengersEjected: "<gray>Ejected {0} passengers."
-playersExpelled: "<gray>Pushed away players: <white><em>{0}"
-playersExpelledSeparator: "<reset><gray>, <white><em>"
 jumpPadsConsoleSpecifyPlayer: "<red>You must specify a player when running this command from console."
 jumpPadsDisabledSelf: "<gray>You have disabled your jump pads."
 jumpPadsAlreadySet: "<red>Your jump pads are already set to {0}."

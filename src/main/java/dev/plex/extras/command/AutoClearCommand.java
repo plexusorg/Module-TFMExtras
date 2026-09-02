@@ -33,7 +33,7 @@ public class AutoClearCommand extends SimplePlexCommand
         {
             return usage();
         }
-        api().players().byName(args[0]).whenComplete((result, failure) -> scheduler().executeGlobal(() ->
+        api().players().byName(args[0]).whenComplete((result, failure) ->
         {
             if (failure != null)
             {
@@ -47,7 +47,7 @@ public class AutoClearCommand extends SimplePlexCommand
                 return;
             }
             toggle(sender, result.get());
-        }));
+        });
         return null;
     }
 

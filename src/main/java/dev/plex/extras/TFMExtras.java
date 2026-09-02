@@ -27,6 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 public class TFMExtras extends PlexModule
 {
@@ -73,11 +74,18 @@ public class TFMExtras extends PlexModule
         ).forEach(this::registerListener);
     }
 
-    public Location getRandomLocation(World world)
+    public void teleportRandom(Player player)
     {
+        World world = player.getWorld();
         double x = ThreadLocalRandom.current().nextDouble(-100000, 100000);
         double z = ThreadLocalRandom.current().nextDouble(-100000, 100000);
-        double y = world.getHighestBlockYAt((int)x, (int)z) + 1;
-        return new Location(world, x, y, z);
+        Location region = new Location(world, x, 0, z);
+        scheduler().runRegion(region, () ->
+        {
+            double y = world.getHighestBlockYAt((int)x, (int)z) + 1;
+            Location target = new Location(world, x, y, z);
+            scheduler().runEntity(player, () -> player.teleportAsync(target));
+        });
     }
+
 }
