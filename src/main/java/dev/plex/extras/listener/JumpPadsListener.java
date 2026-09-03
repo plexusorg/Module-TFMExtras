@@ -68,28 +68,7 @@ public class JumpPadsListener implements Listener
                     {
                         return;
                     }
-                    if (w.y() == -1)
-                    {
-                        playerVector.add(new Vector(0.0, jumpPads.SCALAR * jumpPads.STRENGTH, 0.0));
-                    }
-
-                    switch (w.x())
-                    {
-                        case (-1):
-                            playerVector.add(new Vector(-jumpPads.SCALAR * jumpPads.STRENGTH, 0.0, 0.0));
-                        case (1):
-                            playerVector.add(new Vector(jumpPads.SCALAR * jumpPads.STRENGTH, 0.0, 0.0));
-                    }
-
-                    switch (w.z())
-                    {
-                        case (-1):
-                            playerVector.add(new Vector(0.0, 0.0, -jumpPads.SCALAR * jumpPads.STRENGTH));
-                        case (1):
-                            playerVector.add(new Vector(0.0, 0.0, jumpPads.SCALAR * jumpPads.STRENGTH));
-                    }
-
-                    player.setVelocity(playerVector);
+                    player.setVelocity(jumpPads.enhanced(playerVector, w));
                 }
             });
         }

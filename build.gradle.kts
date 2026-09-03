@@ -1,5 +1,6 @@
 plugins {
     java
+    checkstyle
     `maven-publish`
 }
 
@@ -29,6 +30,11 @@ description = "Module-TFMExtras"
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+}
+
+checkstyle {
+    toolVersion = "14.1.0"
+    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
 }
 
 publishing {

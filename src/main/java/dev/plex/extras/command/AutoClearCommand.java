@@ -1,9 +1,10 @@
 package dev.plex.extras.command;
 
-import com.google.common.collect.ImmutableList;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.api.player.PlexPlayerView;
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -27,17 +28,27 @@ public class AutoClearCommand extends SimplePlexCommand
     }
 
     @Override
-    protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
+    protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
     {
-        if (args.length == 0)
-        {
-            return usage();
-        }
-        api().players().byName(args[0]).whenComplete((result, failure) ->
+        command.executes(context -> executeCommand(context, (sender, player) -> usage()));
+        command.then(playerArgument().executes(context -> executeCommand(context,
+                        (sender, player) -> executeTyped(sender, string(context, "player"))))
+                .then(greedyString("ignored").executes(context -> executeCommand(context,
+                        (sender, player) -> executeTyped(sender, string(context, "player"))))));
+    }
+
+    private com.mojang.brigadier.builder.RequiredArgumentBuilder<CommandSourceStack, String> playerArgument()
+    {
+        return word("player").suggests((context, builder) -> suggestMatching(builder, onlinePlayerNames()));
+    }
+
+    private Component executeTyped(CommandSender sender, String playerName)
+    {
+        api().players().byName(playerName).whenComplete((result, failure) ->
         {
             if (failure != null)
             {
-                module.getLogger().error("Failed to look up player {}", args[0], failure);
+                module.getLogger().error("Failed to look up player {}", playerName, failure);
                 send(sender, Component.text("Player lookup failed."));
                 return;
             }
@@ -53,26 +64,11 @@ public class AutoClearCommand extends SimplePlexCommand
 
     private void toggle(CommandSender sender, PlexPlayerView target)
     {
-        List<String> names = module.getConfig().getStringList("server.clear-on-join");
-        boolean isEnabled = names.contains(target.name());
-        if (!isEnabled)
+        module.toggleConfigEntry("server.clear-on-join", target.name()).whenComplete((enabled, failure) ->
         {
-            names.add(target.name());
-        }
-        else
-        {
-            names.remove(target.name());
-        }
-        module.getConfig().set("server.clear-on-join", names);
-        module.getConfig().save();
-        isEnabled = !isEnabled;
-        send(sender, messageComponent("modifiedAutoClear", target.name(), isEnabled ? "now" : "no longer"));
+            if (failure != null) module.getLogger().error("Failed to update automatic inventory clearing", failure);
+            else send(sender, messageComponent("modifiedAutoClear", target.name(), enabled ? "now" : "no longer"));
+        });
     }
 
-
-    @Override
-    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
-    {
-        return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? onlinePlayerNames() : ImmutableList.of();
-    }
 }

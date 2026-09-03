@@ -1,9 +1,10 @@
 package dev.plex.extras.command;
 
-import com.google.common.collect.ImmutableList;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.api.player.PlexPlayerView;
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -28,23 +29,31 @@ public class AutoTeleportCommand extends SimplePlexCommand
     }
 
     @Override
-    protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
+    protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
     {
-        if (args.length == 0)
-        {
-            if (sender instanceof ConsoleCommandSender)
-            {
-                return usage();
-            }
-            module.teleportRandom(player);
-            return null;
-        }
+        command.executes(context -> executeCommand(context, this::teleportSelf));
+        command.then(word("player").suggests((context, builder) -> suggestMatching(builder, onlinePlayerNames()))
+                .executes(context -> executeCommand(context,
+                        (sender, player) -> togglePlayer(sender, string(context, "player"))))
+                .then(greedyString("ignored").executes(context -> executeCommand(context,
+                        (sender, player) -> togglePlayer(sender, string(context, "player"))))));
+    }
+
+    private Component teleportSelf(CommandSender sender, Player player)
+    {
+        if (sender instanceof ConsoleCommandSender) return usage();
+        module.teleportRandom(player);
+        return null;
+    }
+
+    private Component togglePlayer(CommandSender sender, String playerName)
+    {
         checkPermission(sender, "plex.tfmextras.autotp.other");
-        api().players().byName(args[0]).whenComplete((result, failure) ->
+        api().players().byName(playerName).whenComplete((result, failure) ->
         {
             if (failure != null)
             {
-                module.getLogger().error("Failed to look up player {}", args[0], failure);
+                module.getLogger().error("Failed to look up player {}", playerName, failure);
                 send(sender, Component.text("Player lookup failed."));
                 return;
             }
@@ -60,25 +69,11 @@ public class AutoTeleportCommand extends SimplePlexCommand
 
     private void toggle(CommandSender sender, PlexPlayerView target)
     {
-        List<String> names = module.getConfig().getStringList("server.teleport-on-join");
-        boolean isEnabled = names.contains(target.name());
-        if (!isEnabled)
+        module.toggleConfigEntry("server.teleport-on-join", target.name()).whenComplete((enabled, failure) ->
         {
-            names.add(target.name());
-        }
-        else
-        {
-            names.remove(target.name());
-        }
-        module.getConfig().set("server.teleport-on-join", names);
-        module.getConfig().save();
-        isEnabled = !isEnabled;
-        send(sender, messageComponent("modifiedAutoTeleport", target.name(), isEnabled ? "now" : "no longer"));
+            if (failure != null) module.getLogger().error("Failed to update automatic teleporting", failure);
+            else send(sender, messageComponent("modifiedAutoTeleport", target.name(), enabled ? "now" : "no longer"));
+        });
     }
 
-    @Override
-    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
-    {
-        return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? onlinePlayerNames() : ImmutableList.of();
-    }
 }

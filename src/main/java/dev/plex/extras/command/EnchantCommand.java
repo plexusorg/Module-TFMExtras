@@ -1,8 +1,10 @@
 package dev.plex.extras.command;
 
 import com.google.common.collect.Lists;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.command.source.RequiredCommandSource;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
@@ -35,39 +37,54 @@ public class EnchantCommand extends SimplePlexCommand
                 .build());
     }
     @Override
-    protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
+    protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
     {
-        if (args.length == 0)
-        {
-            return usage();
-        }
+        command.executes(context -> executeCommand(context, (sender, player) -> usage()));
+        command.then(word("action").suggests((context, builder) -> suggestMatching(builder, List.of("add", "reset", "list", "addall", "remove")))
+                .executes(context -> executeCommand(context, (sender, player) -> executeTyped(player, string(context, "action"), null, null)))
+                .then(word("enchantment").suggests((context, builder) ->
+                {
+                    String action = string(context, "action");
+                    if (action.equalsIgnoreCase("add") || action.equalsIgnoreCase("remove"))
+                    {
+                        return suggestMatching(builder, RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).stream()
+                                .map(enchantment -> enchantment.key().value()).toList());
+                    }
+                    return builder.buildFuture();
+                })
+                        .executes(context -> executeCommand(context, (sender, player) -> executeTyped(player, string(context, "action"), string(context, "enchantment"), null)))
+                        .then(word("level").executes(context -> executeCommand(context, (sender, player) -> executeTyped(player, string(context, "action"), string(context, "enchantment"), string(context, "level"))))
+                                .then(greedyString("ignored").executes(context -> executeCommand(context, (sender, player) -> executeTyped(player, string(context, "action"), string(context, "enchantment"), string(context, "level"))))))));
+    }
 
+    private Component executeTyped(Player player, String action, @Nullable String enchantmentName, @Nullable String level)
+    {
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.getType() == Material.AIR)
         {
             return messageComponent("enchantMustHoldItem");
         }
 
-        switch (args[0].toLowerCase())
+        switch (action.toLowerCase())
         {
             case "add":
-                if (args.length < 2)
+                if (enchantmentName == null)
                 {
                     return messageComponent("enchantSpecify");
                 }
 
-                Enchantment enchantmentToAdd = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(NamespacedKey.minecraft(args[1].toLowerCase()));
+                Enchantment enchantmentToAdd = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(NamespacedKey.minecraft(enchantmentName.toLowerCase()));
                 if (enchantmentToAdd == null || !enchantmentToAdd.canEnchantItem(item))
                 {
                     return messageComponent("enchantInvalid");
                 }
 
                 int levelToAdd = enchantmentToAdd.getMaxLevel();
-                if (args.length >= 3)
+                if (level != null)
                 {
                     try
                     {
-                        levelToAdd = Integer.parseInt(args[2]);
+                        levelToAdd = Integer.parseInt(level);
                         if (levelToAdd < 1 || levelToAdd > 255)
                         {
                             return messageComponent("enchantInvalidLevel");
@@ -84,12 +101,12 @@ public class EnchantCommand extends SimplePlexCommand
                 return messageComponent("enchantAdd", enchantmentToAdd.getKey().getKey(), levelToAdd);
 
             case "remove":
-                if (args.length < 2)
+                if (enchantmentName == null)
                 {
                     return messageComponent("enchantSpecify");
                 }
 
-                Enchantment enchantmentToRemove = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(NamespacedKey.minecraft(args[1].toLowerCase()));
+                Enchantment enchantmentToRemove = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(NamespacedKey.minecraft(enchantmentName.toLowerCase()));
                 if (enchantmentToRemove == null || !item.containsEnchantment(enchantmentToRemove))
                 {
                     return messageComponent("enchantInvalid");
@@ -127,23 +144,4 @@ public class EnchantCommand extends SimplePlexCommand
         return getEnchantments(item).stream().map(enchantment -> enchantment.key().value()).toArray(String[]::new);
     }
 
-    @Override
-    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
-    {
-        if (silentCheckPermission(sender, this.getPermission()))
-        {
-            if (args.length == 1)
-            {
-                return Arrays.asList("add", "reset", "list", "addall", "remove");
-            }
-            if (args.length == 2 && (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove")))
-            {
-                return RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).stream()
-                        .map(enchantment -> enchantment.key().value())
-                        .toList();
-            }
-            return Collections.emptyList();
-        }
-        return Collections.emptyList();
-    }
 }

@@ -1,6 +1,8 @@
 package dev.plex.extras.command;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +26,13 @@ public class CloudClearCommand extends SimplePlexCommand
                 .build());
     }
     @Override
-    protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
+    protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
+    {
+        command.executes(context -> executeCommand(context, this::executeTyped));
+        command.then(greedyString("ignored").executes(context -> executeCommand(context, this::executeTyped)));
+    }
+
+    private Component executeTyped(CommandSender sender, Player player)
     {
         String senderName = sender.getName();
         List<org.bukkit.entity.Entity> clouds = Bukkit.getWorlds().stream()
@@ -38,9 +46,4 @@ public class CloudClearCommand extends SimplePlexCommand
         return null;
     }
 
-    @Override
-    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
-    {
-        return Collections.emptyList();
-    }
 }

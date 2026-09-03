@@ -1,8 +1,10 @@
 package dev.plex.extras.command;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.api.player.PlexPlayerView;
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
@@ -32,9 +34,29 @@ public class ClownfishCommand extends SimplePlexCommand
     }
 
     @Override
-    protected Component execute(@NotNull CommandSender commandSender, @Nullable Player player, @NotNull String[] args)
+    protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
     {
-        if (args.length == 0)
+        command.executes(context -> executeCommand(context, (sender, player) -> executeTyped(sender, player, null, null)));
+        command.then(word("action").suggests((context, builder) ->
+        {
+            List<String> actions = new java.util.ArrayList<>(List.of("toggle"));
+            if (context.getSource().getSender().hasPermission("plex.tfmextras.clownfish.restrict")) actions.add("restrict");
+            return suggestMatching(builder, actions);
+        }).executes(context -> executeCommand(context, (sender, player) -> executeTyped(sender, player,
+                        string(context, "action"), null)))
+                .then(word("target").suggests((context, builder) ->
+                {
+                    return string(context, "action").equals("restrict")
+                            ? suggestMatching(builder, onlinePlayerNames()) : builder.buildFuture();
+                }).executes(context -> executeCommand(context, (sender, player) -> executeTyped(sender, player,
+                                string(context, "action"), string(context, "target"))))
+                        .then(greedyString("extra").executes(context -> executeCommand(context,
+                                (sender, player) -> usage())))));
+    }
+
+    private Component executeTyped(CommandSender commandSender, Player player, @Nullable String action, @Nullable String target)
+    {
+        if (action == null)
         {
             ItemStack clownfish = new ItemStack(Material.TROPICAL_FISH);
             ItemMeta meta = clownfish.getItemMeta();
@@ -45,34 +67,26 @@ public class ClownfishCommand extends SimplePlexCommand
             player.getInventory().addItem(clownfish);
             return MiniMessage.miniMessage().deserialize("<rainbow>blub blub... ><_>");
         }
-        else if (args[0].equals("toggle"))
+        else if (action.equals("toggle"))
         {
-            List<String> toggledPlayers = module.getConfig().getStringList("server.clownfish.toggled_players");
-
-            boolean isToggled = toggledPlayers.contains(player.getUniqueId().toString());
-            if (isToggled)
-            {
-                toggledPlayers.remove(player.getUniqueId().toString());
-            }
-            else
-            {
-                toggledPlayers.add(player.getUniqueId().toString());
-            }
-
-            module.getConfig().set("server.clownfish.toggled_players", toggledPlayers);
-            module.getConfig().save();
-
-            return MiniMessage.miniMessage().deserialize("<gray>You will " + (isToggled ? "now" : "no longer") + " be affected by the clownfish.");
+            module.toggleConfigEntry("server.clownfish.toggled_players", player.getUniqueId().toString())
+                    .whenComplete((enabled, failure) ->
+                    {
+                        if (failure != null) module.getLogger().error("Failed to update clownfish toggle", failure);
+                        else send(player, MiniMessage.miniMessage().deserialize("<gray>You will "
+                                + (enabled ? "no longer" : "now") + " be affected by the clownfish."));
+                    });
+            return null;
         }
-        else if (args[0].equals("restrict") && args.length == 2)
+        else if (action.equals("restrict") && target != null)
         {
             if (silentCheckPermission(commandSender, "plex.tfmextras.clownfish.restrict"))
             {
-                api().players().byName(args[1]).whenComplete((result, failure) ->
+                api().players().byName(target).whenComplete((result, failure) ->
                 {
                     if (failure != null)
                     {
-                        module.getLogger().error("Failed to look up player {}", args[1], failure);
+                        module.getLogger().error("Failed to look up player {}", target, failure);
                         send(commandSender, Component.text("Player lookup failed."));
                         return;
                     }
@@ -98,42 +112,13 @@ public class ClownfishCommand extends SimplePlexCommand
 
     private void restrict(CommandSender sender, PlexPlayerView target)
     {
-        List<String> restrictedPlayers = module.getConfig().getStringList("server.clownfish.restricted");
-
-        boolean isRestricted = restrictedPlayers.contains(target.uuid().toString());
-        if (isRestricted)
-        {
-            restrictedPlayers.remove(target.uuid().toString());
-        }
-        else
-        {
-            restrictedPlayers.add(target.uuid().toString());
-        }
-
-        module.getConfig().set("server.clownfish.restricted", restrictedPlayers);
-        module.getConfig().save();
-
-        send(sender, MiniMessage.miniMessage().deserialize("<gold>" + target.name() + " will " + (isRestricted ? "now" : "no longer") + " be able to use the clownfish."));
+        module.toggleConfigEntry("server.clownfish.restricted", target.uuid().toString())
+                .whenComplete((restricted, failure) ->
+                {
+                    if (failure != null) module.getLogger().error("Failed to update clownfish restriction", failure);
+                    else send(sender, MiniMessage.miniMessage().deserialize("<gold>" + target.name() + " will "
+                            + (restricted ? "no longer" : "now") + " be able to use the clownfish."));
+                });
     }
 
-    @Override
-    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
-        if (silentCheckPermission(sender, "plex.tfmextras.clownfish.restrict"))
-        {
-            if (args.length == 1)
-            {
-                return Arrays.asList("toggle", "restrict");
-            }
-            else if (args.length == 2 && args[0].equals("restrict"))
-            {
-                return onlinePlayerNames();
-            }
-        }
-        else if (args.length == 1)
-        {
-            return List.of("toggle");
-        }
-
-        return Collections.emptyList();
-    }
 }

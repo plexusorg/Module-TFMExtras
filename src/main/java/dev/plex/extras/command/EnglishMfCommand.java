@@ -1,7 +1,8 @@
 package dev.plex.extras.command;
 
-import com.google.common.collect.ImmutableList;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -25,13 +26,19 @@ public class EnglishMfCommand extends SimplePlexCommand
                 .build());
     }
     @Override
-    protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
+    protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
     {
-        if (args.length == 0)
-        {
-            return usage();
-        }
-        Player target = getNonNullPlayer(args[0]);
+        command.executes(context -> executeCommand(context, (sender, player) -> usage()));
+        command.then(word("player").suggests((context, builder) -> suggestMatching(builder, onlinePlayerNames()))
+                .executes(context -> executeCommand(context,
+                        (sender, player) -> executeTyped(sender, string(context, "player"))))
+                .then(greedyString("ignored").executes(context -> executeCommand(context,
+                        (sender, player) -> executeTyped(sender, string(context, "player"))))));
+    }
+
+    private Component executeTyped(CommandSender sender, String playerName)
+    {
+        Player target = getNonNullPlayer(playerName);
         target.sendMessage(mmString("<red>ENGLISH MOTHERFUCKER, Do you speak it!?"));
         scheduler().runEntity(target, () ->
         {
@@ -42,9 +49,4 @@ public class EnglishMfCommand extends SimplePlexCommand
         return null;
     }
 
-    @Override
-    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
-    {
-        return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? onlinePlayerNames() : ImmutableList.of();
-    }
 }

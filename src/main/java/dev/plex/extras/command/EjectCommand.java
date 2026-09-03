@@ -1,6 +1,8 @@
 package dev.plex.extras.command;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import dev.plex.command.source.RequiredCommandSource;
 import java.util.Collections;
 import java.util.List;
@@ -21,16 +23,17 @@ public class EjectCommand extends SimplePlexCommand
                 .build());
     }
     @Override
-    protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
+    protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
+    {
+        command.executes(context -> executeCommand(context, this::executeTyped));
+        command.then(greedyString("ignored").executes(context -> executeCommand(context, this::executeTyped)));
+    }
+
+    private Component executeTyped(CommandSender sender, Player player)
     {
         final int passengers = player.getPassengers().size();
         player.eject();
         return messageComponent("passengersEjected", passengers);
     }
 
-    @Override
-    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
-    {
-        return Collections.emptyList();
-    }
 }

@@ -1,7 +1,9 @@
 package dev.plex.extras.command;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.command.source.RequiredCommandSource;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -26,16 +28,27 @@ public class ExpelCommand extends SimplePlexCommand
                 .build());
     }
     @Override
-    protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
+    protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
+    {
+        command.executes(context -> executeCommand(context, (sender, player) -> executeTyped(player, null, null)));
+        command.then(word("radius").executes(context -> executeCommand(context,
+                        (sender, player) -> executeTyped(player, string(context, "radius"), null)))
+                .then(word("strength").executes(context -> executeCommand(context,
+                                (sender, player) -> executeTyped(player, string(context, "radius"), string(context, "strength"))))
+                        .then(greedyString("ignored").executes(context -> executeCommand(context,
+                                (sender, player) -> executeTyped(player, string(context, "radius"), string(context, "strength")))))));
+    }
+
+    private Component executeTyped(Player player, @Nullable String radiusValue, @Nullable String strengthValue)
     {
         double radius = 20.0;
         double strength = 5.0;
 
-        if (args.length > 0)
+        if (radiusValue != null)
         {
             try
             {
-                radius = Math.min(Double.parseDouble(args[0]), 20.0);
+                radius = Math.min(Double.parseDouble(radiusValue), 20.0);
             }
             catch (NumberFormatException ignored)
             {
@@ -43,11 +56,11 @@ public class ExpelCommand extends SimplePlexCommand
             }
         }
 
-        if (args.length > 1)
+        if (strengthValue != null)
         {
             try
             {
-                strength = Math.min(Double.parseDouble(args[1]), 10.0);
+                strength = Math.min(Double.parseDouble(strengthValue), 10.0);
             }
             catch (NumberFormatException ignored)
             {
@@ -81,9 +94,4 @@ public class ExpelCommand extends SimplePlexCommand
         });
     }
 
-    @Override
-    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
-    {
-        return Collections.emptyList();
-    }
 }

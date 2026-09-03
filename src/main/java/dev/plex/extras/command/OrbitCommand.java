@@ -1,7 +1,9 @@
 package dev.plex.extras.command;
 
-import com.google.common.collect.ImmutableList;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
+import dev.plex.extras.TFMExtras;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,37 +14,44 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class OrbitCommand extends SimplePlexCommand
 {
-    public OrbitCommand()
+    private final TFMExtras module;
+
+    public OrbitCommand(TFMExtras module)
     {
         super(command("orbit")
                 .description("Accelerates the player at a super fast rate")
                 .usage("/<command> <target> [<<power> | stop>]")
                 .permission("plex.tfmextras.orbit")
                 .build());
+        this.module = module;
     }
-    private static final Map<UUID, Integer> isOrbited = new ConcurrentHashMap<>();
 
     @Override
-    protected Component execute(@NotNull CommandSender sender, @Nullable Player playerSender, String[] args)
+    protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
     {
-        if (args.length == 0)
-        {
-            return usage();
-        }
+        command.executes(context -> executeCommand(context, (sender, player) -> usage()));
+        command.then(word("target").suggests((context, builder) -> suggestMatching(builder, onlinePlayerNames()))
+                .executes(context -> executeCommand(context,
+                        (sender, player) -> executeTyped(sender, string(context, "target"), null)))
+                .then(word("power").suggests((context, builder) -> suggestMatching(builder, List.of("stop")))
+                        .executes(context -> executeCommand(context, (sender, player) -> executeTyped(sender,
+                                string(context, "target"), string(context, "power"))))
+                        .then(greedyString("ignored").executes(context -> executeCommand(context,
+                                (sender, player) -> executeTyped(sender, string(context, "target"), string(context, "power")))))));
+    }
 
-        Player targetPlayer = getNonNullPlayer(args[0]);
+    private Component executeTyped(CommandSender sender, String target, @Nullable String power)
+    {
+        Player targetPlayer = getNonNullPlayer(target);
 
         int strength = 100;
 
-        if (args.length >= 2)
+        if (power != null)
         {
-            if (args[1].equalsIgnoreCase("stop"))
+            if (power.equalsIgnoreCase("stop"))
             {
                 stopOrbiting(targetPlayer);
                 return messageComponent("stoppedOrbiting", targetPlayer.getName());
@@ -50,7 +59,7 @@ public class OrbitCommand extends SimplePlexCommand
 
             try
             {
-                strength = Math.max(1, Math.min(150, Integer.parseInt(args[1])));
+                strength = Math.max(1, Math.min(150, Integer.parseInt(power)));
             }
             catch (NumberFormatException ex)
             {
@@ -58,7 +67,7 @@ public class OrbitCommand extends SimplePlexCommand
             }
         }
 
-        if (orbitStrength(targetPlayer.getUniqueId()) != null)
+        if (module.orbitStrength(targetPlayer.getUniqueId()) != null)
         {
             return messageComponent("alreadyOrbited", targetPlayer.getName());
         }
@@ -68,38 +77,14 @@ public class OrbitCommand extends SimplePlexCommand
         return null;
     }
 
-    @Override
-    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
-    {
-        if (args.length == 1 && silentCheckPermission(sender, this.getPermission()))
-        {
-            return onlinePlayerNames();
-        }
-        else if (args.length == 2 && silentCheckPermission(sender, this.getPermission()))
-        {
-            return Collections.singletonList("stop");
-        }
-        return ImmutableList.of();
-    }
-
     private void startOrbiting(Player player, int strength)
     {
-        scheduler().runEntity(player, () ->
-        {
-            player.setGameMode(org.bukkit.GameMode.SURVIVAL);
-            player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, strength, false, false));
-            isOrbited.put(player.getUniqueId(), strength);
-        });
+        module.startOrbit(player, strength);
     }
 
     private void stopOrbiting(Player player)
     {
-        isOrbited.remove(player.getUniqueId());
+        module.clearOrbitStrength(player.getUniqueId());
         scheduler().runEntity(player, () -> player.removePotionEffect(PotionEffectType.LEVITATION));
-    }
-
-    public static Integer orbitStrength(UUID playerId)
-    {
-        return isOrbited.get(playerId);
     }
 }

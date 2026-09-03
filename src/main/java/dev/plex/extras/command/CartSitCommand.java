@@ -1,7 +1,8 @@
 package dev.plex.extras.command;
 
-import com.google.common.collect.ImmutableList;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,23 +26,30 @@ public class CartSitCommand extends SimplePlexCommand
                 .build());
     }
     @Override
-    protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
+    protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
     {
-        if (!(sender instanceof Player) && args.length == 0)
+        command.executes(context -> executeCommand(context, this::seatSelf));
+        command.then(word("player").suggests((context, builder) -> suggestMatching(builder, onlinePlayerNames()))
+                .executes(context -> executeCommand(context,
+                        (sender, player) -> seatOther(sender, string(context, "player"))))
+                .then(greedyString("ignored").executes(context -> executeCommand(context,
+                        (sender, player) -> seatOther(sender, string(context, "player"))))));
+    }
+
+    private Component seatSelf(CommandSender sender, Player player)
+    {
+        if (!(sender instanceof Player))
         {
             return usage();
         }
+        seat(sender, player, false);
+        return null;
+    }
 
-        boolean other = args.length > 0;
-        Player target = other ? getNonNullPlayer(args[0]) : player;
-        if (other)
-        {
-            scheduler().runEntity(target, () -> seat(sender, target, true));
-        }
-        else
-        {
-            seat(sender, target, false);
-        }
+    private Component seatOther(CommandSender sender, String playerName)
+    {
+        Player target = getNonNullPlayer(playerName);
+        scheduler().runEntity(target, () -> seat(sender, target, true));
         return null;
     }
 
@@ -72,9 +80,4 @@ public class CartSitCommand extends SimplePlexCommand
                 .orElseThrow();
     }
 
-    @Override
-    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
-    {
-        return args.length == 1 && silentCheckPermission(sender, this.getPermission()) ? onlinePlayerNames() : ImmutableList.of();
-    }
 }

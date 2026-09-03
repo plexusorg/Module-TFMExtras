@@ -1,6 +1,8 @@
 package dev.plex.extras.command;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -26,10 +28,20 @@ public class CakeCommand extends SimplePlexCommand
     private static final ItemStack CAKE = cake();
 
     @Override
-    protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
+    protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
     {
-        Bukkit.getOnlinePlayers().forEach(p -> scheduler().runEntity(p, () -> p.getInventory().addItem(CAKE.clone())));
-        broadcast("<rainbow>But there's no sense crying over every mistake. You just keep on trying till you run out of cake.");
+        command.executes(context -> executeCommand(context, this::executeTyped));
+        command.then(greedyString("ignored").executes(context -> executeCommand(context, this::executeTyped)));
+    }
+
+    private Component executeTyped(CommandSender sender, Player player)
+    {
+        scheduler().runGlobal(() ->
+        {
+            List.copyOf(Bukkit.getOnlinePlayers()).forEach(
+                    target -> scheduler().runEntity(target, () -> target.getInventory().addItem(CAKE.clone())));
+            broadcast("<rainbow>But there's no sense crying over every mistake. You just keep on trying till you run out of cake.");
+        });
         return null;
     }
 
@@ -42,9 +54,4 @@ public class CakeCommand extends SimplePlexCommand
         return cake;
     }
 
-    @Override
-    protected @NotNull List<String> suggestions(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) throws IllegalArgumentException
-    {
-        return Collections.emptyList();
-    }
 }

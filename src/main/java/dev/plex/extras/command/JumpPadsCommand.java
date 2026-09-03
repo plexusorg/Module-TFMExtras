@@ -1,9 +1,11 @@
 package dev.plex.extras.command;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
 import dev.plex.extras.jumppads.JumpPads;
 import dev.plex.extras.jumppads.Mode;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -30,14 +32,19 @@ public class JumpPadsCommand extends SimplePlexCommand
     }
 
     @Override
-    protected Component execute(@NotNull CommandSender sender, @Nullable Player player, @NotNull String[] args)
+    protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
     {
-        if ((args.length < 1) || (args.length > 2))
-        {
-            return usage();
-        }
+        command.executes(context -> executeCommand(context, (sender, player) -> usage()));
+        command.then(word("mode").suggests((context, builder) -> suggestMatching(builder, List.of("none", "normal", "enhanced", "extreme")))
+                .executes(context -> executeCommand(context, (sender, player) -> executeTyped(sender, player, string(context, "mode"), null)))
+                .then(word("target").suggests((context, builder) -> suggestMatching(builder, onlinePlayerNames()))
+                        .executes(context -> executeCommand(context, (sender, player) -> executeTyped(sender, player, string(context, "mode"), string(context, "target"))))
+                        .then(greedyString("extra").executes(context -> executeCommand(context, (sender, player) -> usage())))));
+    }
 
-        if (args.length == 1)
+    private Component executeTyped(CommandSender sender, Player player, String modeName, @Nullable String targetName)
+    {
+        if (targetName == null)
         {
             try
             {
@@ -51,13 +58,13 @@ public class JumpPadsCommand extends SimplePlexCommand
                     return null;
                 }
 
-                if (args[0].equalsIgnoreCase("none") || args[0].equalsIgnoreCase("off"))
+                if (modeName.equalsIgnoreCase("none") || modeName.equalsIgnoreCase("off"))
                 {
                     jumpPads.removePlayer(player);
                     return messageComponent("jumpPadsDisabledSelf");
                 }
 
-                Mode mode = Mode.valueOf(args[0].toUpperCase());
+                Mode mode = Mode.valueOf(modeName.toUpperCase());
 
                 if (mode.equals(jumpPads.get(player)))
                 {
@@ -75,15 +82,15 @@ public class JumpPadsCommand extends SimplePlexCommand
         checkPermission(sender, "plex.tfmextras.jumppads.others");
         try
         {
-            Player p = getNonNullPlayer(args[1]);
+            Player p = getNonNullPlayer(targetName);
 
-            if (args[0].equalsIgnoreCase("none"))
+            if (modeName.equalsIgnoreCase("none"))
             {
                 jumpPads.removePlayer(p);
                 return messageComponent("jumpPadsDisabledOther", p.getName());
             }
 
-            Mode mode = Mode.valueOf(args[0].toUpperCase());
+            Mode mode = Mode.valueOf(modeName.toUpperCase());
 
             if (mode.equals(jumpPads.get(p)))
             {
@@ -99,21 +106,4 @@ public class JumpPadsCommand extends SimplePlexCommand
         }
     }
 
-    @Override
-    protected @NotNull List<String> suggestions(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException
-    {
-        if (silentCheckPermission(sender, this.getPermission()))
-        {
-            if (args.length == 1)
-            {
-                return Arrays.asList("none", "normal", "enhanced", "extreme");
-            }
-            else if (args.length == 2)
-            {
-                return onlinePlayerNames();
-            }
-            return Collections.emptyList();
-        }
-        return Collections.emptyList();
-    }
 }

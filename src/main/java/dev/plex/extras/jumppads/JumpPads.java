@@ -29,6 +29,13 @@ public class JumpPads
         return vector.multiply(STRENGTH * SCALAR * ThreadLocalRandom.current().nextInt(3, 6));
     }
 
+    public Vector enhanced(Vector vector, Wrap direction)
+    {
+        double strength = SCALAR * STRENGTH;
+        return vector.add(new Vector(direction.x() * strength, direction.y() == -1 ? strength : 0,
+                direction.z() * strength));
+    }
+
     public void setMode(Player player, Mode mode)
     {
         playerModeMap.put(player.getUniqueId(), mode);

@@ -1,7 +1,6 @@
 package dev.plex.extras.listener;
 
 import dev.plex.extras.TFMExtras;
-import dev.plex.extras.command.OrbitCommand;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,6 +13,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class OrbitEffectListener implements Listener
 {
+    private static final int ORBIT_EFFECT_TICKS = 20 * 10;
     private final TFMExtras module;
 
     public OrbitEffectListener(TFMExtras module)
@@ -31,10 +31,10 @@ public class OrbitEffectListener implements Listener
             {
                 module.scheduler().runEntityLater(player, () ->
                 {
-                    Integer strength = OrbitCommand.orbitStrength(player.getUniqueId());
+                    Integer strength = module.orbitStrength(player.getUniqueId());
                     if (strength != null)
                     {
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, strength, false, false));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, ORBIT_EFFECT_TICKS, strength, false, false));
                     }
                 }, 2);
             }
@@ -49,7 +49,7 @@ public class OrbitEffectListener implements Listener
         GameMode newGameMode = event.getNewGameMode();
         module.scheduler().runEntityLater(player, () ->
         {
-            if (OrbitCommand.orbitStrength(player.getUniqueId()) != null && newGameMode != GameMode.SURVIVAL)
+            if (module.orbitStrength(player.getUniqueId()) != null && newGameMode != GameMode.SURVIVAL)
             {
                 player.setGameMode(GameMode.SURVIVAL);
             }
