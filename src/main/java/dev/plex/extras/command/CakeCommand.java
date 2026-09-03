@@ -1,13 +1,15 @@
 package dev.plex.extras.command;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
+
+import org.bukkit.Bukkit;
+
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,12 +38,13 @@ public class CakeCommand extends SimplePlexCommand
 
     private Component executeTyped(CommandSender sender, Player player)
     {
-        scheduler().runGlobal(() ->
+        ownTask(Bukkit.getGlobalRegionScheduler().run(taskOwner(), task ->
         {
             List.copyOf(Bukkit.getOnlinePlayers()).forEach(
-                    target -> scheduler().runEntity(target, () -> target.getInventory().addItem(CAKE.clone())));
+                    target -> ownTask(target.getScheduler().run(taskOwner(), ignored ->
+                            target.getInventory().addItem(CAKE.clone()), null)));
             broadcast("<rainbow>But there's no sense crying over every mistake. You just keep on trying till you run out of cake.");
-        });
+        }));
         return null;
     }
 

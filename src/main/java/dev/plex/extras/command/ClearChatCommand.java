@@ -1,12 +1,13 @@
 package dev.plex.extras.command;
 
+import org.bukkit.Bukkit;
+
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -32,17 +33,17 @@ public class ClearChatCommand extends SimplePlexCommand
     private Component executeTyped(CommandSender sender, Player player)
     {
         String senderName = sender.getName();
-        scheduler().runGlobal(() ->
+        ownTask(Bukkit.getGlobalRegionScheduler().run(taskOwner(), task ->
         {
-            List.copyOf(Bukkit.getOnlinePlayers()).forEach(target -> scheduler().runEntity(target, () ->
+            List.copyOf(Bukkit.getOnlinePlayers()).forEach(target ->
             {
                 if (!target.hasPermission("plex.tfmextras.clearchat"))
                 {
                     for (int i = 0; i < 100; i++) send(target, "");
                 }
-            }));
+            });
             broadcast(messageComponent("chatCleared", senderName));
-        });
+        }));
         return null;
     }
 

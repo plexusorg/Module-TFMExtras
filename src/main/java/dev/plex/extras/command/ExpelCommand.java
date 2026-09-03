@@ -81,7 +81,7 @@ public class ExpelCommand extends SimplePlexCommand
 
     private void expel(Player target, Vector senderPos, double radius, double strength)
     {
-        scheduler().runEntity(target, () ->
+        ownTask(target.getScheduler().run(taskOwner(), task ->
         {
             Location targetPos = target.getLocation();
             Vector targetPosVec = targetPos.toVector();
@@ -91,7 +91,7 @@ public class ExpelCommand extends SimplePlexCommand
                 target.getWorld().createExplosion(targetPos, 0.0f, false);
                 target.setVelocity(targetPosVec.subtract(senderPos).normalize().multiply(strength));
             }
-        });
+        }, null));
     }
 
 }

@@ -1,5 +1,7 @@
 package dev.plex.extras;
 
+import org.bukkit.Bukkit;
+
 import dev.plex.api.config.ModuleConfiguration;
 import dev.plex.extras.command.AdminInfoCommand;
 import dev.plex.extras.command.AutoClearCommand;
@@ -27,9 +29,12 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -45,6 +50,7 @@ public class TFMExtras extends PlexModule
     private final Map<UUID, Integer> orbitStrengths = new ConcurrentHashMap<>();
     private final Map<UUID, ScheduledTask> orbitTasks = new ConcurrentHashMap<>();
     private final Object configMutationLock = new Object();
+    private ExecutorService configExecutor;
 
     @Override
     public void load()
@@ -73,6 +79,8 @@ public class TFMExtras extends PlexModule
     @Override
     public void enable()
     {
+        configExecutor = Executors.newSingleThreadExecutor(
+                Thread.ofPlatform().daemon().name("Plex-TFMExtras-Config").factory());
         registerListener(new ClownfishListener(this));
         registerListener(new JumpPadsListener(this));
         registerListener(new OrbitEffectListener(this));
@@ -85,6 +93,11 @@ public class TFMExtras extends PlexModule
         orbitTasks.values().forEach(ScheduledTask::cancel);
         orbitTasks.clear();
         orbitStrengths.clear();
+        if (configExecutor != null)
+        {
+            configExecutor.shutdownNow();
+            configExecutor = null;
+        }
     }
 
     public void teleportRandom(Player player)
@@ -93,12 +106,12 @@ public class TFMExtras extends PlexModule
         double x = ThreadLocalRandom.current().nextDouble(-100000, 100000);
         double z = ThreadLocalRandom.current().nextDouble(-100000, 100000);
         Location region = new Location(world, x, 0, z);
-        scheduler().runRegion(region, () ->
+        ownTask(Bukkit.getRegionScheduler().run(plugin(), region, task ->
         {
             double y = world.getHighestBlockYAt((int)x, (int)z) + 1;
             Location target = new Location(world, x, y, z);
-            scheduler().runEntity(player, () -> player.teleportAsync(target));
-        });
+            ownTask(player.getScheduler().run(plugin(), ignored -> player.teleportAsync(target), null));
+        }));
     }
 
     public Integer orbitStrength(UUID playerId)
@@ -115,12 +128,13 @@ public class TFMExtras extends PlexModule
 
     public void startOrbit(Player player, int strength)
     {
-        scheduler().runEntity(player, () ->
+        ownTask(player.getScheduler().run(plugin(), entityTask ->
         {
-            player.setGameMode(org.bukkit.GameMode.SURVIVAL);
+            player.setGameMode(GameMode.SURVIVAL);
             applyOrbit(player, strength);
             orbitStrengths.put(player.getUniqueId(), strength);
-            ScheduledTask task = scheduler().runEntityTimer(player, () -> applyOrbit(player, strength), 100L, 100L);
+            ScheduledTask task = ownTask(player.getScheduler().runAtFixedRate(plugin(),
+                    ignored -> applyOrbit(player, strength), null, 100L, 100L));
             if (task == null)
             {
                 orbitStrengths.remove(player.getUniqueId());
@@ -128,7 +142,7 @@ public class TFMExtras extends PlexModule
             }
             ScheduledTask previous = orbitTasks.put(player.getUniqueId(), task);
             if (previous != null) previous.cancel();
-        });
+        }, null));
     }
 
     private void applyOrbit(Player player, int strength)
@@ -138,27 +152,18 @@ public class TFMExtras extends PlexModule
 
     public CompletableFuture<Boolean> toggleConfigEntry(String path, String value)
     {
-        CompletableFuture<Boolean> result = new CompletableFuture<>();
-        scheduler().runAsync(() ->
+        return CompletableFuture.supplyAsync(() ->
         {
-            try
+            synchronized (configMutationLock)
             {
-                synchronized (configMutationLock)
-                {
-                    java.util.List<String> values = config.getStringList(path);
-                    boolean enabled = !values.remove(value);
-                    if (enabled) values.add(value);
-                    config.set(path, values);
-                    config.save();
-                    result.complete(enabled);
-                }
+                java.util.List<String> values = config.getStringList(path);
+                boolean enabled = !values.remove(value);
+                if (enabled) values.add(value);
+                config.set(path, values);
+                config.save();
+                return enabled;
             }
-            catch (RuntimeException failure)
-            {
-                result.completeExceptionally(failure);
-            }
-        });
-        return result;
+        }, configExecutor);
     }
 
 }

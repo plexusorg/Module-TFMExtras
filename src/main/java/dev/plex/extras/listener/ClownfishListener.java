@@ -1,11 +1,12 @@
 package dev.plex.extras.listener;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
+
 import dev.plex.extras.TFMExtras;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.text.Component;
 
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -75,7 +76,7 @@ public class ClownfishListener implements Listener
 
     private void pushTarget(Player target, Vector senderPos, double radius, double strength, List<String> toggledPlayers)
     {
-        module.scheduler().runEntity(target, () ->
+        module.ownTask(target.getScheduler().run(module.plugin(), task ->
         {
             if (!toggledPlayers.contains(target.getUniqueId().toString()))
             {
@@ -89,7 +90,7 @@ public class ClownfishListener implements Listener
                     target.setVelocity(targetPosVec.subtract(senderPos).normalize().multiply(strength));
                 }
             }
-        });
+        }, null));
     }
 
     private void playHitSounds(Player player)

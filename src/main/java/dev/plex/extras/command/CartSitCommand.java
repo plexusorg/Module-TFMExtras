@@ -49,7 +49,7 @@ public class CartSitCommand extends SimplePlexCommand
     private Component seatOther(CommandSender sender, String playerName)
     {
         Player target = getNonNullPlayer(playerName);
-        scheduler().runEntity(target, () -> seat(sender, target, true));
+        ownTask(target.getScheduler().run(taskOwner(), ignored -> seat(sender, target, true), null));
         return null;
     }
 
@@ -70,7 +70,7 @@ public class CartSitCommand extends SimplePlexCommand
             return;
         }
         Entity minecart = findNearestEntity(target, minecarts);
-        scheduler().runEntity(minecart, () -> minecart.addPassenger(target));
+        ownTask(minecart.getScheduler().run(taskOwner(), ignored -> minecart.addPassenger(target), null));
     }
 
     private Entity findNearestEntity(Player player, List<Entity> entities)

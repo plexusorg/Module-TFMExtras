@@ -1,12 +1,13 @@
 package dev.plex.extras.command;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
+
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.api.player.PlexPlayerView;
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

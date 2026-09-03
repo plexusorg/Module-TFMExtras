@@ -23,7 +23,8 @@ public class PlayerListener implements Listener
         }
         if (module.getConfig().getStringList("server.teleport-on-join").contains(event.getPlayer().getName()))
         {
-            module.scheduler().runEntityLater(event.getPlayer(), () -> module.teleportRandom(event.getPlayer()), 1);
+            module.ownTask(event.getPlayer().getScheduler().runDelayed(module.plugin(),
+                    task -> module.teleportRandom(event.getPlayer()), null, 1));
         }
     }
 

@@ -1,5 +1,7 @@
 package dev.plex.extras.command;
 
+import org.bukkit.Bukkit;
+
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
@@ -85,6 +87,7 @@ public class OrbitCommand extends SimplePlexCommand
     private void stopOrbiting(Player player)
     {
         module.clearOrbitStrength(player.getUniqueId());
-        scheduler().runEntity(player, () -> player.removePotionEffect(PotionEffectType.LEVITATION));
+        ownTask(player.getScheduler().run(taskOwner(),
+                ignored -> player.removePotionEffect(PotionEffectType.LEVITATION), null));
     }
 }

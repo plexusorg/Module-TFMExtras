@@ -1,5 +1,9 @@
 package dev.plex.extras.command;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
+
+import org.bukkit.Bukkit;
+
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -40,11 +44,11 @@ public class EnglishMfCommand extends SimplePlexCommand
     {
         Player target = getNonNullPlayer(playerName);
         target.sendMessage(mmString("<red>ENGLISH MOTHERFUCKER, Do you speak it!?"));
-        scheduler().runEntity(target, () ->
+        ownTask(target.getScheduler().run(taskOwner(), task ->
         {
             target.setHealth(0);
             target.getWorld().strikeLightningEffect(target.getLocation());
-        });
+        }, null));
         broadcast("<red>" + sender.getName() + " is sick of " + target.getName() + " not speaking English!");
         return null;
     }

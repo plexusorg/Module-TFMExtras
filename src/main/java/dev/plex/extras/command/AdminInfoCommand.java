@@ -1,5 +1,7 @@
 package dev.plex.extras.command;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
+
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -7,7 +9,6 @@ import dev.plex.extras.TFMExtras;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

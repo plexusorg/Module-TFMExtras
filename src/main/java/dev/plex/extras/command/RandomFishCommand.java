@@ -1,5 +1,9 @@
 package dev.plex.extras.command;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
+
+import org.bukkit.Bukkit;
+
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.plex.command.SimplePlexCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -9,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -46,7 +49,8 @@ public class RandomFishCommand extends SimplePlexCommand
             return MiniMessage.miniMessage().deserialize("<red>There is no block within 15 blocks of you.");
         }
         Location location = block.getLocation().add(0, 1, 0);
-        scheduler().runRegion(location, () -> location.getWorld().spawnEntity(location, randomFish()));
+        ownTask(Bukkit.getRegionScheduler().run(taskOwner(), location,
+                task -> location.getWorld().spawnEntity(location, randomFish())));
         return MiniMessage.miniMessage().deserialize(":goodbird:");
     }
 
