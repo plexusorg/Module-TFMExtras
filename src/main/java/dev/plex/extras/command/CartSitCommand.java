@@ -14,6 +14,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static dev.plex.api.message.MessagePlaceholder.placeholder;
+
 public class CartSitCommand extends SimplePlexCommand
 {
     public CartSitCommand()
@@ -65,7 +67,7 @@ public class CartSitCommand extends SimplePlexCommand
         if (minecarts.isEmpty())
         {
             send(sender, other
-                    ? messageComponent("targetMinecartNotFound", target.getName())
+                    ? messageComponent("targetMinecartNotFound", placeholder("player", target.getName()))
                     : messageComponent("minecartNotFound"));
             return;
         }

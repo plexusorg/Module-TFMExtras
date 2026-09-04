@@ -24,6 +24,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static dev.plex.api.message.MessagePlaceholder.placeholder;
+
 public class EnchantCommand extends SimplePlexCommand
 {
     public EnchantCommand()
@@ -98,7 +100,7 @@ public class EnchantCommand extends SimplePlexCommand
 
                 item.addUnsafeEnchantment(enchantmentToAdd, levelToAdd);
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1, 1);
-                return messageComponent("enchantAdd", enchantmentToAdd.getKey().getKey(), levelToAdd);
+                return messageComponent("enchantAdd", placeholder("enchantment", enchantmentToAdd.getKey().getKey()), placeholder("level", levelToAdd));
 
             case "remove":
                 if (enchantmentName == null)
@@ -114,10 +116,10 @@ public class EnchantCommand extends SimplePlexCommand
 
                 item.removeEnchantment(enchantmentToRemove);
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1, 1);
-                return messageComponent("enchantRemove", enchantmentToRemove.getKey().getKey());
+                return messageComponent("enchantRemove", placeholder("enchantment", enchantmentToRemove.getKey().getKey()));
 
             case "list":
-                return messageComponent("enchantList", StringUtils.join(getEnchantmentNames(item), ", "));
+                return messageComponent("enchantList", placeholder("enchantments", StringUtils.join(getEnchantmentNames(item), ", ")));
 
             case "addall":
                 getEnchantments(item).forEach(enchantment -> item.addEnchantment(enchantment, enchantment.getMaxLevel()));

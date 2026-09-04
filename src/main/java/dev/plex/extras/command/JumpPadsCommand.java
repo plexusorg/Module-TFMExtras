@@ -16,6 +16,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static dev.plex.api.message.MessagePlaceholder.placeholder;
+
 public class JumpPadsCommand extends SimplePlexCommand
 {
     private final JumpPads jumpPads;
@@ -68,11 +70,11 @@ public class JumpPadsCommand extends SimplePlexCommand
 
                 if (mode.equals(jumpPads.get(player)))
                 {
-                    return messageComponent("jumpPadsAlreadySet", mode.name());
+                    return messageComponent("jumpPadsAlreadySet", placeholder("mode", mode.name()));
                 }
 
                 jumpPads.setMode(player, mode);
-                return messageComponent("jumpPadsSetSelf", mode.name());
+                return messageComponent("jumpPadsSetSelf", placeholder("mode", mode.name()));
             }
             catch (IllegalArgumentException ignored)
             {
@@ -87,18 +89,18 @@ public class JumpPadsCommand extends SimplePlexCommand
             if (modeName.equalsIgnoreCase("none"))
             {
                 jumpPads.removePlayer(p);
-                return messageComponent("jumpPadsDisabledOther", p.getName());
+                return messageComponent("jumpPadsDisabledOther", placeholder("player", p.getName()));
             }
 
             Mode mode = Mode.valueOf(modeName.toUpperCase());
 
             if (mode.equals(jumpPads.get(p)))
             {
-                return messageComponent("jumpPadsAlreadySet", mode.name());
+                return messageComponent("jumpPadsAlreadySet", placeholder("mode", mode.name()));
             }
 
             jumpPads.setMode(p, mode);
-            return messageComponent("jumpPadsSetOther", p.getName(), mode.name());
+            return messageComponent("jumpPadsSetOther", placeholder("player", p.getName()), placeholder("mode", mode.name()));
         }
         catch (IllegalArgumentException ignored)
         {

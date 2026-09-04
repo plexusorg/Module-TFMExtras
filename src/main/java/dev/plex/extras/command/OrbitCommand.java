@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+import static dev.plex.api.message.MessagePlaceholder.placeholder;
+
 public class OrbitCommand extends SimplePlexCommand
 {
     private final TFMExtras module;
@@ -56,7 +58,7 @@ public class OrbitCommand extends SimplePlexCommand
             if (power.equalsIgnoreCase("stop"))
             {
                 stopOrbiting(targetPlayer);
-                return messageComponent("stoppedOrbiting", targetPlayer.getName());
+                return messageComponent("stoppedOrbiting", placeholder("player", targetPlayer.getName()));
             }
 
             try
@@ -71,11 +73,11 @@ public class OrbitCommand extends SimplePlexCommand
 
         if (module.orbitStrength(targetPlayer.getUniqueId()) != null)
         {
-            return messageComponent("alreadyOrbited", targetPlayer.getName());
+            return messageComponent("alreadyOrbited", placeholder("player", targetPlayer.getName()));
         }
 
         startOrbiting(targetPlayer, strength);
-        broadcast(messageComponent("playerOrbited", sender.getName(), targetPlayer.getName()));
+        broadcast(messageComponent("playerOrbited", placeholder("sender", sender.getName()), placeholder("player", targetPlayer.getName())));
         return null;
     }
 

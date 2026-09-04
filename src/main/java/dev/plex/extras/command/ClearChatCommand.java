@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static dev.plex.api.message.MessagePlaceholder.placeholder;
+
 public class ClearChatCommand extends SimplePlexCommand
 {
     public ClearChatCommand()
@@ -42,7 +44,7 @@ public class ClearChatCommand extends SimplePlexCommand
                     for (int i = 0; i < 100; i++) send(target, "");
                 }
             });
-            broadcast(messageComponent("chatCleared", senderName));
+            broadcast(messageComponent("chatCleared", placeholder("sender", senderName)));
         }));
         return null;
     }

@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static dev.plex.api.message.MessagePlaceholder.placeholder;
+
 public class EjectCommand extends SimplePlexCommand
 {
     public EjectCommand()
@@ -33,7 +35,7 @@ public class EjectCommand extends SimplePlexCommand
     {
         final int passengers = player.getPassengers().size();
         player.eject();
-        return messageComponent("passengersEjected", passengers);
+        return messageComponent("passengersEjected", placeholder("count", passengers));
     }
 
 }

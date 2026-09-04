@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static dev.plex.api.message.MessagePlaceholder.placeholder;
+
 public class AutoClearCommand extends SimplePlexCommand
 {
     private final TFMExtras module;
@@ -67,7 +69,7 @@ public class AutoClearCommand extends SimplePlexCommand
         module.toggleConfigEntry("server.clear-on-join", target.name()).whenComplete((enabled, failure) ->
         {
             if (failure != null) module.getLogger().error("Failed to update automatic inventory clearing", failure);
-            else send(sender, messageComponent("modifiedAutoClear", target.name(), enabled ? "now" : "no longer"));
+            else send(sender, messageComponent("modifiedAutoClear", placeholder("player", target.name()), placeholder("state", enabled ? "now" : "no longer")));
         });
     }
 

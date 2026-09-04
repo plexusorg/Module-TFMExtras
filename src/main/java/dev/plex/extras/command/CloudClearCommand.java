@@ -17,6 +17,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static dev.plex.api.message.MessagePlaceholder.placeholder;
+
 public class CloudClearCommand extends SimplePlexCommand
 {
     public CloudClearCommand()
@@ -68,8 +70,8 @@ public class CloudClearCommand extends SimplePlexCommand
 
     private void report(CommandSender sender, String senderName, int removed)
     {
-        broadcast(messageComponent("areaEffectCloudClear", senderName));
-        send(sender, messageComponent("areaEffectCloudsRemoved", removed));
+        broadcast(messageComponent("areaEffectCloudClear", placeholder("sender", senderName)));
+        send(sender, messageComponent("areaEffectCloudsRemoved", placeholder("count", removed)));
     }
 
 }
