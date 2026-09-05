@@ -76,14 +76,9 @@ public class OrbitCommand extends SimplePlexCommand
             return messageComponent("alreadyOrbited", placeholder("player", targetPlayer.getName()));
         }
 
-        startOrbiting(targetPlayer, strength);
+        module.startOrbit(targetPlayer, strength);
         broadcast(messageComponent("playerOrbited", placeholder("sender", sender.getName()), placeholder("player", targetPlayer.getName())));
         return null;
-    }
-
-    private void startOrbiting(Player player, int strength)
-    {
-        module.startOrbit(player, strength);
     }
 
     private void stopOrbiting(Player player)

@@ -24,6 +24,7 @@ import dev.plex.extras.listener.JumpPadsListener;
 import dev.plex.extras.listener.OrbitEffectListener;
 import dev.plex.extras.listener.PlayerListener;
 import dev.plex.module.PlexModule;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,7 +50,6 @@ public class TFMExtras extends PlexModule
     private ModuleConfiguration config;
     private final Map<UUID, Integer> orbitStrengths = new ConcurrentHashMap<>();
     private final Map<UUID, ScheduledTask> orbitTasks = new ConcurrentHashMap<>();
-    private final Object configMutationLock = new Object();
     private ExecutorService configExecutor;
 
     @Override
@@ -135,11 +135,6 @@ public class TFMExtras extends PlexModule
             orbitStrengths.put(player.getUniqueId(), strength);
             ScheduledTask task = ownTask(player.getScheduler().runAtFixedRate(plugin(),
                     ignored -> applyOrbit(player, strength), null, 100L, 100L));
-            if (task == null)
-            {
-                orbitStrengths.remove(player.getUniqueId());
-                return;
-            }
             ScheduledTask previous = orbitTasks.put(player.getUniqueId(), task);
             if (previous != null) previous.cancel();
         }, null));
@@ -154,15 +149,12 @@ public class TFMExtras extends PlexModule
     {
         return CompletableFuture.supplyAsync(() ->
         {
-            synchronized (configMutationLock)
-            {
-                java.util.List<String> values = config.getStringList(path);
-                boolean enabled = !values.remove(value);
-                if (enabled) values.add(value);
-                config.set(path, values);
-                config.save();
-                return enabled;
-            }
+            List<String> values = config.getStringList(path);
+            boolean enabled = !values.remove(value);
+            if (enabled) values.add(value);
+            config.set(path, values);
+            config.save();
+            return enabled;
         }, configExecutor);
     }
 
