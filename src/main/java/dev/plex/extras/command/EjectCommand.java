@@ -7,12 +7,11 @@ import dev.plex.command.source.RequiredCommandSource;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static dev.plex.api.message.MessagePlaceholder.placeholder;
 
 public class EjectCommand extends SimplePlexCommand
 {
@@ -35,7 +34,7 @@ public class EjectCommand extends SimplePlexCommand
     {
         final int passengers = player.getPassengers().size();
         player.eject();
-        return messageComponent("passengersEjected", placeholder("count", passengers));
+        return messageComponent("passengersEjected", Placeholder.unparsed("count", String.valueOf(passengers)));
     }
 
 }

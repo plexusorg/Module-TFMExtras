@@ -7,6 +7,7 @@ import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -16,8 +17,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
-
-import static dev.plex.api.message.MessagePlaceholder.placeholder;
 
 public class OrbitCommand extends SimplePlexCommand
 {
@@ -58,7 +57,7 @@ public class OrbitCommand extends SimplePlexCommand
             if (power.equalsIgnoreCase("stop"))
             {
                 stopOrbiting(targetPlayer);
-                return messageComponent("stoppedOrbiting", placeholder("player", targetPlayer.getName()));
+                return messageComponent("stoppedOrbiting", Placeholder.parsed("player", targetPlayer.getName()));
             }
 
             try
@@ -73,11 +72,11 @@ public class OrbitCommand extends SimplePlexCommand
 
         if (module.orbitStrength(targetPlayer.getUniqueId()) != null)
         {
-            return messageComponent("alreadyOrbited", placeholder("player", targetPlayer.getName()));
+            return messageComponent("alreadyOrbited", Placeholder.parsed("player", targetPlayer.getName()));
         }
 
         module.startOrbit(targetPlayer, strength);
-        broadcast(messageComponent("playerOrbited", placeholder("sender", sender.getName()), placeholder("player", targetPlayer.getName())));
+        broadcast(messageComponent("playerOrbited", Placeholder.parsed("sender", sender.getName()), Placeholder.parsed("player", targetPlayer.getName())));
         return null;
     }
 

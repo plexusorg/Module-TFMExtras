@@ -7,14 +7,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static dev.plex.api.message.MessagePlaceholder.placeholder;
 
 public class CartSitCommand extends SimplePlexCommand
 {
@@ -67,7 +66,7 @@ public class CartSitCommand extends SimplePlexCommand
         if (minecarts.isEmpty())
         {
             send(sender, other
-                    ? messageComponent("targetMinecartNotFound", placeholder("player", target.getName()))
+                    ? messageComponent("targetMinecartNotFound", Placeholder.parsed("player", target.getName()))
                     : messageComponent("minecartNotFound"));
             return;
         }

@@ -10,13 +10,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static dev.plex.api.message.MessagePlaceholder.placeholder;
 
 public class JumpPadsCommand extends SimplePlexCommand
 {
@@ -70,11 +69,11 @@ public class JumpPadsCommand extends SimplePlexCommand
 
                 if (mode.equals(jumpPads.get(player)))
                 {
-                    return messageComponent("jumpPadsAlreadySet", placeholder("mode", mode.name()));
+                    return messageComponent("jumpPadsAlreadySet", Placeholder.unparsed("mode", mode.name()));
                 }
 
                 jumpPads.setMode(player, mode);
-                return messageComponent("jumpPadsSetSelf", placeholder("mode", mode.name()));
+                return messageComponent("jumpPadsSetSelf", Placeholder.unparsed("mode", mode.name()));
             }
             catch (IllegalArgumentException ignored)
             {
@@ -89,18 +88,18 @@ public class JumpPadsCommand extends SimplePlexCommand
             if (modeName.equalsIgnoreCase("none"))
             {
                 jumpPads.removePlayer(p);
-                return messageComponent("jumpPadsDisabledOther", placeholder("player", p.getName()));
+                return messageComponent("jumpPadsDisabledOther", Placeholder.parsed("player", p.getName()));
             }
 
             Mode mode = Mode.valueOf(modeName.toUpperCase());
 
             if (mode.equals(jumpPads.get(p)))
             {
-                return messageComponent("jumpPadsAlreadySet", placeholder("mode", mode.name()));
+                return messageComponent("jumpPadsAlreadySet", Placeholder.unparsed("mode", mode.name()));
             }
 
             jumpPads.setMode(p, mode);
-            return messageComponent("jumpPadsSetOther", placeholder("player", p.getName()), placeholder("mode", mode.name()));
+            return messageComponent("jumpPadsSetOther", Placeholder.parsed("player", p.getName()), Placeholder.unparsed("mode", mode.name()));
         }
         catch (IllegalArgumentException ignored)
         {

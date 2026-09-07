@@ -8,12 +8,11 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static dev.plex.api.message.MessagePlaceholder.placeholder;
 
 public class ClearChatCommand extends SimplePlexCommand
 {
@@ -44,7 +43,7 @@ public class ClearChatCommand extends SimplePlexCommand
                     for (int i = 0; i < 100; i++) send(target, "");
                 }
             });
-            broadcast(messageComponent("chatCleared", placeholder("sender", senderName)));
+            broadcast(messageComponent("chatCleared", Placeholder.parsed("sender", senderName)));
         }));
         return null;
     }

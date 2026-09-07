@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -23,8 +24,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static dev.plex.api.message.MessagePlaceholder.placeholder;
 
 public class EnchantCommand extends SimplePlexCommand
 {
@@ -100,7 +99,7 @@ public class EnchantCommand extends SimplePlexCommand
 
                 item.addUnsafeEnchantment(enchantmentToAdd, levelToAdd);
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1, 1);
-                return messageComponent("enchantAdd", placeholder("enchantment", enchantmentToAdd.getKey().getKey()), placeholder("level", levelToAdd));
+                return messageComponent("enchantAdd", Placeholder.unparsed("enchantment", enchantmentToAdd.getKey().getKey()), Placeholder.unparsed("level", String.valueOf(levelToAdd)));
 
             case "remove":
                 if (enchantmentName == null)
@@ -116,10 +115,10 @@ public class EnchantCommand extends SimplePlexCommand
 
                 item.removeEnchantment(enchantmentToRemove);
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1, 1);
-                return messageComponent("enchantRemove", placeholder("enchantment", enchantmentToRemove.getKey().getKey()));
+                return messageComponent("enchantRemove", Placeholder.unparsed("enchantment", enchantmentToRemove.getKey().getKey()));
 
             case "list":
-                return messageComponent("enchantList", placeholder("enchantments", StringUtils.join(getEnchantmentNames(item), ", ")));
+                return messageComponent("enchantList", Placeholder.unparsed("enchantments", StringUtils.join(getEnchantmentNames(item), ", ")));
 
             case "addall":
                 getEnchantments(item).forEach(enchantment -> item.addEnchantment(enchantment, enchantment.getMaxLevel()));

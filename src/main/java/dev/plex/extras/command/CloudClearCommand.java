@@ -10,14 +10,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Chunk;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static dev.plex.api.message.MessagePlaceholder.placeholder;
 
 public class CloudClearCommand extends SimplePlexCommand
 {
@@ -70,8 +69,8 @@ public class CloudClearCommand extends SimplePlexCommand
 
     private void report(CommandSender sender, String senderName, int removed)
     {
-        broadcast(messageComponent("areaEffectCloudClear", placeholder("sender", senderName)));
-        send(sender, messageComponent("areaEffectCloudsRemoved", placeholder("count", removed)));
+        broadcast(messageComponent("areaEffectCloudClear", Placeholder.parsed("sender", senderName)));
+        send(sender, messageComponent("areaEffectCloudsRemoved", Placeholder.unparsed("count", String.valueOf(removed))));
     }
 
 }

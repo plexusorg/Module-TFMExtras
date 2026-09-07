@@ -7,12 +7,11 @@ import dev.plex.extras.TFMExtras;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.List;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static dev.plex.api.message.MessagePlaceholder.placeholder;
 
 public class AutoClearCommand extends SimplePlexCommand
 {
@@ -69,7 +68,7 @@ public class AutoClearCommand extends SimplePlexCommand
         module.toggleConfigEntry("server.clear-on-join", target.name()).whenComplete((enabled, failure) ->
         {
             if (failure != null) module.getLogger().error("Failed to update automatic inventory clearing", failure);
-            else send(sender, messageComponent("modifiedAutoClear", placeholder("player", target.name()), placeholder("state", enabled ? "now" : "no longer")));
+            else send(sender, messageComponent("modifiedAutoClear", Placeholder.parsed("player", target.name()), Placeholder.unparsed("state", enabled ? "now" : "no longer")));
         });
     }
 
