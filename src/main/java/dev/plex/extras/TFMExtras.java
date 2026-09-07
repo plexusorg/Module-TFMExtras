@@ -12,6 +12,7 @@ import dev.plex.extras.command.ClearChatCommand;
 import dev.plex.extras.command.ClownfishCommand;
 import dev.plex.extras.command.CloudClearCommand;
 import dev.plex.extras.command.EjectCommand;
+import dev.plex.extras.command.EffectCommand;
 import dev.plex.extras.command.EnchantCommand;
 import dev.plex.extras.command.EnglishMfCommand;
 import dev.plex.extras.command.ExpelCommand;
@@ -68,6 +69,7 @@ public class TFMExtras extends PlexModule
         registerCommand(new ClownfishCommand(this));
         registerCommand(new CloudClearCommand());
         registerCommand(new EjectCommand());
+        registerCommand(new EffectCommand());
         registerCommand(new EnchantCommand());
         registerCommand(new EnglishMfCommand());
         registerCommand(new ExpelCommand());

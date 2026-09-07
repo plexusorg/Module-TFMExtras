@@ -28,3 +28,12 @@ enchantInvalid: "<red>Invalid enchantment for this item."
 enchantAdd: "<gray>Added <enchantment> <level>"
 enchantRemove: "<gray>Removed <enchantment>"
 enchantInvalidLevel: "<red>Invalid enchantment level."
+
+# /effect permissions: plex.tfmextras.effect.give / .clear for self; each .others node additionally allows another player.
+# Vanilla minecraft.command.effect must not be granted to users restricted by these permissions.
+effectGiven: "<gray>Applied <effect> (amplifier <amplifier>) to <player>."
+effectCleared: "<gray>Cleared <effect> from <player>."
+effectsCleared: "<gray>Cleared all potion effects from <player>."
+effectUnchanged: "<red>No potion effects changed for <player>."
+effectPlayerUnavailable: "<red><player> is no longer available."
+effectSpecifyPlayer: "<red>You must specify a player when running this command from console."
