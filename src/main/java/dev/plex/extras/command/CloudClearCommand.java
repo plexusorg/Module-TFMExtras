@@ -3,6 +3,7 @@ package dev.plex.extras.command;
 import org.bukkit.Bukkit;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.plex.api.message.ActionBroadcast;
 import dev.plex.command.SimplePlexCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class CloudClearCommand extends SimplePlexCommand
 
     private Component executeTyped(CommandSender sender, Player player)
     {
+        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
         String senderName = sender.getName();
         ownTask(Bukkit.getGlobalRegionScheduler().run(taskOwner(), task ->
         {
@@ -44,7 +46,7 @@ public class CloudClearCommand extends SimplePlexCommand
             Bukkit.getWorlds().forEach(world -> chunks.addAll(List.of(world.getLoadedChunks())));
             if (chunks.isEmpty())
             {
-                report(sender, senderName, 0);
+                report(sender, announcement, senderName, 0);
                 return;
             }
             AtomicInteger remaining = new AtomicInteger(chunks.size());
@@ -60,16 +62,16 @@ public class CloudClearCommand extends SimplePlexCommand
                                 entity.remove();
                                 removed.incrementAndGet();
                             }
-                            if (remaining.decrementAndGet() == 0) report(sender, senderName, removed.get());
+                            if (remaining.decrementAndGet() == 0) report(sender, announcement, senderName, removed.get());
                         }));
             }
         }));
         return null;
     }
 
-    private void report(CommandSender sender, String senderName, int removed)
+    private void report(CommandSender sender, ActionBroadcast announcement, String senderName, int removed)
     {
-        broadcast(messageComponent("areaEffectCloudClear", Placeholder.parsed("sender", senderName)));
+        announcement.send(messageComponent("areaEffectCloudClear", Placeholder.parsed("sender", senderName)));
         send(sender, messageComponent("areaEffectCloudsRemoved", Placeholder.unparsed("count", String.valueOf(removed))));
     }
 

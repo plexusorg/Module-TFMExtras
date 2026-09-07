@@ -5,6 +5,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.plex.api.message.ActionBroadcast;
 import dev.plex.command.SimplePlexCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.Collections;
@@ -38,12 +39,13 @@ public class CakeCommand extends SimplePlexCommand
 
     private Component executeTyped(CommandSender sender, Player player)
     {
+        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
         ownTask(Bukkit.getGlobalRegionScheduler().run(taskOwner(), task ->
         {
             List.copyOf(Bukkit.getOnlinePlayers()).forEach(
                     target -> ownTask(target.getScheduler().run(taskOwner(), ignored ->
                             target.getInventory().addItem(CAKE.clone()), null)));
-            broadcast("<rainbow>But there's no sense crying over every mistake. You just keep on trying till you run out of cake.");
+            announcement.send(mmString("<rainbow>But there's no sense crying over every mistake. You just keep on trying till you run out of cake."));
         }));
         return null;
     }

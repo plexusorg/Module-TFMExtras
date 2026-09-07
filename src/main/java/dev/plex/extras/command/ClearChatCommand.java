@@ -3,6 +3,7 @@ package dev.plex.extras.command;
 import org.bukkit.Bukkit;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.plex.api.message.ActionBroadcast;
 import dev.plex.command.SimplePlexCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.Collections;
@@ -33,6 +34,7 @@ public class ClearChatCommand extends SimplePlexCommand
 
     private Component executeTyped(CommandSender sender, Player player)
     {
+        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
         String senderName = sender.getName();
         ownTask(Bukkit.getGlobalRegionScheduler().run(taskOwner(), task ->
         {
@@ -43,7 +45,7 @@ public class ClearChatCommand extends SimplePlexCommand
                     for (int i = 0; i < 100; i++) send(target, "");
                 }
             });
-            broadcast(messageComponent("chatCleared", Placeholder.parsed("sender", senderName)));
+            announcement.send(messageComponent("chatCleared", Placeholder.parsed("sender", senderName)));
         }));
         return null;
     }

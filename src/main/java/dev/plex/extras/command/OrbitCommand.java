@@ -3,6 +3,7 @@ package dev.plex.extras.command;
 import org.bukkit.Bukkit;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.plex.api.message.ActionBroadcast;
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.TFMExtras;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -75,8 +76,9 @@ public class OrbitCommand extends SimplePlexCommand
             return messageComponent("alreadyOrbited", Placeholder.parsed("player", targetPlayer.getName()));
         }
 
+        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
         module.startOrbit(targetPlayer, strength);
-        broadcast(messageComponent("playerOrbited", Placeholder.parsed("sender", sender.getName()), Placeholder.parsed("player", targetPlayer.getName())));
+        announcement.send(messageComponent("playerOrbited", Placeholder.parsed("sender", sender.getName()), Placeholder.parsed("player", targetPlayer.getName())));
         return null;
     }
 

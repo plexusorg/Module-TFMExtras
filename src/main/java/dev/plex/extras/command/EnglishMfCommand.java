@@ -5,6 +5,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.plex.api.message.ActionBroadcast;
 import dev.plex.command.SimplePlexCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.List;
@@ -43,13 +44,14 @@ public class EnglishMfCommand extends SimplePlexCommand
     private Component executeTyped(CommandSender sender, String playerName)
     {
         Player target = getNonNullPlayer(playerName);
+        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
         target.sendMessage(mmString("<red>ENGLISH MOTHERFUCKER, Do you speak it!?"));
         ownTask(target.getScheduler().run(taskOwner(), task ->
         {
             target.setHealth(0);
             target.getWorld().strikeLightningEffect(target.getLocation());
         }, null));
-        broadcast("<red>" + sender.getName() + " is sick of " + target.getName() + " not speaking English!");
+        announcement.send(mmString("<red>" + sender.getName() + " is sick of " + target.getName() + " not speaking English!"));
         return null;
     }
 
