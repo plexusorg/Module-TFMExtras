@@ -2,18 +2,18 @@ package dev.plex.extras.command;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import dev.plex.command.SimplePlexCommand;
+import dev.plex.command.exception.CommandFailException;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.registry.RegistryKey;
 import java.util.List;
 import java.util.function.BooleanSupplier;
-import java.util.function.ToIntFunction;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -26,6 +26,9 @@ public class EffectCommand extends SimplePlexCommand
 {
     private static final String GIVE = "plex.tfmextras.effect.give";
     private static final String CLEAR = "plex.tfmextras.effect.clear";
+    private static final String INFINITE = "infinite";
+    private static final int DEFAULT_TICKS = 600;
+    private static final int MAX_SECONDS = 1_000_000;
 
     public EffectCommand()
     {
@@ -44,27 +47,76 @@ public class EffectCommand extends SimplePlexCommand
                 .then(word("player").suggests((context, builder) -> suggestMatching(builder, targets(context, GIVE)))
                         .then(Commands.argument("effect", ArgumentTypes.resource(RegistryKey.MOB_EFFECT))
                                 .executes(context -> give(context, null, 0, false))
-                                .then(giveDuration(Commands.argument("seconds", IntegerArgumentType.integer(1, 1_000_000)),
-                                        context -> IntegerArgumentType.getInteger(context, "seconds")))
-                                .then(giveDuration(Commands.literal("infinite"), context -> PotionEffect.INFINITE_DURATION)))));
+                                .then(word("duration").suggests((context, builder) -> suggestMatching(builder, List.of(INFINITE)))
+                                        .executes(context -> give(context, string(context, "duration"), 0, false))
+                                        .then(Commands.argument("amplifier", IntegerArgumentType.integer(0, 255))
+                                                .executes(context -> give(context, string(context, "duration"),
+                                                        IntegerArgumentType.getInteger(context, "amplifier"), false))
+                                                .then(Commands.argument("hideParticles", BoolArgumentType.bool())
+                                                        .executes(context -> give(context, string(context, "duration"),
+                                                                IntegerArgumentType.getInteger(context, "amplifier"),
+                                                                BoolArgumentType.getBool(context, "hideParticles")))))))));
         command.then(Commands.literal("clear").requires(source -> source.getSender().hasPermission(CLEAR))
-                .executes(context -> executeCommand(context, (sender, player) -> clear(sender, player, null, null)))
+                .executes(context -> clear(context, null, null))
                 .then(word("player").suggests((context, builder) -> suggestMatching(builder, targets(context, CLEAR)))
-                        .executes(context -> executeCommand(context, (sender, player) -> clear(sender, player, string(context, "player"), null)))
+                        .executes(context -> clear(context, string(context, "player"), null))
                         .then(Commands.argument("effect", ArgumentTypes.resource(RegistryKey.MOB_EFFECT))
-                                .executes(context -> executeCommand(context, (sender, player) -> clear(sender, player,
-                                        string(context, "player"), context.getArgument("effect", PotionEffectType.class)))))));
+                                .executes(context -> clear(context, string(context, "player"),
+                                        context.getArgument("effect", PotionEffectType.class))))));
     }
 
-    private ArgumentBuilder<CommandSourceStack, ?> giveDuration(ArgumentBuilder<CommandSourceStack, ?> duration,
-                                                               ToIntFunction<CommandContext<CommandSourceStack>> seconds)
+    private int give(CommandContext<CommandSourceStack> context, @Nullable String duration, int amplifier, boolean hideParticles)
     {
-        return duration.executes(context -> give(context, seconds.applyAsInt(context), 0, false))
-                .then(Commands.argument("amplifier", IntegerArgumentType.integer(0, 255))
-                        .executes(context -> give(context, seconds.applyAsInt(context), IntegerArgumentType.getInteger(context, "amplifier"), false))
-                        .then(Commands.argument("hideParticles", BoolArgumentType.bool())
-                                .executes(context -> give(context, seconds.applyAsInt(context), IntegerArgumentType.getInteger(context, "amplifier"),
-                                        BoolArgumentType.getBool(context, "hideParticles")))));
+        return executeCommand(context, (sender, player) ->
+        {
+            Player target = target(sender, player, string(context, "player"), GIVE);
+            if (target == null) return messageComponent("playerNotFound");
+
+            PotionEffectType type = context.getArgument("effect", PotionEffectType.class);
+            PotionEffect effect = new PotionEffect(type, durationTicks(duration, type), amplifier, false, !hideParticles);
+            Component success = messageComponent("effectGiven", Placeholder.unparsed("effect", type.key().asString()),
+                    Placeholder.unparsed("amplifier", String.valueOf(amplifier)), Placeholder.unparsed("player", target.getName()));
+            return applyToTarget(sender, player, target, () -> target.addPotionEffect(effect), success);
+        });
+    }
+
+    private int clear(CommandContext<CommandSourceStack> context, @Nullable String name, @Nullable PotionEffectType type)
+    {
+        return executeCommand(context, (sender, player) ->
+        {
+            if (name == null && player == null) return messageComponent("effectSpecifyPlayer");
+
+            Player target = target(sender, player, name, CLEAR);
+            if (target == null) return messageComponent("playerNotFound");
+
+            Component success = messageComponent(type == null ? "effectsCleared" : "effectCleared",
+                    Placeholder.unparsed("player", target.getName()),
+                    Placeholder.unparsed("effect", type == null ? "" : type.key().asString()));
+            return applyToTarget(sender, player, target, () ->
+            {
+                if (type == null) return target.clearActivePotionEffects();
+                if (!target.hasPotionEffect(type)) return false;
+                target.removePotionEffect(type);
+                return !target.hasPotionEffect(type);
+            }, success);
+        });
+    }
+
+    private int durationTicks(@Nullable String duration, PotionEffectType type)
+    {
+        if (duration == null) return type.isInstant() ? 1 : DEFAULT_TICKS;
+        if (duration.equals(INFINITE)) return PotionEffect.INFINITE_DURATION;
+
+        try
+        {
+            int seconds = Integer.parseInt(duration);
+            if (seconds >= 1 && seconds <= MAX_SECONDS) return type.isInstant() ? seconds : seconds * 20;
+        }
+        catch (NumberFormatException ignored)
+        {
+            // A non-numeric duration is a usage mistake, so both branches report the usage text below.
+        }
+        throw new CommandFailException(MiniMessage.miniMessage().serialize(usage()));
     }
 
     private List<String> targets(CommandContext<CommandSourceStack> context, String permission)
@@ -74,43 +126,6 @@ public class EffectCommand extends SimplePlexCommand
         return sender instanceof Player player ? List.of(player.getName()) : List.of();
     }
 
-    private int give(CommandContext<CommandSourceStack> context, @Nullable Integer seconds, int amplifier, boolean hideParticles)
-    {
-        return executeCommand(context, (sender, player) ->
-        {
-            checkPermission(sender, GIVE);
-            Player target = target(sender, player, string(context, "player"), GIVE);
-            if (target == null) return messageComponent("playerNotFound");
-            PotionEffectType type = context.getArgument("effect", PotionEffectType.class);
-            int duration;
-            if (seconds == null) duration = type.isInstant() ? 1 : 600;
-            else if (seconds == PotionEffect.INFINITE_DURATION || type.isInstant()) duration = seconds;
-            else duration = seconds * 20;
-            PotionEffect effect = new PotionEffect(type, duration, amplifier, false, !hideParticles);
-            Component success = messageComponent("effectGiven", Placeholder.unparsed("effect", type.key().asString()),
-                    Placeholder.unparsed("amplifier", String.valueOf(amplifier)), Placeholder.unparsed("player", target.getName()));
-            return updateEffects(sender, player, target, () -> target.addPotionEffect(effect), success);
-        });
-    }
-
-    private Component clear(CommandSender sender, @Nullable Player player, @Nullable String name, @Nullable PotionEffectType type)
-    {
-        checkPermission(sender, CLEAR);
-        if (name == null && player == null) return messageComponent("effectSpecifyPlayer");
-        Player target = target(sender, player, name, CLEAR);
-        if (target == null) return messageComponent("playerNotFound");
-        Component success = messageComponent(type == null ? "effectsCleared" : "effectCleared",
-                Placeholder.unparsed("player", target.getName()),
-                Placeholder.unparsed("effect", type == null ? "" : type.key().asString()));
-        return updateEffects(sender, player, target, () ->
-        {
-            if (type == null) return target.clearActivePotionEffects();
-            if (!target.hasPotionEffect(type)) return false;
-            target.removePotionEffect(type);
-            return !target.hasPotionEffect(type);
-        }, success);
-    }
-
     private @Nullable Player target(CommandSender sender, @Nullable Player player, @Nullable String name, String permission)
     {
         Player target = name == null ? player : Bukkit.getPlayerExact(name);
@@ -118,14 +133,15 @@ public class EffectCommand extends SimplePlexCommand
         return target;
     }
 
-    private @Nullable Component updateEffects(CommandSender sender, @Nullable Player player, Player target,
+    // The mutation is the only work owned by the target: a self target runs it here, and another player's
+    // potion state crosses to that player's entity scheduler. The sender hears the outcome after it runs.
+    private @Nullable Component applyToTarget(CommandSender sender, @Nullable Player player, Player target,
                                               BooleanSupplier mutation, Component success)
     {
         Component unchanged = messageComponent("effectUnchanged", Placeholder.unparsed("player", target.getName()));
         if (target == player) return mutation.getAsBoolean() ? success : unchanged;
 
         Component unavailable = messageComponent("effectPlayerUnavailable", Placeholder.unparsed("player", target.getName()));
-        // Cross only for potion state; report the actual result after the mutation completes.
         if (ownTask(target.getScheduler().run(taskOwner(), task ->
                 sender.sendMessage(mutation.getAsBoolean() ? success : unchanged), () -> sender.sendMessage(unavailable))) == null)
         {

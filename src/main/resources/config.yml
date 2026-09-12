@@ -19,3 +19,10 @@ server:
       - "9285ace6-7393-45c5-9420-00fc66374ff4"
     restricted:
       - "9285ace6-7393-45c5-9420-00fc66374ff4"
+  fun:
+    # Ticks before a trail block reverts to the original block.
+    trail_fade_ticks: 100
+    # Ticks before paintball splats revert to the original blocks.
+    paintball_fade_ticks: 200
+    # Longest disco a single command may start, in seconds.
+    disco_max_seconds: 60

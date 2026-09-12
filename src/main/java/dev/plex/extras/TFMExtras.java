@@ -6,19 +6,34 @@ import dev.plex.api.config.ModuleConfiguration;
 import dev.plex.extras.command.AdminInfoCommand;
 import dev.plex.extras.command.AutoClearCommand;
 import dev.plex.extras.command.AutoTeleportCommand;
+import dev.plex.extras.command.CageCommand;
 import dev.plex.extras.command.CakeCommand;
 import dev.plex.extras.command.CartSitCommand;
 import dev.plex.extras.command.ClearChatCommand;
 import dev.plex.extras.command.ClownfishCommand;
 import dev.plex.extras.command.CloudClearCommand;
+import dev.plex.extras.command.CookieCommand;
+import dev.plex.extras.command.DiscoCommand;
 import dev.plex.extras.command.EjectCommand;
 import dev.plex.extras.command.EffectCommand;
 import dev.plex.extras.command.EnchantCommand;
 import dev.plex.extras.command.EnglishMfCommand;
 import dev.plex.extras.command.ExpelCommand;
+import dev.plex.extras.command.GravityCommand;
 import dev.plex.extras.command.JumpPadsCommand;
 import dev.plex.extras.command.OrbitCommand;
+import dev.plex.extras.command.PaintballCommand;
 import dev.plex.extras.command.RandomFishCommand;
+import dev.plex.extras.command.RocketCommand;
+import dev.plex.extras.command.SizeCommand;
+import dev.plex.extras.command.TrailCommand;
+import dev.plex.extras.fun.Cages;
+import dev.plex.extras.fun.Disco;
+import dev.plex.extras.fun.Paintball;
+import dev.plex.extras.fun.Rockets;
+import dev.plex.extras.fun.SessionAttributes;
+import dev.plex.extras.fun.TemporaryBlocks;
+import dev.plex.extras.fun.Trails;
 import dev.plex.extras.jumppads.JumpPads;
 import dev.plex.extras.listener.ClownfishListener;
 import dev.plex.extras.listener.JumpPadsListener;
@@ -33,6 +48,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -52,6 +68,13 @@ public class TFMExtras extends PlexModule
     private final Map<UUID, Integer> orbitStrengths = new ConcurrentHashMap<>();
     private final Map<UUID, ScheduledTask> orbitTasks = new ConcurrentHashMap<>();
     private ExecutorService configExecutor;
+    private TemporaryBlocks temporaryBlocks;
+    private Trails trails;
+    private Paintball paintball;
+    private Cages cages;
+    private Disco disco;
+    private Rockets rockets;
+    private SessionAttributes sessionAttributes;
 
     @Override
     public void load()
@@ -60,22 +83,37 @@ public class TFMExtras extends PlexModule
         config.load();
         loadMessages("messages.yml");
         jumpPads = new JumpPads(config.getInt("server.jumppad_strength", 1));
+        temporaryBlocks = new TemporaryBlocks(this);
+        trails = new Trails(this, temporaryBlocks);
+        paintball = new Paintball(this, temporaryBlocks);
+        cages = new Cages(this, temporaryBlocks);
+        disco = new Disco(this, temporaryBlocks);
+        rockets = new Rockets(this);
+        sessionAttributes = new SessionAttributes(this);
         registerCommand(new AdminInfoCommand(this));
         registerCommand(new AutoClearCommand(this));
         registerCommand(new AutoTeleportCommand(this));
+        registerCommand(new CageCommand(cages));
         registerCommand(new CakeCommand());
         registerCommand(new CartSitCommand());
         registerCommand(new ClearChatCommand());
         registerCommand(new ClownfishCommand(this));
         registerCommand(new CloudClearCommand());
+        registerCommand(new CookieCommand());
+        registerCommand(new DiscoCommand(disco));
         registerCommand(new EjectCommand());
         registerCommand(new EffectCommand());
         registerCommand(new EnchantCommand());
         registerCommand(new EnglishMfCommand());
         registerCommand(new ExpelCommand());
+        registerCommand(new GravityCommand(sessionAttributes));
         registerCommand(new JumpPadsCommand(this));
         registerCommand(new OrbitCommand(this));
+        registerCommand(new PaintballCommand(paintball));
         registerCommand(new RandomFishCommand());
+        registerCommand(new RocketCommand(rockets));
+        registerCommand(new SizeCommand(sessionAttributes));
+        registerCommand(new TrailCommand(trails));
     }
 
     @Override
@@ -87,6 +125,10 @@ public class TFMExtras extends PlexModule
         registerListener(new JumpPadsListener(this));
         registerListener(new OrbitEffectListener(this));
         registerListener(new PlayerListener(this));
+        registerListener(trails);
+        registerListener(paintball);
+        registerListener(cages);
+        registerListener(sessionAttributes);
     }
 
     @Override
@@ -95,6 +137,15 @@ public class TFMExtras extends PlexModule
         orbitTasks.values().forEach(ScheduledTask::cancel);
         orbitTasks.clear();
         orbitStrengths.clear();
+        // Restore every temporary block first and unowned, because Plex cancels this module's owned
+        // tasks right after disable. The bound keeps unload inside Plex's shutdown budget, and a
+        // timeout surfaces as a logged shutdown failure instead of silent success.
+        CompletableFuture<Void> blocks = temporaryBlocks.revertAll();
+        rockets.cancelAll();
+        disco.stopAll();
+        cages.uncageAll();
+        completeShutdownBeforeClose(CompletableFuture.allOf(blocks, sessionAttributes.resetOnline())
+                .orTimeout(5, TimeUnit.SECONDS));
         if (configExecutor != null)
         {
             configExecutor.shutdownNow();
