@@ -56,11 +56,21 @@ public class CageCommand extends SimplePlexCommand
         }
 
         Player target = getNonNullPlayer(name);
-        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
-        Component built = messageComponent("cageBuilt", Placeholder.unparsed("sender", sender.getName()),
+        boolean self = sender == target;
+        Component built = messageComponent(self ? "cageBuiltSelf" : "cageBuilt", Placeholder.unparsed("sender", sender.getName()),
                 Placeholder.unparsed("player", target.getName()));
+        Runnable done;
+        if (self)
+        {
+            done = () -> sender.sendMessage(built);
+        }
+        else
+        {
+            ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
+            done = () -> announcement.send(built);
+        }
         Component unavailable = messageComponent("funPlayerUnavailable", Placeholder.unparsed("player", target.getName()));
-        cages.cage(target, outer, inner, () -> announcement.send(built), () -> sender.sendMessage(unavailable));
+        cages.cage(target, outer, inner, done, () -> sender.sendMessage(unavailable));
         return null;
     }
 
@@ -83,12 +93,16 @@ public class CageCommand extends SimplePlexCommand
     private Component remove(CommandSender sender, String name)
     {
         Player target = getNonNullPlayer(name);
-        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
         if (!cages.uncage(target.getUniqueId()))
         {
             return messageComponent("cageNotCaged", Placeholder.unparsed("player", target.getName()));
         }
 
+        if (sender == target)
+        {
+            return messageComponent("cageRemovedSelf");
+        }
+        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
         announcement.send(messageComponent("cageRemoved", Placeholder.unparsed("sender", sender.getName()),
                 Placeholder.unparsed("player", target.getName())));
         return null;

@@ -94,12 +94,10 @@ public class DiscoCommand extends SimplePlexCommand
     {
         if (seconds == null)
         {
-            sender.sendMessage(messageComponent(disco.stop(target.getUniqueId()) ? "discoStopped" : "discoNotRunning",
-                    Placeholder.unparsed("sender", sender.getName()), Placeholder.unparsed("player", target.getName())));
+            sender.sendMessage(messageComponent(disco.stop(target.getUniqueId()) ? "discoStoppedSelf" : "discoNotRunningSelf"));
             return;
         }
-        Component started = messageComponent("discoStarted", Placeholder.unparsed("sender", sender.getName()),
-                Placeholder.unparsed("player", target.getName()), Placeholder.unparsed("seconds", String.valueOf(seconds)));
+        Component started = messageComponent("discoStartedSelf", Placeholder.unparsed("seconds", String.valueOf(seconds)));
         Component unavailable = messageComponent("funPlayerUnavailable", Placeholder.unparsed("player", target.getName()));
         disco.start(target, seconds, () -> sender.sendMessage(started), () -> sender.sendMessage(unavailable));
     }

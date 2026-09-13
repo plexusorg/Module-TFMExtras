@@ -80,8 +80,12 @@ public class OrbitCommand extends SimplePlexCommand
             return messageComponent("alreadyOrbited", Placeholder.parsed("player", targetPlayer.getName()));
         }
 
-        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
         module.startOrbit(targetPlayer, strength);
+        if (sender == targetPlayer)
+        {
+            return messageComponent("orbitStartedSelf");
+        }
+        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
         announcement.send(messageComponent("playerOrbited", Placeholder.parsed("sender", sender.getName()), Placeholder.parsed("player", targetPlayer.getName())));
         return null;
     }

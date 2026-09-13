@@ -49,7 +49,7 @@ public class RocketCommand extends SimplePlexCommand
         {
             checkPermission(sender, "plex.tfmextras.rocket.others");
         }
-        Component launched = messageComponent("rocketLaunched",
+        Component launched = messageComponent(self ? "rocketLaunchedSelf" : "rocketLaunched",
                 Placeholder.unparsed("sender", sender.getName()),
                 Placeholder.unparsed("player", target.getName()));
         Runnable done;
