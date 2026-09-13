@@ -7,6 +7,7 @@ import dev.plex.extras.command.AdminInfoCommand;
 import dev.plex.extras.command.AutoClearCommand;
 import dev.plex.extras.command.AutoTeleportCommand;
 import dev.plex.extras.command.CageCommand;
+import dev.plex.extras.command.UncageCommand;
 import dev.plex.extras.command.CakeCommand;
 import dev.plex.extras.command.ClearChatCommand;
 import dev.plex.extras.command.ClownfishCommand;
@@ -93,6 +94,7 @@ public class TFMExtras extends PlexModule
         registerCommand(new AutoClearCommand(this));
         registerCommand(new AutoTeleportCommand(this));
         registerCommand(new CageCommand(cages));
+        registerCommand(new UncageCommand(cages));
         registerCommand(new CakeCommand());
         registerCommand(new ClearChatCommand());
         registerCommand(new ClownfishCommand(this));

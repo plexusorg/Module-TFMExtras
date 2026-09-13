@@ -2,7 +2,6 @@ package dev.plex.extras.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import dev.plex.api.message.ActionBroadcast;
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.fun.Cages;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -10,6 +9,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
@@ -25,7 +25,7 @@ public class CageCommand extends SimplePlexCommand
     {
         super(command("cage")
                 .description("Traps a player in a cage until it is removed")
-                .usage("/<command> <player> [off | <outer> [inner]]")
+                .usage("/<command> <player> [outer] [inner]")
                 .permission("plex.tfmextras.cage")
                 .build());
         this.cages = cages;
@@ -38,8 +38,6 @@ public class CageCommand extends SimplePlexCommand
         command.then(word("player").suggests((context, builder) -> suggestMatching(builder, onlinePlayerNames()))
                 .executes(context -> executeCommand(context, (sender, player) -> build(sender, string(context, "player"),
                         Material.GLASS.createBlockData(), Material.AIR.createBlockData())))
-                .then(Commands.literal("off").executes(context -> executeCommand(context,
-                        (sender, player) -> remove(sender, string(context, "player")))))
                 .then(Commands.argument("outer", ArgumentTypes.blockState())
                         .executes(context -> executeCommand(context, (sender, player) -> build(sender, string(context, "player"),
                                 blockData(context, "outer"), Material.AIR.createBlockData())))
@@ -56,19 +54,9 @@ public class CageCommand extends SimplePlexCommand
         }
 
         Player target = getNonNullPlayer(name);
-        boolean self = sender == target;
-        Component built = messageComponent(self ? "cageBuiltSelf" : "cageBuilt", Placeholder.unparsed("sender", sender.getName()),
+        Component built = messageComponent("cageBuilt", Placeholder.unparsed("sender", sender.getName()),
                 Placeholder.unparsed("player", target.getName()));
-        Runnable done;
-        if (self)
-        {
-            done = () -> sender.sendMessage(built);
-        }
-        else
-        {
-            ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
-            done = () -> announcement.send(built);
-        }
+        Runnable done = () -> Bukkit.broadcast(built);
         Component unavailable = messageComponent("funPlayerUnavailable", Placeholder.unparsed("player", target.getName()));
         cages.cage(target, outer, inner, done, () -> sender.sendMessage(unavailable));
         return null;
@@ -88,24 +76,6 @@ public class CageCommand extends SimplePlexCommand
             return true;
         }
         return material.isSolid() && !material.hasGravity() && material != Material.TNT;
-    }
-
-    private Component remove(CommandSender sender, String name)
-    {
-        Player target = getNonNullPlayer(name);
-        if (!cages.uncage(target.getUniqueId()))
-        {
-            return messageComponent("cageNotCaged", Placeholder.unparsed("player", target.getName()));
-        }
-
-        if (sender == target)
-        {
-            return messageComponent("cageRemovedSelf");
-        }
-        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
-        announcement.send(messageComponent("cageRemoved", Placeholder.unparsed("sender", sender.getName()),
-                Placeholder.unparsed("player", target.getName())));
-        return null;
     }
 
     private BlockData blockData(CommandContext<CommandSourceStack> context, String name)

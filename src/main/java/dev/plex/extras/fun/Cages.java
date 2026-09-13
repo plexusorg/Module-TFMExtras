@@ -12,6 +12,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -45,6 +46,20 @@ public final class Cages implements Listener
     public void uncageAll()
     {
         cages.keySet().forEach(this::uncage);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void protectCage(BlockBreakEvent event)
+    {
+        Block block = event.getBlock();
+        for (Cage cage : cages.values())
+        {
+            if (block.getWorld() == cage.world() && cage.blocks().contains(block.getX(), block.getY(), block.getZ()))
+            {
+                event.setCancelled(true);
+                return;
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -90,7 +105,8 @@ public final class Cages implements Listener
         TemporaryBlocks.Placement placement = blocks.place(center,
                 shell(center.getWorld(), cx, cy, cz, outer, inner), 0);
         cages.put(playerId, new Cage(placement, center.getWorld(),
-                new BoundingBox(cx - 1, cy, cz - 1, cx + 2, cy + 3, cz + 2)));
+                new BoundingBox(cx - 1, cy, cz - 1, cx + 2, cy + 3, cz + 2),
+                new BoundingBox(cx - 2, cy - 1, cz - 2, cx + 3, cy + 4, cz + 3)));
         done.run();
     }
 
@@ -112,7 +128,7 @@ public final class Cages implements Listener
         return shell;
     }
 
-    private record Cage(TemporaryBlocks.Placement placement, World world, BoundingBox interior)
+    private record Cage(TemporaryBlocks.Placement placement, World world, BoundingBox interior, BoundingBox blocks)
     {
     }
 }
