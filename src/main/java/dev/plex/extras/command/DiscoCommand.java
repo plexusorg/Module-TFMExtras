@@ -2,10 +2,12 @@ package dev.plex.extras.command;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.plex.api.message.ActionBroadcast;
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.fun.Disco;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
@@ -62,10 +64,28 @@ public class DiscoCommand extends SimplePlexCommand
             return null;
         }
 
+        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
+        AtomicBoolean announced = new AtomicBoolean();
+        Component message = messageComponent(seconds == null ? "discoEveryoneStopped" : "discoEveryoneStarted",
+                Placeholder.unparsed("sender", sender.getName()),
+                Placeholder.unparsed("seconds", String.valueOf(seconds)));
+        Runnable done = () ->
+        {
+            if (announced.compareAndSet(false, true)) announcement.send(message);
+        };
         for (String name : onlinePlayerNames())
         {
             Player target = Bukkit.getPlayerExact(name);
-            if (target != null) apply(sender, target, seconds);
+            if (target == null) continue;
+            if (seconds == null)
+            {
+                if (disco.stop(target.getUniqueId())) done.run();
+            }
+            else
+            {
+                disco.start(target, seconds, done, () -> sender.sendMessage(messageComponent("funPlayerUnavailable",
+                        Placeholder.unparsed("player", target.getName()))));
+            }
         }
         return null;
     }
