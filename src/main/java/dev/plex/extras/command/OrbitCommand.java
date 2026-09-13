@@ -50,6 +50,10 @@ public class OrbitCommand extends SimplePlexCommand
     private Component executeTyped(CommandSender sender, String target, @Nullable String power)
     {
         Player targetPlayer = getNonNullPlayer(target);
+        if (sender != targetPlayer)
+        {
+            checkPermission(sender, "plex.tfmextras.orbit.others");
+        }
 
         int strength = 100;
 

@@ -49,7 +49,7 @@ public class AutoTeleportCommand extends SimplePlexCommand
 
     private Component togglePlayer(CommandSender sender, String playerName)
     {
-        checkPermission(sender, "plex.tfmextras.autotp.other");
+        checkPermission(sender, "plex.tfmextras.autotp.others");
         api().players().byName(playerName).whenComplete((result, failure) ->
         {
             if (failure != null)

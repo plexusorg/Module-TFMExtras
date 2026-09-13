@@ -26,7 +26,7 @@ public class Rockets
     private static final int THRUST_PERIOD = 2;
     private static final int BLAST_INTERVAL = 10;
     private static final double THRUST_VELOCITY = 1.2;
-    private static final int SLOW_FALLING_TICKS = 20 * 30;
+    private static final int SLOW_FALLING_TICKS = 20 * 15;
     private static final List<Color> COLORS = List.of(Color.RED, Color.ORANGE, Color.YELLOW,
             Color.LIME, Color.AQUA, Color.FUCHSIA);
 
@@ -99,6 +99,21 @@ public class Rockets
     private void thrust(Player player, UUID playerId, ScheduledTask task, AtomicInteger elapsed)
     {
         int ticks = elapsed.addAndGet(THRUST_PERIOD);
+        if (ticks > THRUST_TICKS)
+        {
+            boolean grounded = player.isOnGround();
+            if (grounded)
+            {
+                player.removePotionEffect(PotionEffectType.SLOW_FALLING);
+            }
+            if (grounded || ticks >= THRUST_TICKS + SLOW_FALLING_TICKS
+                    || !player.hasPotionEffect(PotionEffectType.SLOW_FALLING))
+            {
+                task.cancel();
+                flights.remove(playerId, task);
+            }
+            return;
+        }
         player.setVelocity(new Vector(0, THRUST_VELOCITY, 0));
         player.getWorld().spawnParticle(Particle.FLAME, player.getLocation(), 10, 0.2, 0.2, 0.2);
         if (ticks % BLAST_INTERVAL == 0)
@@ -110,10 +125,9 @@ public class Rockets
             return;
         }
 
-        task.cancel();
         detonate(player);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, SLOW_FALLING_TICKS, 0, false, false));
-        land(playerId);
+        flying.remove(playerId);
     }
 
     private void detonate(Player player)
