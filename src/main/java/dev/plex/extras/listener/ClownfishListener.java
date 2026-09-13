@@ -61,7 +61,7 @@ public class ClownfishListener implements Listener
                     }
 
                     double radius = module.getConfig().getInt("server.clownfish.radius");
-                    double strength = module.getConfig().getInt("server.clownfish.strength");
+                    double strength = module.getConfig().getDouble("server.clownfish.strength");
 
                     final Vector senderPos = player.getLocation().toVector();
                     final List<String> toggledPlayers = module.getConfig().getStringList("server.clownfish.toggled_players");
@@ -87,7 +87,13 @@ public class ClownfishListener implements Listener
                     target.setFlying(false);
                     playHitSounds(target);
                     target.getWorld().spawnParticle(Particle.CLOUD, targetPos, 5);
-                    target.setVelocity(targetPosVec.subtract(senderPos).normalize().multiply(strength));
+                    Vector velocity = targetPosVec.subtract(senderPos);
+                    if (velocity.lengthSquared() > 0)
+                    {
+                        velocity.normalize().multiply(strength);
+                    }
+                    velocity.setY(Math.max(0.6, velocity.getY()));
+                    target.setVelocity(velocity);
                 }
             }
         }, null));

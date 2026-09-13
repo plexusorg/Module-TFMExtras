@@ -14,7 +14,7 @@ server:
   allow-unsafe-enchantments: true
   clownfish:
     radius: 5
-    strength: 2.5
+    strength: 3.8
     toggled_players:
       - "9285ace6-7393-45c5-9420-00fc66374ff4"
     restricted:
