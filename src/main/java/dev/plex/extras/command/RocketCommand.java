@@ -6,6 +6,7 @@ import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.fun.Rockets;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.command.CommandSender;
@@ -14,13 +15,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class RocketCommand extends SimplePlexCommand
 {
+    private static final String OTHERS_PERMISSION = "plex.tfmextras.rocket.others";
     private final Rockets rockets;
 
     public RocketCommand(Rockets rockets)
     {
         super(command("rocket")
-                .description("Launches a player into the sky")
-                .usage("/<command> [player]")
+                .description("Launches yourself, another player, or everyone into the sky")
+                .usage("/<command> [player | -a]")
                 .permission("plex.tfmextras.rocket")
                 .build());
         this.rockets = rockets;
@@ -29,26 +31,39 @@ public class RocketCommand extends SimplePlexCommand
     @Override
     protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
     {
-        command.executes(context -> executeCommand(context,
-                (sender, player) -> player == null ? usage() : launch(sender, player.getName())));
-        command.then(word("player").suggests((context, builder) ->
-        {
-            CommandSender sender = context.getSource().getSender();
-            return suggestMatching(builder, sender.hasPermission("plex.tfmextras.rocket.others")
-                    ? onlinePlayerNames() : sender instanceof Player player ? List.of(player.getName()) : List.of());
-        })
+        command.executes(context -> executeCommand(context, (sender, player) -> execute(sender, null)));
+        command.then(targetArgument("player", OTHERS_PERMISSION)
                 .executes(context -> executeCommand(context,
-                        (sender, player) -> launch(sender, string(context, "player")))));
+                        (sender, player) -> execute(sender, string(context, "player")))));
     }
 
-    private @Nullable Component launch(CommandSender sender, String name)
+    private @Nullable Component execute(CommandSender sender, @Nullable String name)
     {
-        Player target = getNonNullPlayer(name);
-        boolean self = target.equals(sender);
-        if (!self)
+        List<Player> targets = resolveTargets(sender, name, OTHERS_PERMISSION);
+        if (!ALL_TARGETS.equals(name))
         {
-            checkPermission(sender, "plex.tfmextras.rocket.others");
+            return launch(sender, targets.get(0));
         }
+
+        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
+        AtomicBoolean announced = new AtomicBoolean();
+        Component everyone = messageComponent("rocketLaunchedEveryone", Placeholder.unparsed("sender", sender.getName()));
+        Runnable done = () ->
+        {
+            if (announced.compareAndSet(false, true)) announcement.send(everyone);
+        };
+        for (Player target : targets)
+        {
+            Runnable retired = () -> sender.sendMessage(messageComponent("funPlayerUnavailable",
+                    Placeholder.unparsed("player", target.getName())));
+            rockets.launch(target, done, retired);
+        }
+        return null;
+    }
+
+    private @Nullable Component launch(CommandSender sender, Player target)
+    {
+        boolean self = target.equals(sender);
         Component launched = messageComponent(self ? "rocketLaunchedSelf" : "rocketLaunched",
                 Placeholder.unparsed("sender", sender.getName()),
                 Placeholder.unparsed("player", target.getName()));

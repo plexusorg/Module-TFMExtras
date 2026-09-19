@@ -33,7 +33,9 @@ public class AutoTeleportCommand extends SimplePlexCommand
     protected void configureCommand(LiteralArgumentBuilder<CommandSourceStack> command)
     {
         command.executes(context -> executeCommand(context, this::teleportSelf));
-        command.then(word("player").suggests((context, builder) -> suggestMatching(builder, onlinePlayerNames()))
+        command.then(word("player").suggests((context, builder) -> suggestMatching(builder,
+                        silentCheckPermission(context.getSource().getSender(), "plex.tfmextras.autotp.others")
+                                ? onlinePlayerNames() : List.of()))
                 .executes(context -> executeCommand(context,
                         (sender, player) -> togglePlayer(sender, string(context, "player"))))
                 .then(greedyString("ignored").executes(context -> executeCommand(context,

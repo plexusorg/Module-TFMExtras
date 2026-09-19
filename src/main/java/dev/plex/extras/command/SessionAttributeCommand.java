@@ -1,14 +1,13 @@
 package dev.plex.extras.command;
 
-import com.mojang.brigadier.context.CommandContext;
+import dev.plex.api.message.ActionBroadcast;
 import dev.plex.command.CommandSpec;
 import dev.plex.command.SimplePlexCommand;
 import dev.plex.extras.fun.SessionAttributes;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,60 +19,77 @@ public abstract class SessionAttributeCommand extends SimplePlexCommand
     private final Attribute attribute;
     private final String setKey;
     private final String resetKey;
+    private final String setEveryoneKey;
+    private final String resetEveryoneKey;
 
     protected SessionAttributeCommand(CommandSpec commandSpec, SessionAttributes attributes, Attribute attribute,
-                                      String setKey, String resetKey)
+                                      String setKey, String resetKey, String setEveryoneKey, String resetEveryoneKey)
     {
         super(commandSpec);
         this.attributes = attributes;
         this.attribute = attribute;
         this.setKey = setKey;
         this.resetKey = resetKey;
+        this.setEveryoneKey = setEveryoneKey;
+        this.resetEveryoneKey = resetEveryoneKey;
     }
 
-    protected List<String> targets(CommandContext<CommandSourceStack> context)
+    protected @Nullable Component apply(CommandSender sender, @Nullable String name, @Nullable Double value)
     {
-        CommandSender sender = context.getSource().getSender();
-        if (sender.hasPermission(getPermission() + ".others")) return onlinePlayerNames();
-        return sender instanceof Player player ? List.of(player.getName()) : List.of();
-    }
-
-    protected @Nullable Component apply(CommandSender sender, @Nullable Player player, String name, @Nullable Double value)
-    {
-        Player target = target(sender, player, name);
-        if (target == null) return messageComponent("playerNotFound");
-
-        Component success = value == null
-                ? messageComponent(resetKey, Placeholder.unparsed("player", target.getName()))
-                : messageComponent(setKey, Placeholder.unparsed("player", target.getName()),
-                        Placeholder.unparsed("value", String.valueOf(value)));
-        Runnable mutation = value == null
-                ? () -> attributes.reset(target, attribute)
-                : () -> attributes.set(target, attribute, value);
-
-        if (target == player)
+        List<Player> targets = resolveTargets(sender, name, getPermission() + ".others");
+        if (!ALL_TARGETS.equals(name))
         {
-            mutation.run();
-            return success;
+            return applyTo(sender, targets.get(0), value);
         }
 
-        Component unavailable = messageComponent("funPlayerUnavailable", Placeholder.unparsed("player", target.getName()));
-        // Cross only for the attribute mutation; report it after the target's region applies it.
-        if (ownTask(target.getScheduler().run(taskOwner(), task ->
+        ActionBroadcast announcement = api().messages().captureActionBroadcast(sender);
+        AtomicBoolean announced = new AtomicBoolean();
+        Component everyone = messageComponent(value == null ? resetEveryoneKey : setEveryoneKey,
+                Placeholder.unparsed("sender", sender.getName()), Placeholder.unparsed("value", String.valueOf(value)));
+        Runnable done = () ->
         {
-            mutation.run();
-            sender.sendMessage(success);
-        }, () -> sender.sendMessage(unavailable))) == null)
+            if (announced.compareAndSet(false, true)) announcement.send(everyone);
+        };
+        for (Player target : targets)
         {
-            sender.sendMessage(unavailable);
+            mutate(sender, target, value, done);
         }
         return null;
     }
 
-    private @Nullable Player target(CommandSender sender, @Nullable Player player, String name)
+    private @Nullable Component applyTo(CommandSender sender, Player target, @Nullable Double value)
     {
-        Player target = Bukkit.getPlayerExact(name);
-        if (target != null && target != player) checkPermission(sender, getPermission() + ".others");
-        return target;
+        Component success = value == null
+                ? messageComponent(resetKey, Placeholder.unparsed("player", target.getName()))
+                : messageComponent(setKey, Placeholder.unparsed("player", target.getName()),
+                        Placeholder.unparsed("value", String.valueOf(value)));
+        mutate(sender, target, value, () -> sender.sendMessage(success));
+        return null;
+    }
+
+    // Crosses only for another player's attribute mutation; a self target already owns its own region.
+    private void mutate(CommandSender sender, Player target, @Nullable Double value, Runnable done)
+    {
+        if (target.equals(sender))
+        {
+            mutation(target, value).run();
+            done.run();
+            return;
+        }
+
+        Component unavailable = messageComponent("funPlayerUnavailable", Placeholder.unparsed("player", target.getName()));
+        if (ownTask(target.getScheduler().run(taskOwner(), task ->
+        {
+            mutation(target, value).run();
+            done.run();
+        }, () -> sender.sendMessage(unavailable))) == null)
+        {
+            sender.sendMessage(unavailable);
+        }
+    }
+
+    private Runnable mutation(Player target, @Nullable Double value)
+    {
+        return value == null ? () -> attributes.reset(target, attribute) : () -> attributes.set(target, attribute, value);
     }
 }

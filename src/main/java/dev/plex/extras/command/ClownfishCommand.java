@@ -81,29 +81,23 @@ public class ClownfishCommand extends SimplePlexCommand
         }
         else if (action.equals("restrict") && target != null)
         {
-            if (silentCheckPermission(commandSender, "plex.tfmextras.clownfish.restrict"))
+            checkPermission(commandSender, "plex.tfmextras.clownfish.restrict");
+            api().players().byName(target).whenComplete((result, failure) ->
             {
-                api().players().byName(target).whenComplete((result, failure) ->
+                if (failure != null)
                 {
-                    if (failure != null)
-                    {
-                        module.getLogger().error("Failed to look up player {}", target, failure);
-                        send(commandSender, Component.text("Player lookup failed."));
-                        return;
-                    }
-                    if (result.isEmpty())
-                    {
-                        send(commandSender, messageComponent("playerNotFound"));
-                        return;
-                    }
-                    restrict(commandSender, result.get());
-                });
-                return null;
-            }
-            else
-            {
-                return MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.");
-            }
+                    module.getLogger().error("Failed to look up player {}", target, failure);
+                    send(commandSender, Component.text("Player lookup failed."));
+                    return;
+                }
+                if (result.isEmpty())
+                {
+                    send(commandSender, messageComponent("playerNotFound"));
+                    return;
+                }
+                restrict(commandSender, result.get());
+            });
+            return null;
         }
         else
         {
