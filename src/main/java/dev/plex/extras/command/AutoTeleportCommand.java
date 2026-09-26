@@ -52,10 +52,14 @@ public class AutoTeleportCommand extends SimplePlexCommand
     private Component togglePlayer(CommandSender sender, String playerName)
     {
         checkPermission(sender, "plex.tfmextras.autotp.others");
-        api().players().byName(playerName).whenComplete((result, failure) ->
+        api().players().resolveCommandPlayer(playerName).whenComplete((result, failure) ->
         {
             if (failure != null)
             {
+                if (sendPlayerLookupFailure(sender, failure))
+                {
+                    return;
+                }
                 module.getLogger().error("Failed to look up player {}", playerName, failure);
                 send(sender, Component.text("Player lookup failed."));
                 return;

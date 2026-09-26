@@ -82,10 +82,14 @@ public class ClownfishCommand extends SimplePlexCommand
         else if (action.equals("restrict") && target != null)
         {
             checkPermission(commandSender, "plex.tfmextras.clownfish.restrict");
-            api().players().byName(target).whenComplete((result, failure) ->
+            api().players().resolveCommandPlayer(target).whenComplete((result, failure) ->
             {
                 if (failure != null)
                 {
+                    if (sendPlayerLookupFailure(commandSender, failure))
+                    {
+                        return;
+                    }
                     module.getLogger().error("Failed to look up player {}", target, failure);
                     send(commandSender, Component.text("Player lookup failed."));
                     return;
