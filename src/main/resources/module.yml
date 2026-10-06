@@ -1,5 +1,5 @@
 name: Module-TFMExtras
 main: dev.plex.extras.TFMExtras
-description: TFM extras for Plex
+description: Extra commands in the spirit of TotalFreedomMod
 version: 2.0.1-SNAPSHOT
 apiCompatibility: 1
