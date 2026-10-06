@@ -21,11 +21,11 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.48")
     compileOnly("io.papermc.paper:paper-api:26.2.build.+")
     implementation("org.apache.commons:commons-lang3:3.21.0")
-    compileOnly("dev.plex:api:2.0-SNAPSHOT")
+    compileOnly("dev.plex:api:2.0")
 }
 
 group = "dev.plex"
-version = "2.0-SNAPSHOT"
+version = "2.0"
 description = "Module-TFMExtras"
 
 java {
